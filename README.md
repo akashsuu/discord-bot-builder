@@ -15,7 +15,7 @@ Build, run, and export Discord bots by connecting nodes in a Blender-style edito
 - **Code export** — generate a real, runnable `bot.js` file
 - **Plugin system** — extend with custom node types
 - **Auto-save** — project saves automatically every 2 seconds
-- **Dark theme** — Blender-inspired UI
+- **Dark theme**
 
 ---
 
