@@ -31,14 +31,19 @@ function loadPlugins(pluginsDir) {
       const pluginModule = require(indexPath);
 
       if (pluginModule.nodes && typeof pluginModule.nodes === 'object') {
+        const cfg = pluginMeta.nodeConfig || {};
         for (const [nodeType, impl] of Object.entries(pluginModule.nodes)) {
           plugins[nodeType] = impl;
           meta.push({
-            type: nodeType,
-            label: pluginMeta.name || nodeType,
-            icon: pluginMeta.icon || '🔌',
+            type:        nodeType,
+            label:       cfg.label       || pluginMeta.name || nodeType,
+            icon:        cfg.icon        || pluginMeta.icon || '🔌',
+            color:       cfg.color       || '#2A2A3A',
             description: pluginMeta.description || '',
-            version: pluginMeta.version || '1.0.0',
+            version:     pluginMeta.version || '1.0.0',
+            hasInput:    cfg.hasInput  !== false,
+            hasOutput:   cfg.hasOutput !== false,
+            defaults:    cfg.defaults  || {},
           });
           console.log(`[Plugins] Registered node type: "${nodeType}" (from ${pluginMeta.name})`);
         }

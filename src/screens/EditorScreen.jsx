@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -14,7 +14,8 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import { useProject } from '../context/ProjectContext';
-import nodeTypes, { DEFAULT_NODE_DATA, NODE_PALETTE } from '../nodes/nodeTypes';
+import builtinNodeTypes, { DEFAULT_NODE_DATA, NODE_PALETTE } from '../nodes/nodeTypes';
+import PluginNode from '../nodes/PluginNode';
 import Toolbar from '../components/Toolbar';
 import LogPanel from '../components/LogPanel';
 
@@ -39,17 +40,21 @@ function serialize(nodes) {
 }
 
 // ── Right-click context menu ──────────────────────────────────────────────────
-function ContextMenu({ menu, palette, onAdd, onClose }) {
+function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
   const [search, setSearch] = useState('');
   const inputRef = useRef(null);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
-  const filtered = search
-    ? palette.filter((p) => p.label.toLowerCase().includes(search.toLowerCase()))
+  const allItems = [
+    ...palette,
+    ...(pluginMeta || []).map((p) => ({ type: p.type, label: p.label, color: p.color, icon: p.icon, _plugin: true })),
+  ];
+
+  const filtered = search.trim()
+    ? allItems.filter((p) => p.label.toLowerCase().includes(search.toLowerCase()))
     : null;
 
-  // close on outside click is handled by the overlay div
   return (
     <div className="bl-ctx-overlay" onMouseDown={onClose}>
       <div
@@ -76,21 +81,36 @@ function ContextMenu({ menu, palette, onAdd, onClose }) {
               </div>
             ))
         ) : (
-          CATEGORIES.map((cat) => (
-            <React.Fragment key={cat.label}>
-              <div className="bl-ctx-cat">{cat.label}</div>
-              {cat.items.map((type) => {
-                const p = palette.find((x) => x.type === type);
-                if (!p) return null;
-                return (
-                  <div key={type} className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
+          <>
+            {CATEGORIES.map((cat) => (
+              <React.Fragment key={cat.label}>
+                <div className="bl-ctx-cat">{cat.label}</div>
+                {cat.items.map((type) => {
+                  const p = palette.find((x) => x.type === type);
+                  if (!p) return null;
+                  return (
+                    <div key={type} className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
+                      <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+                      {p.label}
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+
+            {pluginMeta && pluginMeta.length > 0 && (
+              <>
+                <div className="bl-ctx-divider" />
+                <div className="bl-ctx-cat">Plugins</div>
+                {pluginMeta.map((p) => (
+                  <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
                     <span className="bl-ctx-item-dot" style={{ background: p.color }} />
                     {p.label}
                   </div>
-                );
-              })}
-            </React.Fragment>
-          ))
+                ))}
+              </>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -217,6 +237,22 @@ function EditorInner() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(projectData?.edges || []);
   const [contextMenu, setContextMenu] = useState(null);
   const [showNPanel, setShowNPanel] = useState(true);
+  const [pluginMeta, setPluginMeta] = useState([]);
+
+  // Load plugin node types registered in the main process
+  useEffect(() => {
+    if (!window.electronAPI) return;
+    window.electronAPI.getPluginNodeTypes().then((types) => {
+      setPluginMeta(types || []);
+    }).catch(() => {});
+  }, []);
+
+  // Build combined nodeTypes: builtins + one PluginNode component per plugin type
+  const nodeTypes = useMemo(() => {
+    const extra = {};
+    for (const p of pluginMeta) extra[p.type] = PluginNode;
+    return { ...builtinNodeTypes, ...extra };
+  }, [pluginMeta]);
 
   const { project: rfProject } = useReactFlow();
   const wrapperRef = useRef(null);
@@ -279,11 +315,26 @@ function EditorInner() {
   const addNodeAtPos = useCallback((type) => {
     if (!contextMenu) return;
     const id = `${type}_${Date.now()}_${_nc++}`;
-    setNodes((prev) => [
-      ...prev,
-      { id, type, position: contextMenu.flowPos, data: { ...(DEFAULT_NODE_DATA[type] || {}) } },
-    ]);
-  }, [contextMenu, setNodes]);
+
+    let data;
+    const builtin = DEFAULT_NODE_DATA[type];
+    if (builtin) {
+      data = { ...builtin };
+    } else {
+      // Plugin node — seed with _* rendering config + field defaults
+      const pm = pluginMeta.find((p) => p.type === type) || {};
+      data = {
+        _label:     pm.label    || type,
+        _icon:      pm.icon     || '🔌',
+        _color:     pm.color    || '#2A2A3A',
+        _hasInput:  pm.hasInput  !== false,
+        _hasOutput: pm.hasOutput !== false,
+        ...(pm.defaults || {}),
+      };
+    }
+
+    setNodes((prev) => [...prev, { id, type, position: contextMenu.flowPos, data }]);
+  }, [contextMenu, setNodes, pluginMeta]);
 
   // close context menu when clicking outside
   const onPaneClick = useCallback(() => {
@@ -345,6 +396,7 @@ function EditorInner() {
         <ContextMenu
           menu={contextMenu}
           palette={NODE_PALETTE}
+          pluginMeta={pluginMeta}
           onAdd={addNodeAtPos}
           onClose={() => setContextMenu(null)}
         />
