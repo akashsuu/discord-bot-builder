@@ -6,16 +6,12 @@ function serializeNodes(nodes) {
 }
 
 export default function Toolbar({ nodes, edges }) {
-  const {
-    projectData, projectPath, updateProject,
-    botRunning, addLog,
-  } = useProject();
-
+  const { projectData, projectPath, updateProject, botRunning, addLog } = useProject();
   const [tokenModal, setTokenModal] = useState(false);
-  const [savingState, setSavingState] = useState('idle'); // 'idle' | 'saving' | 'saved'
+  const [saveState, setSaveState] = useState('idle');
   const [runLoading, setRunLoading] = useState(false);
 
-  const getPayload = useCallback(() => ({
+  const payload = useCallback(() => ({
     ...projectData,
     nodes: serializeNodes(nodes),
     edges,
@@ -23,92 +19,75 @@ export default function Toolbar({ nodes, edges }) {
 
   const handleSave = useCallback(async () => {
     if (!projectPath) return;
-    setSavingState('saving');
-    try {
-      await window.electronAPI.saveProject({
-        projectPath,
-        projectData: getPayload(),
-      });
-      addLog('[System] Project saved.');
-      setSavingState('saved');
-      setTimeout(() => setSavingState('idle'), 1500);
-    } catch {
-      setSavingState('idle');
-    }
-  }, [projectPath, getPayload, addLog]);
+    setSaveState('saving');
+    await window.electronAPI.saveProject({ projectPath, projectData: payload() });
+    addLog('[System] Saved.');
+    setSaveState('saved');
+    setTimeout(() => setSaveState('idle'), 1400);
+  }, [projectPath, payload, addLog]);
 
   const handleRun = useCallback(async () => {
     if (botRunning || runLoading) return;
-    if (!projectData?.token) {
-      addLog('[Error] No bot token set. Use the Token button to add one.');
-      return;
-    }
+    if (!projectData?.token) { addLog('[Error] No token set. Click Token button.'); return; }
     setRunLoading(true);
-    const result = await window.electronAPI.runBot({ projectData: getPayload() });
+    const r = await window.electronAPI.runBot({ projectData: payload() });
     setRunLoading(false);
-    if (!result.success) addLog(`[Error] ${result.error}`);
-  }, [botRunning, runLoading, projectData, getPayload, addLog]);
+    if (!r.success) addLog(`[Error] ${r.error}`);
+  }, [botRunning, runLoading, projectData, payload, addLog]);
 
   const handleStop = useCallback(async () => {
-    const result = await window.electronAPI.stopBot();
-    if (!result.success) addLog(`[Error] ${result.error}`);
+    const r = await window.electronAPI.stopBot();
+    if (!r.success) addLog(`[Error] ${r.error}`);
   }, [addLog]);
 
   const handleExport = useCallback(async () => {
-    const result = await window.electronAPI.exportCode({ projectData: getPayload() });
-    if (result.success) {
-      addLog(`[System] Code exported → ${result.path}`);
-    } else if (result.error) {
-      addLog(`[Error] Export: ${result.error}`);
-    }
-  }, [getPayload, addLog]);
+    const r = await window.electronAPI.exportCode({ projectData: payload() });
+    if (r.success) addLog(`[System] Exported → ${r.path}`);
+    else if (r.error) addLog(`[Error] ${r.error}`);
+  }, [payload, addLog]);
 
-  const saveLabel = savingState === 'saving' ? '…' : savingState === 'saved' ? '✓ Saved' : '💾 Save';
+  const saveLabel = saveState === 'saving' ? '…' : saveState === 'saved' ? '✓ Saved' : '💾 Save';
 
   return (
     <>
-      <div className="toolbar">
-        <div className="toolbar-brand">
-          <span className="toolbar-logo">⚡</span>
-          <span className="toolbar-project-name">{projectData?.name || 'Bot Builder'}</span>
+      <div className="bl-header">
+        <div className="bl-brand">
+          <span className="bl-brand-icon">⚡</span>
+          <span className="bl-brand-name">{projectData?.name || 'Bot Builder'}</span>
         </div>
 
-        <div className="toolbar-center">
-          <button
-            className={`tb-btn run-btn ${botRunning || runLoading ? 'tb-disabled' : ''}`}
-            onClick={handleRun}
-            disabled={botRunning || runLoading}
-            title="Run Bot (requires token)"
-          >
-            {runLoading ? '…' : '▶ Run Bot'}
-          </button>
+        <div className="bl-header-sep" />
 
-          <button
-            className={`tb-btn stop-btn ${!botRunning ? 'tb-disabled' : ''}`}
-            onClick={handleStop}
-            disabled={!botRunning}
-            title="Stop Bot"
-          >
-            ⏹ Stop Bot
-          </button>
+        <button
+          className="bl-btn bl-btn-run"
+          onClick={handleRun}
+          disabled={botRunning || runLoading}
+          title="Run Bot"
+        >
+          ▶ {runLoading ? '…' : 'Run'}
+        </button>
 
-          <div className={`bot-badge ${botRunning ? 'badge-online' : 'badge-offline'}`}>
-            <span className="badge-dot" />
-            {botRunning ? 'Online' : 'Offline'}
-          </div>
-        </div>
+        <button
+          className="bl-btn bl-btn-stop"
+          onClick={handleStop}
+          disabled={!botRunning}
+          title="Stop Bot"
+        >
+          ■ Stop
+        </button>
 
-        <div className="toolbar-right">
-          <button className="tb-btn" onClick={handleSave} title="Save project (Ctrl+S)">
-            {saveLabel}
-          </button>
-          <button className="tb-btn" onClick={handleExport} title="Export as bot.js">
-            📦 Export
-          </button>
-          <button className="tb-btn token-btn" onClick={() => setTokenModal(true)} title="Set bot token">
-            🔑 Token
-          </button>
-        </div>
+        <div className="bl-header-sep" />
+
+        <span className={`bl-status-label ${botRunning ? 'online' : ''}`}>
+          <span className={`bl-status-dot ${botRunning ? 'online' : 'offline'}`} />
+          {botRunning ? 'Online' : 'Offline'}
+        </span>
+
+        <div className="bl-header-fill" />
+
+        <button className="bl-btn" onClick={handleSave} title="Save (Ctrl+S)">{saveLabel}</button>
+        <button className="bl-btn" onClick={handleExport} title="Export bot.js">📦 Export</button>
+        <button className="bl-btn bl-btn-token" onClick={() => setTokenModal(true)} title="Bot Token">🔑 Token</button>
       </div>
 
       {tokenModal && <TokenModal onClose={() => setTokenModal(false)} />}
@@ -135,9 +114,7 @@ function TokenModal({ onClose }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <h3 className="modal-title">🔑 Bot Token</h3>
-        <p className="modal-desc">
-          Stored locally in <code>project.json</code>. Never shared.
-        </p>
+        <p className="modal-desc">Stored locally in <code>project.json</code>. Never shared.</p>
         <div className="token-row">
           <input
             className="modal-input"
@@ -148,9 +125,7 @@ function TokenModal({ onClose }) {
             spellCheck={false}
             autoFocus
           />
-          <button className="eye-btn" onClick={() => setShow((s) => !s)}>
-            {show ? '🙈' : '👁️'}
-          </button>
+          <button className="eye-btn" onClick={() => setShow((s) => !s)}>{show ? '🙈' : '👁️'}</button>
         </div>
         <div className="modal-actions">
           <button className="btn-ghost" onClick={onClose}>Cancel</button>

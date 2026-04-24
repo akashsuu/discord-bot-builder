@@ -8,57 +8,44 @@ export default function LogPanel() {
   const [autoScroll, setAutoScroll] = useState(true);
 
   useEffect(() => {
-    if (autoScroll && bottomRef.current) {
+    if (autoScroll && !collapsed && bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [logs, autoScroll]);
+  }, [logs, autoScroll, collapsed]);
 
-  const getLogClass = (text) => {
-    if (text.includes('[Error]')) return 'log-error';
-    if (text.includes('[Bot]')) return 'log-bot';
-    if (text.includes('[Engine]')) return 'log-engine';
-    if (text.includes('[System]')) return 'log-system';
-    return 'log-default';
+  const logClass = (text) => {
+    if (text.includes('[Error]'))  return 'bl-log-error';
+    if (text.includes('[Bot]'))    return 'bl-log-bot';
+    if (text.includes('[Engine]')) return 'bl-log-engine';
+    if (text.includes('[System]')) return 'bl-log-system';
+    return 'bl-log-default';
   };
 
   return (
-    <div className={`log-panel ${collapsed ? 'log-collapsed' : ''}`}>
-      <div className="log-header">
-        <div className="log-header-left">
-          <button
-            className="log-toggle"
-            onClick={() => setCollapsed((c) => !c)}
-            title={collapsed ? 'Expand logs' : 'Collapse logs'}
-          >
-            {collapsed ? '▲' : '▼'}
-          </button>
-          <span className="log-title">Console</span>
-          <span className="log-count">{logs.length} entries</span>
-        </div>
-        <div className="log-header-right">
-          <label className="log-autoscroll">
-            <input
-              type="checkbox"
-              checked={autoScroll}
-              onChange={(e) => setAutoScroll(e.target.checked)}
-            />
-            Auto-scroll
-          </label>
-          <button className="log-clear-btn" onClick={clearLogs} title="Clear logs">
-            🗑 Clear
-          </button>
-        </div>
+    <div className={`bl-console ${collapsed ? 'collapsed' : ''}`}>
+      <div className="bl-console-hdr">
+        <button className="bl-console-toggle" onClick={() => setCollapsed((c) => !c)}>
+          {collapsed ? '▲' : '▼'}
+        </button>
+        <span className="bl-console-title">Console</span>
+        <span className="bl-console-count">{logs.length}</span>
+        <div className="bl-console-fill" />
+        <label className="bl-console-autoscroll">
+          <input type="checkbox" checked={autoScroll} onChange={(e) => setAutoScroll(e.target.checked)} />
+          &nbsp;Scroll
+        </label>
+        <button className="bl-console-clear" onClick={clearLogs} title="Clear">✕ Clear</button>
       </div>
 
       {!collapsed && (
-        <div className="log-body">
+        <div className="bl-console-body">
           {logs.length === 0 && (
-            <p className="log-empty">No logs yet. Run your bot to see output here.</p>
+            <div className="bl-console-empty">No output. Run your bot to see logs.</div>
           )}
           {logs.map((entry) => (
-            <div key={entry.id} className={`log-line ${getLogClass(entry.text)}`}>
-              <span className="log-time">{entry.time}</span>
-              <span className="log-text">{entry.text}</span>
+            <div key={entry.id} className={`bl-log-line ${logClass(entry.text)}`}>
+              <span className="bl-log-time">{entry.time}</span>
+              <span className="bl-log-text">{entry.text}</span>
             </div>
           ))}
           <div ref={bottomRef} />
