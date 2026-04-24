@@ -2,7 +2,7 @@
 # ⚡ Discord Bot Builder
 
 **Visual node-based Discord bot creator — no code required.**
-Build, run, and export Discord bots by connecting nodes in a Blender-style editor.
+Build, run, and export Discord bots by connecting nodes in a wire connect style editor.
 
 > © Akashsuu Bot Builder — All rights reserved
 
