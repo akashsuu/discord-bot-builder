@@ -11,16 +11,17 @@ export function ProjectProvider({ children }) {
 
   // Subscribe to bot events from main process
   useEffect(() => {
-    window.electronAPI.onBotLog((log) => {
-      addLog(log);
-    });
-    window.electronAPI.onBotStatus((status) => {
-      setBotRunning(status.running);
-    });
+    if (!window.electronAPI) {
+      console.error('[ProjectContext] window.electronAPI is not defined — preload may have failed.');
+      return;
+    }
+    window.electronAPI.onBotLog((log) => addLog(log));
+    window.electronAPI.onBotStatus((status) => setBotRunning(status.running));
     return () => {
       window.electronAPI.removeListener('bot:log');
       window.electronAPI.removeListener('bot:status');
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addLog = useCallback((text) => {

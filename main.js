@@ -24,8 +24,15 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
 
+  // Open DevTools so errors are visible during development
+  mainWindow.webContents.openDevTools({ mode: 'detach' });
+
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
+  });
+
+  mainWindow.webContents.on('did-fail-load', (_e, code, desc) => {
+    console.error('[Main] Failed to load renderer:', code, desc);
   });
 }
 
