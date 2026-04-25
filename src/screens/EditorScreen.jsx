@@ -117,9 +117,70 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
   );
 }
 
+// ── Shared embed sub-form used in NPanel ─────────────────────────────────────
+function EmbedFields({ d, update }) {
+  return (
+    <>
+      <div style={{ height: 1, background: '#2A2A2A', margin: '6px 0' }} />
+
+      <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
+        <label className="bl-embed-toggle" style={{ paddingLeft: 0 }}>
+          <input type="checkbox" checked={!!d.embedEnabled} onChange={(e) => update('embedEnabled', e.target.checked)} />
+          Embed
+        </label>
+      </div>
+
+      {d.embedEnabled && (
+        <>
+          <div className="bl-prop-row">
+            <span className="bl-prop-label">Color</span>
+            <div className="bl-color-field">
+              <input type="color" className="bl-color-pick" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} />
+              <input type="text" className="bl-field-input" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
+            </div>
+          </div>
+
+          <div className="bl-prop-row">
+            <span className="bl-prop-label">Title</span>
+            <input className="bl-field-input" value={d.embedTitle || ''} onChange={(e) => update('embedTitle', e.target.value)} placeholder="Optional" spellCheck={false} />
+          </div>
+
+          <div className="bl-prop-row">
+            <span className="bl-prop-label">Image URL</span>
+            <input className="bl-field-input" value={d.imageUrl || ''} onChange={(e) => update('imageUrl', e.target.value)} placeholder="https://…" spellCheck={false} />
+          </div>
+
+          {d.imageUrl && (
+            <div className="bl-prop-row">
+              <span className="bl-prop-label">Position</span>
+              <div className="bl-img-pos-row">
+                <button
+                  className={`bl-img-pos-btn ${(d.imagePosition || 'image') === 'image' ? 'active' : ''}`}
+                  onClick={() => update('imagePosition', 'image')}
+                  title="Large rectangle at bottom"
+                >▬ Bottom</button>
+                <button
+                  className={`bl-img-pos-btn ${d.imagePosition === 'thumbnail' ? 'active' : ''}`}
+                  onClick={() => update('imagePosition', 'thumbnail')}
+                  title="Small square at top-right"
+                >▪ Top-Right</button>
+              </div>
+            </div>
+          )}
+
+          <div className="bl-prop-row">
+            <span className="bl-prop-label">Footer</span>
+            <input className="bl-field-input" value={d.embedFooter || ''} onChange={(e) => update('embedFooter', e.target.value)} placeholder="Optional" spellCheck={false} />
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
 // ── Properties N-panel ────────────────────────────────────────────────────────
 function NPanel({ selectedNode, setNodes }) {
-  const [openSections, setOpenSections] = useState({ node: true, props: true });
+  const [openSections, setOpenSections] = useState({ node: true, props: true, embed: true });
 
   const toggle = (k) => setOpenSections((s) => ({ ...s, [k]: !s[k] }));
 
@@ -188,20 +249,24 @@ function NPanel({ selectedNode, setNodes }) {
                   <span className="bl-prop-label">Reply</span>
                   <input className="bl-field-input" value={d.reply || ''} onChange={(e) => update('reply', e.target.value)} spellCheck={false} />
                 </div>
+                <EmbedFields d={d} update={update} />
               </>
             )}
 
             {selectedNode.type === 'send_message' && (
-              <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
-                <span className="bl-prop-label" style={{ textAlign: 'left' }}>Text</span>
-                <textarea
-                  className="bl-field-input"
-                  style={{ resize: 'vertical', minHeight: 56 }}
-                  value={d.text || ''}
-                  onChange={(e) => update('text', e.target.value)}
-                  spellCheck={false}
-                />
-              </div>
+              <>
+                <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
+                  <span className="bl-prop-label" style={{ textAlign: 'left' }}>Text</span>
+                  <textarea
+                    className="bl-field-input"
+                    style={{ resize: 'vertical', minHeight: 56 }}
+                    value={d.text || ''}
+                    onChange={(e) => update('text', e.target.value)}
+                    spellCheck={false}
+                  />
+                </div>
+                <EmbedFields d={d} update={update} />
+              </>
             )}
 
             {selectedNode.type === 'condition_branch' && (

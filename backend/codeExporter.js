@@ -29,8 +29,12 @@ function buildNode(node, nodes, edges, plugins, depth) {
       lines.push(`${pad}if (message.content.startsWith(${cmd})) {`);
 
       if (node.data.reply) {
-        const reply = buildTemplateLiteral(node.data.reply);
-        lines.push(`${pad}${INDENT}message.channel.send(${reply});`);
+        if (node.data.embedEnabled) {
+          lines.push(...buildEmbedSend(node.data, node.data.reply, pad + INDENT));
+        } else {
+          const reply = buildTemplateLiteral(node.data.reply);
+          lines.push(`${pad}${INDENT}message.channel.send(${reply});`);
+        }
       }
 
       for (const next of getOutputNodes(node.id, nodes, edges)) {
@@ -41,8 +45,12 @@ function buildNode(node, nodes, edges, plugins, depth) {
     }
 
     case 'send_message': {
-      const txt = buildTemplateLiteral(node.data.text || '');
-      lines.push(`${pad}message.channel.send(${txt});`);
+      if (node.data.embedEnabled) {
+        lines.push(...buildEmbedSend(node.data, node.data.text || '', pad));
+      } else {
+        const txt = buildTemplateLiteral(node.data.text || '');
+        lines.push(`${pad}message.channel.send(${txt});`);
+      }
       for (const next of getOutputNodes(node.id, nodes, edges)) {
         lines.push(buildNode(next, nodes, edges, plugins, depth + 1));
       }
@@ -80,6 +88,33 @@ function buildNode(node, nodes, edges, plugins, depth) {
   }
 
   return lines.join('\n');
+}
+
+// Returns an array of code lines that send an embed
+function buildEmbedSend(data, rawText, pad) {
+  const lines = [];
+  const txt = buildTemplateLiteral(rawText);
+  lines.push(`${pad}await message.channel.send({ embeds: [{`);
+  lines.push(`${pad}  description: ${txt},`);
+  if (data.embedTitle) {
+    lines.push(`${pad}  title: ${JSON.stringify(data.embedTitle)},`);
+  }
+  if (data.embedColor) {
+    const colorNum = parseInt(data.embedColor.replace('#', ''), 16);
+    if (!isNaN(colorNum)) lines.push(`${pad}  color: ${colorNum},`);
+  }
+  if (data.imageUrl) {
+    if (data.imagePosition === 'thumbnail') {
+      lines.push(`${pad}  thumbnail: { url: ${JSON.stringify(data.imageUrl)} },`);
+    } else {
+      lines.push(`${pad}  image: { url: ${JSON.stringify(data.imageUrl)} },`);
+    }
+  }
+  if (data.embedFooter) {
+    lines.push(`${pad}  footer: { text: ${JSON.stringify(data.embedFooter)} },`);
+  }
+  lines.push(`${pad}}] });`);
+  return lines;
 }
 
 // Converts {user} / {args} to template-literal expressions

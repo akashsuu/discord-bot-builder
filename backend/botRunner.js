@@ -15,6 +15,33 @@ function substitute(text, message) {
     .replace(/\{channel\}/g, message.channel.name || 'unknown');
 }
 
+// ─── Build a discord.js embed object from node data ───────────────────────
+function buildEmbed(data, text) {
+  const embed = {};
+  if (text) embed.description = text;
+
+  if (data.embedTitle) embed.title = data.embedTitle;
+
+  if (data.embedColor) {
+    const hex = data.embedColor.replace('#', '');
+    const num = parseInt(hex, 16);
+    if (!isNaN(num)) embed.color = num;
+  }
+
+  if (data.imageUrl) {
+    if (data.imagePosition === 'thumbnail') {
+      embed.thumbnail = { url: data.imageUrl };
+    } else {
+      // default = large rectangle at bottom
+      embed.image = { url: data.imageUrl };
+    }
+  }
+
+  if (data.embedFooter) embed.footer = { text: data.embedFooter };
+
+  return embed;
+}
+
 // ─── Graph traversal helpers ───────────────────────────────────────────────
 function getOutputNodes(nodeId, nodes, edges, handleId) {
   return edges
@@ -53,7 +80,12 @@ async function executeNode(node, nodes, edges, message, plugins, log) {
 
       if (node.data.reply) {
         const text = substitute(node.data.reply, message);
-        await message.channel.send(text);
+        if (node.data.embedEnabled) {
+          const embed = buildEmbed(node.data, text);
+          await message.channel.send({ embeds: [embed] });
+        } else {
+          await message.channel.send(text);
+        }
       }
       for (const next of getOutputNodes(node.id, nodes, edges)) {
         await executeNode(next, nodes, edges, message, plugins, log);
@@ -63,7 +95,12 @@ async function executeNode(node, nodes, edges, message, plugins, log) {
 
     case 'send_message': {
       const text = substitute(node.data.text || '', message);
-      if (text) await message.channel.send(text);
+      if (node.data.embedEnabled) {
+        const embed = buildEmbed(node.data, text);
+        await message.channel.send({ embeds: [embed] });
+      } else if (text) {
+        await message.channel.send(text);
+      }
       for (const next of getOutputNodes(node.id, nodes, edges)) {
         await executeNode(next, nodes, edges, message, plugins, log);
       }
