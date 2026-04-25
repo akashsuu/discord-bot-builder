@@ -578,12 +578,43 @@ code {
   height: 22px;
   display: flex;
   align-items: center;
-  padding: 0 8px 0 6px;
+  padding: 0 8px 0 4px;
   border-radius: var(--r) var(--r) 0 0;
   font-size: 11px;
   font-weight: 600;
-  gap: 5px;
+  gap: 4px;
   cursor: default;
+  position: relative;
+}
+
+/* minimized: round all corners, no bottom border radius gap */
+.bl-node-min .bl-node-hdr {
+  border-radius: var(--r);
+}
+.bl-node-min {
+  min-width: 150px !important;
+}
+
+.bl-collapse-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  font-size: 8px;
+  padding: 2px 2px;
+  line-height: 1;
+  border-radius: 2px;
+  transition: color .1s, background .1s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+.bl-collapse-btn:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.12);
 }
 .bl-node-hdr-icon { font-size: 11px; }
 .bl-node-hdr-title { color: #ddd; letter-spacing: 0.2px; }
