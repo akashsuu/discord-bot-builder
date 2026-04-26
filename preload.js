@@ -17,8 +17,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getPluginNodeTypes: () => ipcRenderer.invoke('plugins:getNodeTypes'),
 
   // Events from main → renderer
-  onBotLog: (cb) => ipcRenderer.on('bot:log', (_event, log) => cb(log)),
+  onBotLog:    (cb) => ipcRenderer.on('bot:log',    (_event, log)    => cb(log)),
   onBotStatus: (cb) => ipcRenderer.on('bot:status', (_event, status) => cb(status)),
+  onBotInfo:   (cb) => ipcRenderer.on('bot:info',   (_event, info)   => cb(info)),
 
   // Cleanup
   removeListener: (channel) => ipcRenderer.removeAllListeners(channel),
