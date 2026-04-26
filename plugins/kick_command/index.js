@@ -10,7 +10,7 @@ function applyTemplate(template, vars) {
 module.exports = {
   nodes: {
     kick_command: {
-      async execute(node, message) {
+      async execute(node, message, ctx) {
         const cmd = (node.data.command || '!kick').trim();
         if (!message.content.startsWith(cmd)) return false;
 
@@ -27,32 +27,35 @@ module.exports = {
           await message.reply(`❌ Usage: \`${cmd} @user [reason]\``);
           return false;
         }
-
         if (target.id === message.client.user.id) {
           await message.reply("❌ I can't kick myself.");
           return false;
         }
-
         if (!target.kickable) {
-          await message.reply('❌ I cannot kick that user — they may have a higher role than me.');
+          await message.reply('❌ I cannot kick that user — they may have a higher role.');
           return false;
         }
 
-        const afterCmd   = message.content.slice(cmd.length).trim();
+        const afterCmd      = message.content.slice(cmd.length).trim();
         const reasonFromMsg = afterCmd.replace(/<@!?\d+>/, '').trim();
-        const reason     = reasonFromMsg || node.data.reason || 'No reason provided';
+        const reason        = reasonFromMsg || node.data.reason || 'No reason provided';
 
         await target.kick(reason);
 
-        // Use the editable output template
         const template = node.data.output || '✅ {target} has been kicked.\n📋 Reason: {reason}';
-        const msg = applyTemplate(template, {
+        const text = applyTemplate(template, {
           target:  target.user.tag,
           reason,
           user:    message.author.username,
           command: cmd,
         });
-        await message.channel.send(msg);
+
+        // Use ctx.sendEmbed — respects node embed color, logo, image settings
+        if (ctx && ctx.sendEmbed) {
+          await ctx.sendEmbed(message, node.data, text);
+        } else {
+          await message.channel.send(text);
+        }
         return true;
       },
 
@@ -76,13 +79,11 @@ if (message.content.startsWith("${cmd}")) {
       const _ac = message.content.slice("${cmd}".length).trim();
       const _r  = _ac.replace(/<@!?\\d+>/, "").trim() || "${reason}";
       _kt.kick(_r).then(() => {
-        const _tpl = \`${tpl}\`;
-        message.channel.send(
-          _tpl.replace(/\\{target\\}/g, _kt.user.tag)
-              .replace(/\\{reason\\}/g, _r)
-              .replace(/\\{user\\}/g,   message.author.username)
-              .replace(/\\{command\\}/g,"${cmd}")
-        );
+        const _msg = \`${tpl}\`
+          .replace(/\\{target\\}/g, _kt.user.tag)
+          .replace(/\\{reason\\}/g, _r)
+          .replace(/\\{user\\}/g,   message.author.username);
+        message.channel.send(_msg);
       });
     }
   }
