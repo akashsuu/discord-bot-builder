@@ -222,13 +222,26 @@ function DiscordPreview({ node }) {
     );
   }
 
+  const botName = botInfo?.username || 'YourBot';
+  const botTag  = botInfo?.tag      || null;
+
   return (
     <div className="dc-wrap">
       <div className="dc-msg">
-        <div className="dc-avatar">⚡</div>
+        {/* Avatar: real bot avatar if online, otherwise placeholder */}
+        {botInfo?.avatarURL
+          ? <img
+              src={botInfo.avatarURL}
+              className="dc-avatar-img"
+              alt={botName}
+              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+            />
+          : null
+        }
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex' }}>⚡</div>
         <div className="dc-msg-body">
           <div className="dc-msg-hdr">
-            <span className="dc-bot-name">YourBot</span>
+            <span className="dc-bot-name">{botName}</span>
             <span className="dc-bot-badge">BOT</span>
             <span className="dc-timestamp">Today at {time}</span>
           </div>
