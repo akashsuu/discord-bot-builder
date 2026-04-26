@@ -1,8 +1,13 @@
 import React, { useCallback } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
-function demoSub(text) {
-  return (text || '')
+// Substitute all known demo + field-based variables
+function pluginPreview(template, data) {
+  return (template || '')
+    .replace(/\{target\}/g,  'OwO#8456')
+    .replace(/\{latency\}/g, '42')
+    .replace(/\{reason\}/g,  data.reason  || 'No reason provided')
+    .replace(/\{command\}/g, data.command || '!command')
     .replace(/\{user\}/g,    'Akashsuu')
     .replace(/\{args\}/g,    'world')
     .replace(/\{tag\}/g,     'Akashsuu#0000')
@@ -14,22 +19,24 @@ export default function PluginNode({ id, data, selected }) {
   const collapsed = !!data.collapsed;
 
   const update = useCallback((key, val) => {
-    setNodes((ns) => ns.map((n) => n.id === id ? { ...n, data: { ...n.data, [key]: val } } : n));
+    setNodes((ns) => ns.map((n) =>
+      n.id === id ? { ...n, data: { ...n.data, [key]: val } } : n
+    ));
   }, [id, setNodes]);
 
   const toggle = useCallback(() => {
-    setNodes((ns) => ns.map((n) => n.id === id ? { ...n, data: { ...n.data, collapsed: !n.data.collapsed } } : n));
+    setNodes((ns) => ns.map((n) =>
+      n.id === id ? { ...n, data: { ...n.data, collapsed: !n.data.collapsed } } : n
+    ));
   }, [id, setNodes]);
 
-  // all editable fields (no internal _ keys, no collapsed flag)
-  const fields = Object.entries(data).filter(([k]) => !k.startsWith('_') && k !== 'collapsed');
-
-  // first string field is treated as the primary "output" text for preview
-  const outputEntry = fields.find(([, v]) => typeof v === 'string' && v.length > 0);
-  const outputText  = outputEntry ? demoSub(outputEntry[1]) : null;
+  // Separate output field from other input fields
+  const inputFields  = Object.entries(data).filter(([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output');
+  const hasOutput    = 'output' in data;
+  const previewText  = hasOutput ? pluginPreview(data.output, data) : null;
 
   return (
-    <div className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`}>
+    <div className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`} style={{ minWidth: 210 }}>
       <div className="bl-node-hdr" style={{ background: data._color || '#2A2A3A' }}>
         <button className="bl-collapse-btn" onClick={toggle} title={collapsed ? 'Expand' : 'Minimize'}>
           {collapsed ? '▶' : '▼'}
@@ -53,9 +60,9 @@ export default function PluginNode({ id, data, selected }) {
             </div>
           )}
 
-          {fields.length > 0 && <div className="bl-node-divider" />}
-
-          {fields.map(([key, val]) => (
+          {/* Input fields (command, reason, etc.) */}
+          {inputFields.length > 0 && <div className="bl-node-divider" />}
+          {inputFields.map(([key, val]) => (
             <div key={key} className="bl-field">
               <span className="bl-field-lbl">{key}</span>
               <input
@@ -67,12 +74,33 @@ export default function PluginNode({ id, data, selected }) {
             </div>
           ))}
 
-          {/* Output preview for the first string field */}
-          {outputText && (
-            <div className="bl-out-preview">
-              <div className="bl-out-preview-lbl">Output preview</div>
-              {outputText}
-            </div>
+          {/* Output message template */}
+          {hasOutput && (
+            <>
+              <div className="bl-node-divider" />
+              <div className="bl-field">
+                <span className="bl-field-lbl" style={{ color: '#6AAA4A' }}>Output Message</span>
+                <textarea
+                  className="bl-node-textarea"
+                  style={{ borderColor: '#2A4A1A', minHeight: 52 }}
+                  value={data.output || ''}
+                  onChange={(e) => update('output', e.target.value)}
+                  spellCheck={false}
+                  rows={3}
+                />
+                <span className="bl-field-hint">
+                  {'{target}  {reason}  {latency}  {user}  {command}'}
+                </span>
+              </div>
+
+              {/* Live output preview */}
+              {previewText && (
+                <div className="bl-out-preview">
+                  <div className="bl-out-preview-lbl">Output preview</div>
+                  {previewText}
+                </div>
+              )}
+            </>
           )}
 
           {data._hasOutput && (

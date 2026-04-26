@@ -1,27 +1,40 @@
 'use strict';
 
-/**
- * Example plugin — registers a "ping_command" node type.
- *
- * execute()      — called by botRunner when a message arrives
- * generateCode() — called by codeExporter when user exports JS
- */
 module.exports = {
   nodes: {
     ping_command: {
       async execute(node, message) {
-        if (message.content.trim().toLowerCase() !== '!ping') return false;
+        const cmd = (node.data.command || '!ping').trim();
+        if (message.content.trim().toLowerCase() !== cmd.toLowerCase()) return false;
 
         const latency = Date.now() - message.createdTimestamp;
-        await message.channel.send(`🏓 Pong! Latency: **${latency}ms**`);
-        return true; // allow downstream nodes to run
+
+        const template = node.data.output || '🏓 Pong! Latency: {latency}ms';
+        const msg = template
+          .replace(/\{latency\}/g, latency)
+          .replace(/\{command\}/g, cmd)
+          .replace(/\{user\}/g, message.author.username);
+
+        await message.channel.send(msg);
+        return true;
       },
 
       generateCode(node) {
-        return `if (message.content.trim().toLowerCase() === "!ping") {
-  const latency = Date.now() - message.createdTimestamp;
-  message.channel.send(\`🏓 Pong! Latency: \${latency}ms\`);
-}`;
+        const cmd = (node.data.command || '!ping').replace(/"/g, '\\"');
+        const tpl = (node.data.output || '🏓 Pong! Latency: {latency}ms')
+                      .replace(/\\/g, '\\\\').replace(/`/g, '\\`');
+        return `
+// ── Ping Command ──────────────────────────────────
+if (message.content.trim().toLowerCase() === "${cmd}".toLowerCase()) {
+  const _lat = Date.now() - message.createdTimestamp;
+  const _tpl = \`${tpl}\`;
+  message.channel.send(
+    _tpl.replace(/\\{latency\\}/g, _lat)
+        .replace(/\\{command\\}/g,  "${cmd}")
+        .replace(/\\{user\\}/g,     message.author.username)
+  );
+}
+`;
       },
     },
   },

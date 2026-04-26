@@ -117,9 +117,14 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
   );
 }
 
-// ── Variable substitution with demo values for preview ───────────────────────
-function demoSub(text) {
+// ── Variable substitution for preview (built-in + plugin vars) ───────────────
+function demoSub(text, nodeData) {
+  const d = nodeData || {};
   return (text || '')
+    .replace(/\{target\}/g,  'OwO#8456')
+    .replace(/\{latency\}/g, '42')
+    .replace(/\{reason\}/g,  d.reason  || 'No reason provided')
+    .replace(/\{command\}/g, d.command || '!command')
     .replace(/\{user\}/g,    'Akashsuu')
     .replace(/\{args\}/g,    'world')
     .replace(/\{tag\}/g,     'Akashsuu#0000')
@@ -173,15 +178,19 @@ function DiscordPreview({ node }) {
   const d = node.data;
   let rawText = '';
 
-  if (node.type === 'custom_command')  rawText = d.reply || '';
-  else if (node.type === 'send_message') rawText = d.text  || '';
+  if (node.type === 'custom_command')    rawText = d.reply  || '';
+  else if (node.type === 'send_message') rawText = d.text   || '';
   else {
-    // plugin node — grab first non-internal string field
-    const entry = Object.entries(d).find(([k, v]) => !k.startsWith('_') && k !== 'collapsed' && typeof v === 'string');
-    rawText = entry ? entry[1] : '';
+    // Plugin node — prefer the 'output' field template, then fall back to first string field
+    if (d.output !== undefined) {
+      rawText = d.output || '';
+    } else {
+      const entry = Object.entries(d).find(([k, v]) => !k.startsWith('_') && k !== 'collapsed' && typeof v === 'string');
+      rawText = entry ? entry[1] : '';
+    }
   }
 
-  const text = demoSub(rawText);
+  const text = demoSub(rawText, d);
   const hasContent = text || d.embedEnabled;
 
   if (!hasContent) {
