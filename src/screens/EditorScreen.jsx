@@ -117,6 +117,102 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
   );
 }
 
+// ── Variable substitution with demo values for preview ───────────────────────
+function demoSub(text) {
+  return (text || '')
+    .replace(/\{user\}/g,    'Akashsuu')
+    .replace(/\{args\}/g,    'world')
+    .replace(/\{tag\}/g,     'Akashsuu#0000')
+    .replace(/\{channel\}/g, 'general');
+}
+
+// ── Discord embed block ───────────────────────────────────────────────────────
+function DiscordEmbed({ data, text }) {
+  const color  = data.embedColor || '#5865F2';
+  const isThumb = data.imageUrl && data.imagePosition === 'thumbnail';
+  const isImg   = data.imageUrl && data.imagePosition !== 'thumbnail';
+
+  return (
+    <div className="dc-embed" style={{ borderLeftColor: color }}>
+      <div className="dc-embed-inner">
+        <div className="dc-embed-top">
+          <div className="dc-embed-main">
+            {data.embedTitle && <div className="dc-embed-title">{data.embedTitle}</div>}
+            {text && <div className="dc-embed-desc">{text}</div>}
+          </div>
+          {isThumb && (
+            data.imageUrl
+              ? <img src={data.imageUrl} className="dc-embed-thumb" alt="thumb" onError={(e) => { e.target.style.display='none'; }} />
+              : <div className="dc-thumb-placeholder">No image</div>
+          )}
+        </div>
+        {isImg && (
+          data.imageUrl
+            ? <img src={data.imageUrl} className="dc-embed-img" alt="img" onError={(e) => { e.target.style.display='none'; }} />
+            : <div className="dc-img-placeholder">Image will appear here</div>
+        )}
+        {data.embedFooter && <div className="dc-embed-footer">{data.embedFooter}</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── Full Discord message preview ──────────────────────────────────────────────
+function DiscordPreview({ node }) {
+  const now  = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  if (!node) {
+    return (
+      <div className="dc-wrap">
+        <div className="dc-no-out">Select a command or send node</div>
+      </div>
+    );
+  }
+
+  const d = node.data;
+  let rawText = '';
+
+  if (node.type === 'custom_command')  rawText = d.reply || '';
+  else if (node.type === 'send_message') rawText = d.text  || '';
+  else {
+    // plugin node — grab first non-internal string field
+    const entry = Object.entries(d).find(([k, v]) => !k.startsWith('_') && k !== 'collapsed' && typeof v === 'string');
+    rawText = entry ? entry[1] : '';
+  }
+
+  const text = demoSub(rawText);
+  const hasContent = text || d.embedEnabled;
+
+  if (!hasContent) {
+    return (
+      <div className="dc-wrap">
+        <div className="dc-no-out">No output configured on this node.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        <div className="dc-avatar">⚡</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">YourBot</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled ? (
+            <DiscordEmbed data={d} text={text} />
+          ) : (
+            <div className="dc-plain">{text}</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Shared embed sub-form used in NPanel ─────────────────────────────────────
 function EmbedFields({ d, update }) {
   return (
@@ -180,7 +276,7 @@ function EmbedFields({ d, update }) {
 
 // ── Properties N-panel ────────────────────────────────────────────────────────
 function NPanel({ selectedNode, setNodes }) {
-  const [openSections, setOpenSections] = useState({ node: true, props: true, embed: true });
+  const [openSections, setOpenSections] = useState({ node: true, props: true, embed: true, preview: true });
 
   const toggle = (k) => setOpenSections((s) => ({ ...s, [k]: !s[k] }));
 
@@ -288,6 +384,17 @@ function NPanel({ selectedNode, setNodes }) {
           </div>
         )}
       </div>
+
+      {/* Discord Preview section — shown for any node that outputs something */}
+      {selectedNode.type !== 'event_message' && selectedNode.type !== 'condition_branch' && (
+        <div className="bl-npanel-section">
+          <div className="bl-npanel-section-hdr" onClick={() => toggle('preview')}>
+            <span className="arrow">{openSections.preview ? '▼' : '▶'}</span>
+            Discord Preview
+          </div>
+          {openSections.preview && <DiscordPreview node={selectedNode} />}
+        </div>
+      )}
 
       <div className="bl-npanel-hint">Press N to toggle panel</div>
     </div>

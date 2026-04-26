@@ -1,6 +1,14 @@
 import React, { useCallback } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
+function demoSub(text) {
+  return (text || '')
+    .replace(/\{user\}/g,    'Akashsuu')
+    .replace(/\{args\}/g,    'world')
+    .replace(/\{tag\}/g,     'Akashsuu#0000')
+    .replace(/\{channel\}/g, 'general');
+}
+
 export default function CustomCommandNode({ id, data, selected }) {
   const { setNodes } = useReactFlow();
   const collapsed = !!data.collapsed;
@@ -40,15 +48,37 @@ export default function CustomCommandNode({ id, data, selected }) {
 
           <div className="bl-field">
             <span className="bl-field-lbl">Command</span>
-            <input className="bl-node-input" value={data.command || ''} onChange={(e) => update('command', e.target.value)} placeholder="!hello" spellCheck={false} />
+            <input
+              className="bl-node-input"
+              value={data.command || ''}
+              onChange={(e) => update('command', e.target.value)}
+              placeholder="!hello"
+              spellCheck={false}
+            />
           </div>
 
           <div className="bl-field">
             <span className="bl-field-lbl">Reply</span>
-            <input className="bl-node-input" value={data.reply || ''} onChange={(e) => update('reply', e.target.value)} placeholder="Hello {user}!" spellCheck={false} />
-            <span className="bl-field-hint">{'{user}  {args}  {tag}'}</span>
+            <textarea
+              className="bl-node-textarea"
+              value={data.reply || ''}
+              onChange={(e) => update('reply', e.target.value)}
+              placeholder="Hello {user}!"
+              rows={2}
+              spellCheck={false}
+            />
+            <span className="bl-field-hint">{'{user}  {args}  {tag}  {channel}'}</span>
           </div>
 
+          {/* Output preview */}
+          {data.reply && (
+            <div className="bl-out-preview">
+              <div className="bl-out-preview-lbl">Output preview</div>
+              {demoSub(data.reply) || <span className="bl-out-preview-empty">empty</span>}
+            </div>
+          )}
+
+          {/* Embed section */}
           <div className="bl-node-divider" />
           <div className="bl-field">
             <label className="bl-embed-toggle">

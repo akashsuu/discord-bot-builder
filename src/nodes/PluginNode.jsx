@@ -1,6 +1,14 @@
 import React, { useCallback } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
+function demoSub(text) {
+  return (text || '')
+    .replace(/\{user\}/g,    'Akashsuu')
+    .replace(/\{args\}/g,    'world')
+    .replace(/\{tag\}/g,     'Akashsuu#0000')
+    .replace(/\{channel\}/g, 'general');
+}
+
 export default function PluginNode({ id, data, selected }) {
   const { setNodes } = useReactFlow();
   const collapsed = !!data.collapsed;
@@ -13,7 +21,12 @@ export default function PluginNode({ id, data, selected }) {
     setNodes((ns) => ns.map((n) => n.id === id ? { ...n, data: { ...n.data, collapsed: !n.data.collapsed } } : n));
   }, [id, setNodes]);
 
+  // all editable fields (no internal _ keys, no collapsed flag)
   const fields = Object.entries(data).filter(([k]) => !k.startsWith('_') && k !== 'collapsed');
+
+  // first string field is treated as the primary "output" text for preview
+  const outputEntry = fields.find(([, v]) => typeof v === 'string' && v.length > 0);
+  const outputText  = outputEntry ? demoSub(outputEntry[1]) : null;
 
   return (
     <div className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`}>
@@ -45,9 +58,22 @@ export default function PluginNode({ id, data, selected }) {
           {fields.map(([key, val]) => (
             <div key={key} className="bl-field">
               <span className="bl-field-lbl">{key}</span>
-              <input className="bl-node-input" value={val || ''} onChange={(e) => update(key, e.target.value)} spellCheck={false} />
+              <input
+                className="bl-node-input"
+                value={val || ''}
+                onChange={(e) => update(key, e.target.value)}
+                spellCheck={false}
+              />
             </div>
           ))}
+
+          {/* Output preview for the first string field */}
+          {outputText && (
+            <div className="bl-out-preview">
+              <div className="bl-out-preview-lbl">Output preview</div>
+              {outputText}
+            </div>
+          )}
 
           {data._hasOutput && (
             <>

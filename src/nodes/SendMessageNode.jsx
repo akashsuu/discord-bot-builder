@@ -1,6 +1,14 @@
 import React, { useCallback } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
+function demoSub(text) {
+  return (text || '')
+    .replace(/\{user\}/g,    'Akashsuu')
+    .replace(/\{args\}/g,    'world')
+    .replace(/\{tag\}/g,     'Akashsuu#0000')
+    .replace(/\{channel\}/g, 'general');
+}
+
 export default function SendMessageNode({ id, data, selected }) {
   const { setNodes } = useReactFlow();
   const collapsed = !!data.collapsed;
@@ -37,10 +45,26 @@ export default function SendMessageNode({ id, data, selected }) {
 
           <div className="bl-field">
             <span className="bl-field-lbl">Text</span>
-            <textarea className="bl-node-textarea" value={data.text || ''} onChange={(e) => update('text', e.target.value)} placeholder="Hello {user}!" rows={3} spellCheck={false} />
+            <textarea
+              className="bl-node-textarea"
+              value={data.text || ''}
+              onChange={(e) => update('text', e.target.value)}
+              placeholder="Hello {user}!"
+              rows={3}
+              spellCheck={false}
+            />
             <span className="bl-field-hint">{'{user}  {args}  {tag}  {channel}'}</span>
           </div>
 
+          {/* Output preview */}
+          {data.text && (
+            <div className="bl-out-preview">
+              <div className="bl-out-preview-lbl">Output preview</div>
+              {demoSub(data.text) || <span className="bl-out-preview-empty">empty</span>}
+            </div>
+          )}
+
+          {/* Embed section */}
           <div className="bl-node-divider" />
           <div className="bl-field">
             <label className="bl-embed-toggle">
