@@ -243,6 +243,7 @@ function DiscordPreview({ node }) {
           <div className="dc-msg-hdr">
             <span className="dc-bot-name">{botName}</span>
             <span className="dc-bot-badge">BOT</span>
+            {botTag && <span className="dc-bot-tag-label">#{botTag.split('#')[1]}</span>}
             <span className="dc-timestamp">Today at {time}</span>
           </div>
           {d.embedEnabled ? (
