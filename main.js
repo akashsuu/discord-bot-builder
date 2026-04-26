@@ -112,11 +112,20 @@ ipcMain.handle('project:save', async (_event, { projectPath, projectData }) => {
 ipcMain.handle('bot:run', async (_event, { projectData }) => {
   try {
     const plugins = pluginLoader.getPlugins();
-    await botRunner.start(projectData, plugins, (log) => {
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('bot:log', log);
+    await botRunner.start(
+      projectData,
+      plugins,
+      (log) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('bot:log', log);
+        }
+      },
+      (info) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('bot:info', info);
+        }
       }
-    });
+    );
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('bot:status', { running: true });
     }
