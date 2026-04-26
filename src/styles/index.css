@@ -812,6 +812,19 @@ code {
   user-select: none;
 }
 
+.dc-avatar-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.dc-bot-tag-label {
+  font-size: 10px;
+  color: #5a5f6a;
+}
+
 .dc-msg-body { flex: 1; min-width: 0; }
 
 .dc-msg-hdr {
