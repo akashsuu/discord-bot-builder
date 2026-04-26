@@ -76,7 +76,7 @@ async function executeNode(node, nodes, edges, message, plugins, log) {
   // Plugin nodes take priority
   const plugin = plugins[node.type];
   if (plugin && typeof plugin.execute === 'function') {
-    const cont = await plugin.execute(node, message);
+    const cont = await plugin.execute(node, message, makePluginCtx());
     if (cont) {
       for (const next of getOutputNodes(node.id, nodes, edges)) {
         await executeNode(next, nodes, edges, message, plugins, log);
