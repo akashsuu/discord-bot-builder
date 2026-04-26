@@ -148,7 +148,7 @@ async function executeNode(node, nodes, edges, message, plugins, log) {
 }
 
 // ─── Public API ────────────────────────────────────────────────────────────
-async function start(projectData, plugins = {}, log = console.log) {
+async function start(projectData, plugins = {}, log = console.log, onInfo = () => {}) {
   if (running) {
     log('[Bot] Already running — stop first.');
     return;
@@ -172,6 +172,13 @@ async function start(projectData, plugins = {}, log = console.log) {
     running = true;
     log(`[Bot] Logged in as ${client.user.tag}`);
     log(`[Bot] Watching ${nodes.filter((n) => n.type === 'event_message').length} event node(s)`);
+
+    // Send real bot identity to the renderer so the Discord preview shows the real name
+    onInfo({
+      username:  client.user.username,
+      tag:       client.user.tag,
+      avatarURL: client.user.displayAvatarURL({ size: 64, extension: 'png' }),
+    });
   });
 
   client.on('messageCreate', async (message) => {
