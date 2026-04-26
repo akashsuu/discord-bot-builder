@@ -1,5 +1,7 @@
 'use strict';
 
+const { buildTemplateLiteral } = require('./variables');
+
 const INDENT = '  ';
 
 // ─── Graph helpers ─────────────────────────────────────────────────────────
@@ -115,19 +117,6 @@ function buildEmbedSend(data, rawText, pad) {
   }
   lines.push(`${pad}}] });`);
   return lines;
-}
-
-// Converts {user} / {args} to template-literal expressions
-function buildTemplateLiteral(text) {
-  const escaped = text
-    .replace(/\\/g, '\\\\')
-    .replace(/`/g,  '\\`')
-    .replace(/\$\{/g, '\\${')
-    .replace(/\{user\}/g, '${message.author.username}')
-    .replace(/\{args\}/g, '${message.content.split(" ").slice(1).join(" ")}')
-    .replace(/\{tag\}/g,  '${message.author.tag}')
-    .replace(/\{channel\}/g, '${message.channel.name}');
-  return '`' + escaped + '`';
 }
 
 // ─── Public ────────────────────────────────────────────────────────────────

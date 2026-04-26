@@ -1,13 +1,6 @@
 import React, { useCallback } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
-
-function demoSub(text) {
-  return (text || '')
-    .replace(/\{user\}/g,    'Akashsuu')
-    .replace(/\{args\}/g,    'world')
-    .replace(/\{tag\}/g,     'Akashsuu#0000')
-    .replace(/\{channel\}/g, 'general');
-}
+import { demoSub, varHint, BUILTIN_VARS } from '../utils/variables';
 
 export default function CustomCommandNode({ id, data, selected }) {
   const { setNodes } = useReactFlow();
@@ -67,14 +60,14 @@ export default function CustomCommandNode({ id, data, selected }) {
               rows={2}
               spellCheck={false}
             />
-            <span className="bl-field-hint">{'{user}  {args}  {tag}  {channel}'}</span>
+            <span className="bl-field-hint">{varHint(BUILTIN_VARS)}</span>
           </div>
 
           {/* Output preview */}
           {data.reply && (
             <div className="bl-out-preview">
               <div className="bl-out-preview-lbl">Output preview</div>
-              {demoSub(data.reply) || <span className="bl-out-preview-empty">empty</span>}
+              {demoSub(data.reply, data) || <span className="bl-out-preview-empty">empty</span>}
             </div>
           )}
 

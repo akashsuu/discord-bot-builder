@@ -18,6 +18,7 @@ import builtinNodeTypes, { DEFAULT_NODE_DATA, NODE_PALETTE } from '../nodes/node
 import PluginNode from '../nodes/PluginNode';
 import Toolbar from '../components/Toolbar';
 import LogPanel from '../components/LogPanel';
+import { demoSub, varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
 
 let _nc = 1;
 

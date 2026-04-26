@@ -1,19 +1,10 @@
 'use strict';
 
 const { Client, GatewayIntentBits } = require('discord.js');
+const { substitute } = require('./variables');
 
 let client = null;
 let running = false;
-
-// ─── Variable substitution ─────────────────────────────────────────────────
-function substitute(text, message) {
-  const args = message.content.split(' ').slice(1).join(' ');
-  return text
-    .replace(/\{user\}/g, message.author.username)
-    .replace(/\{args\}/g, args)
-    .replace(/\{tag\}/g, message.author.tag)
-    .replace(/\{channel\}/g, message.channel.name || 'unknown');
-}
 
 // ─── Build a discord.js embed object from node data ───────────────────────
 function buildEmbed(data, text) {

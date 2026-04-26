@@ -1,13 +1,6 @@
 import React, { useCallback } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
-
-function demoSub(text) {
-  return (text || '')
-    .replace(/\{user\}/g,    'Akashsuu')
-    .replace(/\{args\}/g,    'world')
-    .replace(/\{tag\}/g,     'Akashsuu#0000')
-    .replace(/\{channel\}/g, 'general');
-}
+import { demoSub, varHint, BUILTIN_VARS } from '../utils/variables';
 
 export default function SendMessageNode({ id, data, selected }) {
   const { setNodes } = useReactFlow();
@@ -53,14 +46,14 @@ export default function SendMessageNode({ id, data, selected }) {
               rows={3}
               spellCheck={false}
             />
-            <span className="bl-field-hint">{'{user}  {args}  {tag}  {channel}'}</span>
+            <span className="bl-field-hint">{varHint(BUILTIN_VARS)}</span>
           </div>
 
           {/* Output preview */}
           {data.text && (
             <div className="bl-out-preview">
               <div className="bl-out-preview-lbl">Output preview</div>
-              {demoSub(data.text) || <span className="bl-out-preview-empty">empty</span>}
+              {demoSub(data.text, data) || <span className="bl-out-preview-empty">empty</span>}
             </div>
           )}
 
