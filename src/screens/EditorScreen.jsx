@@ -133,13 +133,30 @@ function demoSub(text, nodeData) {
 
 // ── Discord embed block ───────────────────────────────────────────────────────
 function DiscordEmbed({ data, text }) {
-  const color  = data.embedColor || '#5865F2';
-  const isThumb = data.imageUrl && data.imagePosition === 'thumbnail';
-  const isImg   = data.imageUrl && data.imagePosition !== 'thumbnail';
+  const color    = data.embedColor || '#5865F2';
+  // built-in nodes: thumbnail = top-right square, image = bottom rect
+  // plugin nodes: logoUrl = top-left author icon, imageUrl = bottom rect
+  const isThumb  = data.imageUrl && data.imagePosition === 'thumbnail';
+  const isImgBot = data.imageUrl && data.imagePosition !== 'thumbnail';
+  // plugin logo (author icon, top-left)
+  const hasLogo  = data.logoUrl || data.logoName;
 
   return (
     <div className="dc-embed" style={{ borderLeftColor: color }}>
       <div className="dc-embed-inner">
+
+        {/* Author row — top-left logo icon + name */}
+        {hasLogo && (
+          <div className="dc-embed-author">
+            {data.logoUrl
+              ? <img src={data.logoUrl} className="dc-author-icon" alt="logo" onError={(e) => { e.target.style.display='none'; }} />
+              : <div className="dc-author-icon-ph" />
+            }
+            {data.logoName && <span className="dc-author-name">{data.logoName}</span>}
+          </div>
+        )}
+
+        {/* Title + thumbnail (built-in nodes) */}
         <div className="dc-embed-top">
           <div className="dc-embed-main">
             {data.embedTitle && <div className="dc-embed-title">{data.embedTitle}</div>}
@@ -148,14 +165,17 @@ function DiscordEmbed({ data, text }) {
           {isThumb && (
             data.imageUrl
               ? <img src={data.imageUrl} className="dc-embed-thumb" alt="thumb" onError={(e) => { e.target.style.display='none'; }} />
-              : <div className="dc-thumb-placeholder">No image</div>
+              : <div className="dc-thumb-placeholder">thumb</div>
           )}
         </div>
-        {isImg && (
+
+        {/* Bottom rectangle image */}
+        {(isImgBot || data.imageUrl) && !isThumb && (
           data.imageUrl
             ? <img src={data.imageUrl} className="dc-embed-img" alt="img" onError={(e) => { e.target.style.display='none'; }} />
             : <div className="dc-img-placeholder">Image will appear here</div>
         )}
+
         {data.embedFooter && <div className="dc-embed-footer">{data.embedFooter}</div>}
       </div>
     </div>
