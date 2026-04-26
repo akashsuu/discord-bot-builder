@@ -23,23 +23,42 @@ function buildEmbed(data, text) {
   if (data.embedTitle) embed.title = data.embedTitle;
 
   if (data.embedColor) {
-    const hex = data.embedColor.replace('#', '');
-    const num = parseInt(hex, 16);
+    const num = parseInt(data.embedColor.replace('#', ''), 16);
     if (!isNaN(num)) embed.color = num;
   }
 
+  // Top-left author block: logo icon + name
+  if (data.logoUrl || data.logoName) {
+    embed.author = {
+      name:     data.logoName || '​',
+      icon_url: data.logoUrl  || undefined,
+    };
+  }
+
+  // Bottom rectangle image
   if (data.imageUrl) {
-    if (data.imagePosition === 'thumbnail') {
-      embed.thumbnail = { url: data.imageUrl };
-    } else {
-      // default = large rectangle at bottom
-      embed.image = { url: data.imageUrl };
-    }
+    embed.image = { url: data.imageUrl };
   }
 
   if (data.embedFooter) embed.footer = { text: data.embedFooter };
 
   return embed;
+}
+
+// ─── Context passed to every plugin execute() as 3rd argument ─────────────
+function makePluginCtx() {
+  return {
+    // Sends a plain or embed message depending on node.data.embedEnabled
+    sendEmbed: async (message, data, text) => {
+      if (data.embedEnabled) {
+        const embed = buildEmbed(data, text);
+        await message.channel.send({ embeds: [embed] });
+      } else {
+        if (text) await message.channel.send(text);
+      }
+    },
+    buildEmbed,
+  };
 }
 
 // ─── Graph traversal helpers ───────────────────────────────────────────────
