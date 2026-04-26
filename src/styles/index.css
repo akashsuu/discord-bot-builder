@@ -920,6 +920,35 @@ code {
   border-top: 1px solid #3b3d44;
 }
 
+/* Author row (top-left logo icon + name) */
+.dc-embed-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.dc-author-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #1e1f22;
+  flex-shrink: 0;
+}
+.dc-author-icon-ph {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3A3A44;
+  border: 1px dashed #555;
+  flex-shrink: 0;
+}
+.dc-author-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #dbdee1;
+}
+
 .dc-img-placeholder {
   width: 100%;
   height: 80px;
