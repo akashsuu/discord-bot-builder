@@ -502,7 +502,8 @@ function EditorInner() {
     if (builtin) {
       data = { ...builtin };
     } else {
-      // Plugin node — seed with _* rendering config + field defaults
+      // Plugin node — seed embed fields first so they're always present,
+      // then plugin defaults override anything they define
       const pm = pluginMeta.find((p) => p.type === type) || {};
       data = {
         _label:     pm.label    || type,
@@ -510,6 +511,13 @@ function EditorInner() {
         _color:     pm.color    || '#2A2A3A',
         _hasInput:  pm.hasInput  !== false,
         _hasOutput: pm.hasOutput !== false,
+        // embed defaults (always present so PluginNode renders the section)
+        embedEnabled: false,
+        embedColor:   '#5865F2',
+        logoUrl:      '',
+        logoName:     '',
+        imageUrl:     '',
+        embedFooter:  '',
         ...(pm.defaults || {}),
       };
     }
