@@ -12,7 +12,6 @@ Build, run, and export Discord bots by connecting nodes in a nodes-style editor.
 - **Visual node editor** — drag, drop, and connect nodes on an infinite canvas
 - **Live bot runner** — start and stop your bot directly inside the app
 - **Code export** — generate a real, runnable `bot.js` file
-- **Plugin system** — extend with custom node types
 - **Auto-save** — project saves automatically every 2 seconds
 - **Dark theme** — Blender-inspired UI
 
