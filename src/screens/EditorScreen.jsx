@@ -274,6 +274,7 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
             )}
           </>
         )}
+      </div>{/* end bl-ctx-menu-inner */}
       </div>
     </div>
   );
