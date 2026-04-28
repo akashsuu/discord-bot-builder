@@ -103,13 +103,14 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
   useEffect(() => { inputRef.current?.focus(); }, []);
   useEffect(() => () => clearTimeout(hoverTimer.current), []);
 
-  // Submenu opens left when right edge is close
   const flipLeft = menu.x > window.innerWidth - 420;
 
   const showSub = (key) => { clearTimeout(hoverTimer.current); setHovered(key); };
-  const hideSub = ()    => { hoverTimer.current = setTimeout(() => setHovered(null), 130); };
+  const hideSub = ()    => { hoverTimer.current = setTimeout(() => setHovered(null), 150); };
 
-  // Plugins NOT belonging to the 6 event categories → shown at bottom as flyouts
+  const subMenuClass = `bl-ctx-submenu${flipLeft ? ' bl-ctx-submenu-left' : ''}`;
+
+  // Plugins not in any event-mapped category → bottom flyout group
   const extraPluginGroups = useMemo(() => {
     const filtered = (pluginMeta || []).filter((p) => !EVENT_SUBMENU_CATS.has(p.category));
     if (!filtered.length) return [];
@@ -132,17 +133,6 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
     ? allItems.filter((p) => p.label.toLowerCase().includes(search.toLowerCase()))
     : null;
 
-  // Helper: render a flyout panel
-  const SubMenu = ({ id, children }) => hoveredGroup !== id ? null : (
-    <div
-      className={`bl-ctx-submenu${flipLeft ? ' bl-ctx-submenu-left' : ''}`}
-      onMouseEnter={() => showSub(id)}
-      onMouseLeave={hideSub}
-    >
-      {children}
-    </div>
-  );
-
   return (
     <div className="bl-ctx-overlay" onMouseDown={onClose}>
       <div
@@ -160,7 +150,6 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
         />
 
         {filtered ? (
-          /* ── Search results (flat) ── */
           filtered.length === 0
             ? <div style={{ padding: '8px 10px', color: '#555', fontSize: 11 }}>No results</div>
             : filtered.map((p) => (
@@ -174,12 +163,12 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
             {/* ── Events ── */}
             <div className="bl-ctx-cat">Events</div>
 
-            {/* All event types — submenu rows */}
             {Object.entries(EVENT_SUBMENU_MAP).map(([type, folderCat]) => {
-              const p            = palette.find((x) => x.type === type);
+              const p             = palette.find((x) => x.type === type);
               if (!p) return null;
               const folderPlugins = (pluginMeta || []).filter((x) => x.category === folderCat);
-              const shortLabel   = p.label.replace(' Event', '');
+              const shortLabel    = p.label.replace(' Event', '');
+              const isOpen        = hoveredGroup === type;
 
               return (
                 <div
@@ -192,32 +181,35 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
                   <span style={{ flex: 1 }}>{shortLabel}</span>
                   <span className="bl-ctx-arrow">▶</span>
 
-                  <SubMenu id={type}>
-                    {/* Event node row */}
-                    <div className="bl-ctx-sub-section">Event Node</div>
-                    <div className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
-                      <span className="bl-ctx-item-dot" style={{ background: p.color }} />
-                      {p.label}
-                    </div>
-
-                    {/* Plugins from plugins/{folderCat}/ */}
-                    {folderPlugins.length > 0 ? (
-                      <>
-                        <div className="bl-ctx-divider" />
-                        <div className="bl-ctx-sub-section">Plugins</div>
-                        {folderPlugins.map((pl) => (
-                          <div key={pl.type} className="bl-ctx-item" onMouseDown={() => { onAdd(pl.type); onClose(); }}>
-                            <span className="bl-ctx-item-dot" style={{ background: pl.color }} />
-                            {pl.label}
-                          </div>
-                        ))}
-                      </>
-                    ) : (
-                      <div className="bl-ctx-sub-empty">
-                        plugins/{folderCat}/
+                  {/* Inline flyout — no nested component so no unmount/remount on state change */}
+                  {isOpen && (
+                    <div
+                      className={subMenuClass}
+                      onMouseEnter={() => showSub(type)}
+                      onMouseLeave={hideSub}
+                    >
+                      <div className="bl-ctx-sub-section">Event Node</div>
+                      <div className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
+                        <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+                        {p.label}
                       </div>
-                    )}
-                  </SubMenu>
+
+                      {folderPlugins.length > 0 ? (
+                        <>
+                          <div className="bl-ctx-divider" />
+                          <div className="bl-ctx-sub-section">Plugins</div>
+                          {folderPlugins.map((pl) => (
+                            <div key={pl.type} className="bl-ctx-item" onMouseDown={() => { onAdd(pl.type); onClose(); }}>
+                              <span className="bl-ctx-item-dot" style={{ background: pl.color }} />
+                              {pl.label}
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <div className="bl-ctx-sub-empty">plugins/{folderCat}/</div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -243,31 +235,40 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
               </React.Fragment>
             ))}
 
-            {/* ── Extra plugin groups (non-event categories) — flyout ── */}
+            {/* ── Extra plugin groups (non-event-category) — flyout ── */}
             {extraPluginGroups.length > 0 && (
               <>
                 <div className="bl-ctx-divider" />
-                {extraPluginGroups.map(([label, items]) => (
-                  <div
-                    key={label}
-                    className="bl-ctx-item bl-ctx-item-sub"
-                    onMouseEnter={() => showSub(label)}
-                    onMouseLeave={hideSub}
-                  >
-                    <span className="bl-ctx-item-dot" style={{ background: items[0]?.color || '#555' }} />
-                    <span style={{ flex: 1 }}>{label}</span>
-                    <span className="bl-ctx-arrow">▶</span>
+                {extraPluginGroups.map(([label, items]) => {
+                  const isOpen = hoveredGroup === label;
+                  return (
+                    <div
+                      key={label}
+                      className="bl-ctx-item bl-ctx-item-sub"
+                      onMouseEnter={() => showSub(label)}
+                      onMouseLeave={hideSub}
+                    >
+                      <span className="bl-ctx-item-dot" style={{ background: items[0]?.color || '#555' }} />
+                      <span style={{ flex: 1 }}>{label}</span>
+                      <span className="bl-ctx-arrow">▶</span>
 
-                    <SubMenu id={label}>
-                      {items.map((p) => (
-                        <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
-                          <span className="bl-ctx-item-dot" style={{ background: p.color }} />
-                          {p.label}
+                      {isOpen && (
+                        <div
+                          className={subMenuClass}
+                          onMouseEnter={() => showSub(label)}
+                          onMouseLeave={hideSub}
+                        >
+                          {items.map((p) => (
+                            <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
+                              <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+                              {p.label}
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </SubMenu>
-                  </div>
-                ))}
+                      )}
+                    </div>
+                  );
+                })}
               </>
             )}
           </>
