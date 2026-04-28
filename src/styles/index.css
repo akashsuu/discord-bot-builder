@@ -175,21 +175,21 @@ input, textarea, select, button { font-family: inherit; font-size: 12px; color: 
 /* shared buttons */
 .btn-primary {
   display: flex; align-items: center;
-  background: #405020;
+  background: #3b1a6e;
   color: var(--bl-text);
-  border: 1px solid #5A7030;
+  border: 1px solid #6b35c8;
   border-radius: var(--r); padding: 7px 16px;
   font-size: 12px; font-weight: 600;
   cursor: pointer; transition: background .12s;
 }
-.btn-primary:hover { background: #4E6228; }
+.btn-primary:hover { background: #4e24a0; }
 .btn-primary:disabled { opacity: .45; cursor: not-allowed; }
 .btn-primary.full-width { width: 100%; justify-content: center; }
 
 .btn-secondary {
   display: flex; align-items: center;
   background: var(--bl-surface); color: var(--bl-text);
-  border: 1px solid #505050;
+  border: 1px solid var(--bl-border);
   border-radius: var(--r); padding: 7px 16px;
   font-size: 12px; font-weight: 600;
   cursor: pointer; transition: background .12s;
@@ -202,7 +202,7 @@ input, textarea, select, button { font-family: inherit; font-size: 12px; color: 
   border-radius: var(--r); padding: 6px 12px;
   cursor: pointer; transition: color .12s, border-color .12s;
 }
-.btn-ghost:hover { color: var(--bl-text); border-color: #666; }
+.btn-ghost:hover { color: var(--bl-text); border-color: #5a4a8a; }
 
 /* modal */
 .modal-backdrop {
