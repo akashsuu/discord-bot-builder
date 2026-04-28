@@ -140,6 +140,7 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
         style={{ left: menu.x, top: menu.y }}
         onMouseDown={(e) => e.stopPropagation()}
       >
+      <div className="bl-ctx-menu-inner">
         <div className="bl-ctx-header">Add Node</div>
         <input
           ref={inputRef}
