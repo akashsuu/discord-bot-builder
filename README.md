@@ -280,7 +280,6 @@ module.exports = {
 };
 ```
 
-Plugins are loaded automatically at app startup — no registration needed.
 
 ---
 
