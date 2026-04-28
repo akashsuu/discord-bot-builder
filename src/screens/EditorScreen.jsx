@@ -95,27 +95,29 @@ const EVENT_SUBMENU_CATS = new Set(Object.values(EVENT_SUBMENU_MAP));
 
 // ── Right-click context menu ──────────────────────────────────────────────────
 function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
-  const [search, setSearch]        = useState('');
-  const [hoveredGroup, setHovered] = useState(null);
+  const [search, setSearch] = useState('');
+  // activeSub: { key, top, left, right } — screen rect of the hovered row
+  const [activeSub, setActive] = useState(null);
   const inputRef   = useRef(null);
   const hoverTimer = useRef(null);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
   useEffect(() => () => clearTimeout(hoverTimer.current), []);
 
-  const flipLeft = menu.x > window.innerWidth - 420;
+  // Capture the row's screen rect so the submenu can be placed with position:fixed
+  const openSub  = (key, el) => {
+    clearTimeout(hoverTimer.current);
+    const r = el.getBoundingClientRect();
+    setActive({ key, top: r.top, left: r.left, right: r.right });
+  };
+  const closeSub = ()  => { hoverTimer.current = setTimeout(() => setActive(null), 150); };
+  const keepSub  = ()  => clearTimeout(hoverTimer.current);
 
-  const showSub = (key) => { clearTimeout(hoverTimer.current); setHovered(key); };
-  const hideSub = ()    => { hoverTimer.current = setTimeout(() => setHovered(null), 150); };
-
-  const subMenuClass = `bl-ctx-submenu${flipLeft ? ' bl-ctx-submenu-left' : ''}`;
-
-  // Plugins not in any event-mapped category → bottom flyout group
   const extraPluginGroups = useMemo(() => {
-    const filtered = (pluginMeta || []).filter((p) => !EVENT_SUBMENU_CATS.has(p.category));
-    if (!filtered.length) return [];
+    const list = (pluginMeta || []).filter((p) => !EVENT_SUBMENU_CATS.has(p.category));
+    if (!list.length) return [];
     const map = new Map();
-    for (const p of filtered) {
+    for (const p of list) {
       const key = p.category
         ? p.category.charAt(0).toUpperCase() + p.category.slice(1) + ' Plugins'
         : 'Plugins';
@@ -133,150 +135,161 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
     ? allItems.filter((p) => p.label.toLowerCase().includes(search.toLowerCase()))
     : null;
 
+  // Build the content shown inside the fixed submenu panel
+  const buildSubContent = (key) => {
+    if (key in EVENT_SUBMENU_MAP) {
+      const folderCat    = EVENT_SUBMENU_MAP[key];
+      const p            = palette.find((x) => x.type === key);
+      const folderPlugins = (pluginMeta || []).filter((x) => x.category === folderCat);
+      return (
+        <>
+          <div className="bl-ctx-sub-section">Event Node</div>
+          <div className="bl-ctx-item" onMouseDown={() => { onAdd(key); onClose(); }}>
+            <span className="bl-ctx-item-dot" style={{ background: p?.color }} />
+            {p?.label}
+          </div>
+          {folderPlugins.length > 0 ? (
+            <>
+              <div className="bl-ctx-divider" />
+              <div className="bl-ctx-sub-section">Plugins</div>
+              {folderPlugins.map((pl) => (
+                <div key={pl.type} className="bl-ctx-item" onMouseDown={() => { onAdd(pl.type); onClose(); }}>
+                  <span className="bl-ctx-item-dot" style={{ background: pl.color }} />
+                  {pl.label}
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className="bl-ctx-sub-empty">plugins/{folderCat}/</div>
+          )}
+        </>
+      );
+    }
+    const group = extraPluginGroups.find(([label]) => label === key);
+    if (group) {
+      return group[1].map((p) => (
+        <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
+          <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+          {p.label}
+        </div>
+      ));
+    }
+    return null;
+  };
+
+  // Fixed-position left edge: right of the row, or left-shifted near screen edge
+  const subLeft = activeSub
+    ? (activeSub.right > window.innerWidth - 400 ? activeSub.left - 196 : activeSub.right)
+    : 0;
+
   return (
-    <div className="bl-ctx-overlay" onMouseDown={onClose}>
-      <div
-        className="bl-ctx-menu"
-        style={{ left: menu.x, top: menu.y }}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-      <div className="bl-ctx-menu-inner">
-        <div className="bl-ctx-header">Add Node</div>
-        <input
-          ref={inputRef}
-          className="bl-ctx-search"
-          placeholder="Search…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+    <>
+      <div className="bl-ctx-overlay" onMouseDown={onClose}>
+        <div
+          className="bl-ctx-menu"
+          style={{ left: menu.x, top: menu.y }}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <div className="bl-ctx-header">Add Node</div>
+          <input
+            ref={inputRef}
+            className="bl-ctx-search"
+            placeholder="Search…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
-        {filtered ? (
-          filtered.length === 0
-            ? <div style={{ padding: '8px 10px', color: '#555', fontSize: 11 }}>No results</div>
-            : filtered.map((p) => (
-              <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
-                <span className="bl-ctx-item-dot" style={{ background: p.color }} />
-                {p.label}
-              </div>
-            ))
-        ) : (
-          <>
-            {/* ── Events ── */}
-            <div className="bl-ctx-cat">Events</div>
-
-            {Object.entries(EVENT_SUBMENU_MAP).map(([type, folderCat]) => {
-              const p             = palette.find((x) => x.type === type);
-              if (!p) return null;
-              const folderPlugins = (pluginMeta || []).filter((x) => x.category === folderCat);
-              const shortLabel    = p.label.replace(' Event', '');
-              const isOpen        = hoveredGroup === type;
-
-              return (
-                <div
-                  key={type}
-                  className="bl-ctx-item bl-ctx-item-sub"
-                  onMouseEnter={() => showSub(type)}
-                  onMouseLeave={hideSub}
-                >
+          {filtered ? (
+            filtered.length === 0
+              ? <div style={{ padding: '8px 10px', color: '#555', fontSize: 11 }}>No results</div>
+              : filtered.map((p) => (
+                <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
                   <span className="bl-ctx-item-dot" style={{ background: p.color }} />
-                  <span style={{ flex: 1 }}>{shortLabel}</span>
-                  <span className="bl-ctx-arrow">▶</span>
+                  {p.label}
+                </div>
+              ))
+          ) : (
+            <>
+              {/* ── Events ── */}
+              <div className="bl-ctx-cat">Events</div>
+              {Object.entries(EVENT_SUBMENU_MAP).map(([type]) => {
+                const p = palette.find((x) => x.type === type);
+                if (!p) return null;
+                const isActive = activeSub?.key === type;
+                return (
+                  <div
+                    key={type}
+                    className={`bl-ctx-item bl-ctx-item-sub${isActive ? ' bl-ctx-item-active' : ''}`}
+                    onMouseEnter={(e) => openSub(type, e.currentTarget)}
+                    onMouseLeave={closeSub}
+                  >
+                    <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+                    <span style={{ flex: 1 }}>{p.label.replace(' Event', '')}</span>
+                    <span className="bl-ctx-arrow">▶</span>
+                  </div>
+                );
+              })}
 
-                  {/* Inline flyout — no nested component so no unmount/remount on state change */}
-                  {isOpen && (
-                    <div
-                      className={subMenuClass}
-                      onMouseEnter={() => showSub(type)}
-                      onMouseLeave={hideSub}
-                    >
-                      <div className="bl-ctx-sub-section">Event Node</div>
-                      <div className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
+              {/* ── Commands, Actions, Logic ── */}
+              {[
+                { label: 'Commands', items: ['custom_command'] },
+                { label: 'Actions',  items: ['send_message'] },
+                { label: 'Logic',    items: ['condition_branch'] },
+              ].map((cat) => (
+                <React.Fragment key={cat.label}>
+                  <div className="bl-ctx-cat">{cat.label}</div>
+                  {cat.items.map((type) => {
+                    const p = palette.find((x) => x.type === type);
+                    if (!p) return null;
+                    return (
+                      <div key={type} className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
                         <span className="bl-ctx-item-dot" style={{ background: p.color }} />
                         {p.label}
                       </div>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
 
-                      {folderPlugins.length > 0 ? (
-                        <>
-                          <div className="bl-ctx-divider" />
-                          <div className="bl-ctx-sub-section">Plugins</div>
-                          {folderPlugins.map((pl) => (
-                            <div key={pl.type} className="bl-ctx-item" onMouseDown={() => { onAdd(pl.type); onClose(); }}>
-                              <span className="bl-ctx-item-dot" style={{ background: pl.color }} />
-                              {pl.label}
-                            </div>
-                          ))}
-                        </>
-                      ) : (
-                        <div className="bl-ctx-sub-empty">plugins/{folderCat}/</div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            {/* ── Commands, Actions, Logic ── */}
-            {[
-              { label: 'Commands', items: ['custom_command'] },
-              { label: 'Actions',  items: ['send_message'] },
-              { label: 'Logic',    items: ['condition_branch'] },
-            ].map((cat) => (
-              <React.Fragment key={cat.label}>
-                <div className="bl-ctx-cat">{cat.label}</div>
-                {cat.items.map((type) => {
-                  const p = palette.find((x) => x.type === type);
-                  if (!p) return null;
-                  return (
-                    <div key={type} className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
-                      <span className="bl-ctx-item-dot" style={{ background: p.color }} />
-                      {p.label}
-                    </div>
-                  );
-                })}
-              </React.Fragment>
-            ))}
-
-            {/* ── Extra plugin groups (non-event-category) — flyout ── */}
-            {extraPluginGroups.length > 0 && (
-              <>
-                <div className="bl-ctx-divider" />
-                {extraPluginGroups.map(([label, items]) => {
-                  const isOpen = hoveredGroup === label;
-                  return (
-                    <div
-                      key={label}
-                      className="bl-ctx-item bl-ctx-item-sub"
-                      onMouseEnter={() => showSub(label)}
-                      onMouseLeave={hideSub}
-                    >
-                      <span className="bl-ctx-item-dot" style={{ background: items[0]?.color || '#555' }} />
-                      <span style={{ flex: 1 }}>{label}</span>
-                      <span className="bl-ctx-arrow">▶</span>
-
-                      {isOpen && (
-                        <div
-                          className={subMenuClass}
-                          onMouseEnter={() => showSub(label)}
-                          onMouseLeave={hideSub}
-                        >
-                          {items.map((p) => (
-                            <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
-                              <span className="bl-ctx-item-dot" style={{ background: p.color }} />
-                              {p.label}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </>
-            )}
-          </>
-        )}
-      </div>{/* end bl-ctx-menu-inner */}
+              {/* ── Extra plugin groups ── */}
+              {extraPluginGroups.length > 0 && (
+                <>
+                  <div className="bl-ctx-divider" />
+                  {extraPluginGroups.map(([label, items]) => {
+                    const isActive = activeSub?.key === label;
+                    return (
+                      <div
+                        key={label}
+                        className={`bl-ctx-item bl-ctx-item-sub${isActive ? ' bl-ctx-item-active' : ''}`}
+                        onMouseEnter={(e) => openSub(label, e.currentTarget)}
+                        onMouseLeave={closeSub}
+                      >
+                        <span className="bl-ctx-item-dot" style={{ background: items[0]?.color || '#555' }} />
+                        <span style={{ flex: 1 }}>{label}</span>
+                        <span className="bl-ctx-arrow">▶</span>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Submenu panel — position:fixed, completely outside overflow:hidden ancestors */}
+      {activeSub && (
+        <div
+          className="bl-ctx-submenu-panel"
+          style={{ top: activeSub.top, left: subLeft }}
+          onMouseEnter={keepSub}
+          onMouseLeave={closeSub}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          {buildSubContent(activeSub.key)}
+        </div>
+      )}
+    </>
   );
 }
 

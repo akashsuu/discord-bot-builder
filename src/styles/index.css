@@ -507,22 +507,36 @@ code {
   border-radius: var(--r);
   box-shadow: 0 6px 24px rgba(0,0,0,.7);
   z-index: 1001;
-  overflow: visible;   /* must be visible so submenu panels aren't clipped */
+  overflow: hidden;
   font-size: 11px;
 }
 
-/* Inner wrapper clips the list to rounded corners without clipping submenus */
-.bl-ctx-menu-inner {
+/* Fixed submenu panel — rendered outside overlay, never clipped */
+.bl-ctx-submenu-panel {
+  position: fixed;
+  min-width: 196px;
+  max-height: 320px;
+  overflow-y: auto;
   background: var(--bl-panel);
+  border: 1px solid #505050;
   border-radius: var(--r);
-  overflow: hidden;
+  box-shadow: 6px 6px 24px rgba(0,0,0,.85);
+  z-index: 1003;
+  font-size: 11px;
+  animation: ctx-sub-in .08s ease;
 }
+
+/* Highlight the row whose submenu is open */
+.bl-ctx-item-active {
+  background: #3D5A8A;
+  color: #fff;
+}
+.bl-ctx-item-active .bl-ctx-arrow { color: #fff; opacity: 1; }
 
 .bl-ctx-header {
   padding: 6px 8px 5px;
   background: var(--bl-surface);
   border-bottom: 1px solid var(--bl-border);
-  border-radius: var(--r) var(--r) 0 0;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
