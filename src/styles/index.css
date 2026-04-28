@@ -357,18 +357,18 @@ code {
   gap: 4px;
   transition: background .1s, border-color .1s;
 }
-.bl-btn:hover { background: #4A4A4A; border-color: #666; }
+.bl-btn:hover { background: #221040; border-color: #6b35c8; }
 .bl-btn:disabled { opacity: .38; cursor: not-allowed; }
-.bl-btn:disabled:hover { background: var(--bl-elevated); border-color: #505050; }
+.bl-btn:disabled:hover { background: var(--bl-elevated); border-color: var(--bl-border); }
 
-.bl-btn-run { border-color: #3A6A3A; color: #7ACA7A; }
-.bl-btn-run:hover:not(:disabled) { background: #2A4A2A; border-color: #5A9A5A; }
+.bl-btn-run { border-color: #2a5a2a; color: #6dda6d; }
+.bl-btn-run:hover:not(:disabled) { background: #1a3a1a; border-color: #4aaa4a; }
 
-.bl-btn-stop { border-color: #6A2A2A; color: #CA7A7A; }
-.bl-btn-stop:hover:not(:disabled) { background: #4A1A1A; border-color: #9A5A5A; }
+.bl-btn-stop { border-color: #6a2a3a; color: #f47a8a; }
+.bl-btn-stop:hover:not(:disabled) { background: #3a1020; border-color: #c05060; }
 
-.bl-btn-token { border-color: #5A4A20; color: #D4A840; }
-.bl-btn-token:hover { background: #3A3010; border-color: #8A7030; }
+.bl-btn-token { border-color: #4a2a8a; color: #c084fc; }
+.bl-btn-token:hover { background: #2a1060; border-color: #8b5cf6; }
 
 .bl-status-dot {
   width: 6px; height: 6px;
@@ -376,7 +376,7 @@ code {
   display: inline-block;
 }
 .bl-status-dot.online { background: #5ACA5A; }
-.bl-status-dot.offline { background: #555; }
+.bl-status-dot.offline { background: #42386a; }
 
 .bl-header-fill { flex: 1; }
 
@@ -387,7 +387,7 @@ code {
   align-items: center;
   gap: 4px;
 }
-.bl-status-label.online { color: #7ACA7A; }
+.bl-status-label.online { color: #6dda6d; }
 
 /* ────────────────────────────────────────────────────
    N-PANEL (properties, right side)
