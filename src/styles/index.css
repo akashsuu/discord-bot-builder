@@ -507,14 +507,22 @@ code {
   border-radius: var(--r);
   box-shadow: 0 6px 24px rgba(0,0,0,.7);
   z-index: 1001;
-  overflow: hidden;
+  overflow: visible;   /* must be visible so submenu panels aren't clipped */
   font-size: 11px;
+}
+
+/* Inner wrapper clips the list to rounded corners without clipping submenus */
+.bl-ctx-menu-inner {
+  background: var(--bl-panel);
+  border-radius: var(--r);
+  overflow: hidden;
 }
 
 .bl-ctx-header {
   padding: 6px 8px 5px;
   background: var(--bl-surface);
   border-bottom: 1px solid var(--bl-border);
+  border-radius: var(--r) var(--r) 0 0;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
