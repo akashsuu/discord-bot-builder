@@ -1,0 +1,17 @@
+{
+  "name": "Guild Logger",
+  "version": "1.0.0",
+  "description": "Logs when the bot joins or leaves a guild",
+  "author": "Akashsuu",
+  "icon": "🏰",
+  "nodeConfig": {
+    "label": "Guild Logger",
+    "icon": "🏰",
+    "color": "#0A2A1A",
+    "hasInput": true,
+    "hasOutput": false,
+    "defaults": {
+      "output": "🏰 Joined server **{server}** with {members} members!"
+    }
+  }
+}
