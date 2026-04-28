@@ -17,7 +17,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     },
-    backgroundColor: '#0d0e1a',
+    backgroundColor: '#08080f',
     title: 'Discord Bot Builder — Akashsuu',
     show: false,
   });

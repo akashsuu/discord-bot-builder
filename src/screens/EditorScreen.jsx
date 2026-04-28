@@ -23,16 +23,16 @@ import { varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
 let _nc = 1;
 
 const MINIMAP_NODE_COLOR = {
-  event_message:    '#1E4030',
-  event_channel:    '#162040',
-  event_client:     '#2A1840',
-  event_emoji:      '#3A2800',
-  event_guild:      '#0A2A1A',
-  event_member:     '#1A2840',
-  event_role:       '#3A1018',
-  custom_command:   '#1E2E46',
-  send_message:     '#3A4A1A',
-  condition_branch: '#4A3010',
+  event_message:    '#1a0d40',
+  event_channel:    '#0f1245',
+  event_client:     '#200a42',
+  event_emoji:      '#2a0a45',
+  event_guild:      '#0a1838',
+  event_member:     '#0d1050',
+  event_role:       '#280838',
+  custom_command:   '#0a0c30',
+  send_message:     '#0c1a10',
+  condition_branch: '#200808',
 };
 
 const CATEGORIES = [
@@ -552,7 +552,7 @@ function NPanel({ selectedNode, setNodes }) {
         {openSections.props && (
           <div className="bl-npanel-body">
             {selectedNode.type === 'event_message' && (
-              <div style={{ color: '#666', fontSize: 11 }}>No editable properties.</div>
+              <div style={{ color: '#42386a', fontSize: 11 }}>No editable properties.</div>
             )}
 
             {EVENT_NODE_OPTIONS[selectedNode.type] && (
@@ -706,7 +706,7 @@ function EditorInner() {
     setEdges((eds) => addEdge({
       ...params,
       type: 'default',
-      style: { stroke: '#C49C00', strokeWidth: 1.5 },
+      style: { stroke: '#9333ea', strokeWidth: 1.5 },
     }, eds));
   }, [setEdges]);
 
@@ -778,21 +778,21 @@ function EditorInner() {
             snapGrid={[10, 10]}
             defaultEdgeOptions={{
               type: 'default',
-              style: { stroke: '#C49C00', strokeWidth: 1.5 },
+              style: { stroke: '#9333ea', strokeWidth: 1.5 },
             }}
-            connectionLineStyle={{ stroke: '#C49C00', strokeWidth: 1.5 }}
+            connectionLineStyle={{ stroke: '#9333ea', strokeWidth: 1.5 }}
           >
             <Background
               variant={BackgroundVariant.Dots}
               gap={20}
               size={1}
-              color="#333"
+              color="#1e1a3c"
             />
             <Controls showInteractive={false} />
             <MiniMap
               nodeColor={(n) => MINIMAP_NODE_COLOR[n.type] || '#3D3D3D'}
-              maskColor="rgba(13,13,13,0.75)"
-              style={{ background: '#1D1D1D', border: '1px solid #111' }}
+              maskColor="rgba(5,4,15,0.80)"
+              style={{ background: '#0e0e1c', border: '1px solid #1e1a3c' }}
             />
             <Panel position="top-right">
               <div className="canvas-info">{nodes.length} nodes · {edges.length} edges · RMB = add</div>
