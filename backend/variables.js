@@ -30,18 +30,19 @@ const VARIABLES = [
  * @param {Object} [extra]  — { command, target, reason, latency }
  */
 function substitute(text, message, extra = {}) {
-  const args = message.content.split(' ').slice(1).join(' ');
+  if (!message) return text || '';
+  const args = (message.content || '').split(' ').slice(1).join(' ');
   const now  = new Date();
 
   let result = text || '';
   result = result
-    .replace(/\{user\}/g,    message.author.username)
-    .replace(/\{tag\}/g,     message.author.tag)
-    .replace(/\{id\}/g,      message.author.id)
+    .replace(/\{user\}/g,    message.author?.username || '')
+    .replace(/\{tag\}/g,     message.author?.tag      || '')
+    .replace(/\{id\}/g,      message.author?.id       || '')
     .replace(/\{args\}/g,    args)
-    .replace(/\{channel\}/g, message.channel.name    || 'unknown')
-    .replace(/\{server\}/g,  message.guild?.name     || 'unknown')
-    .replace(/\{command\}/g, extra.command            || '')
+    .replace(/\{channel\}/g, message.channel?.name    || 'unknown')
+    .replace(/\{server\}/g,  message.guild?.name      || 'unknown')
+    .replace(/\{command\}/g, extra.command             || '')
     .replace(/\{date\}/g,    now.toISOString().slice(0, 10))
     .replace(/\{time\}/g,    now.toTimeString().slice(0, 8));
 

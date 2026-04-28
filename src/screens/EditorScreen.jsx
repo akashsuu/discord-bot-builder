@@ -18,43 +18,130 @@ import builtinNodeTypes, { DEFAULT_NODE_DATA, NODE_PALETTE } from '../nodes/node
 import PluginNode from '../nodes/PluginNode';
 import Toolbar from '../components/Toolbar';
 import LogPanel from '../components/LogPanel';
-import { demoSub, varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
+import { varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
 
 let _nc = 1;
 
 const MINIMAP_NODE_COLOR = {
   event_message:    '#1E4030',
+  event_channel:    '#162040',
+  event_client:     '#2A1840',
+  event_emoji:      '#3A2800',
+  event_guild:      '#0A2A1A',
+  event_member:     '#1A2840',
+  event_role:       '#3A1018',
   custom_command:   '#1E2E46',
   send_message:     '#3A4A1A',
   condition_branch: '#4A3010',
 };
 
 const CATEGORIES = [
-  { label: 'Events',   items: ['event_message'] },
+  { label: 'Events',   items: ['event_message', 'event_channel', 'event_client', 'event_emoji', 'event_guild', 'event_member', 'event_role'] },
   { label: 'Commands', items: ['custom_command'] },
   { label: 'Actions',  items: ['send_message'] },
   { label: 'Logic',    items: ['condition_branch'] },
 ];
 
+// Event sub-options for each new event node type (used in NPanel + node components)
+const EVENT_NODE_OPTIONS = {
+  event_channel: [
+    { value: 'channelCreate',     label: 'Channel Create' },
+    { value: 'channelDelete',     label: 'Channel Delete' },
+    { value: 'channelUpdate',     label: 'Channel Update' },
+    { value: 'channelPinsUpdate', label: 'Pins Update' },
+  ],
+  event_client: [
+    { value: 'ready', label: 'Ready' },
+    { value: 'warn',  label: 'Warn'  },
+  ],
+  event_emoji: [
+    { value: 'emojiCreate', label: 'Emoji Create' },
+    { value: 'emojiDelete', label: 'Emoji Delete' },
+    { value: 'emojiUpdate', label: 'Emoji Update' },
+  ],
+  event_guild: [
+    { value: 'guildCreate',    label: 'Guild Join' },
+    { value: 'guildDelete',    label: 'Guild Leave' },
+    { value: 'guildUpdate',    label: 'Guild Update' },
+    { value: 'guildAvailable', label: 'Guild Available' },
+  ],
+  event_member: [
+    { value: 'guildMemberAdd',    label: 'Member Join' },
+    { value: 'guildMemberRemove', label: 'Member Leave' },
+    { value: 'guildMemberUpdate', label: 'Member Update' },
+  ],
+  event_role: [
+    { value: 'roleCreate', label: 'Role Create' },
+    { value: 'roleDelete', label: 'Role Delete' },
+    { value: 'roleUpdate', label: 'Role Update' },
+  ],
+};
+
 function serialize(nodes) {
   return nodes.map(({ id, type, position, data }) => ({ id, type, position, data }));
 }
 
+// ── Event node types that get their own submenu column ───────────────────────
+const EVENT_SUBMENU_MAP = {
+  event_message: 'message',
+  event_channel: 'channel',
+  event_client:  'client',
+  event_emoji:   'emoji',
+  event_guild:   'guild',
+  event_member:  'member',
+  event_role:    'role',
+};
+const EVENT_SUBMENU_CATS = new Set(Object.values(EVENT_SUBMENU_MAP));
+
 // ── Right-click context menu ──────────────────────────────────────────────────
 function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
-  const [search, setSearch] = useState('');
-  const inputRef = useRef(null);
+  const [search, setSearch]        = useState('');
+  const [hoveredGroup, setHovered] = useState(null);
+  const inputRef   = useRef(null);
+  const hoverTimer = useRef(null);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
+  useEffect(() => () => clearTimeout(hoverTimer.current), []);
+
+  // Submenu opens left when right edge is close
+  const flipLeft = menu.x > window.innerWidth - 420;
+
+  const showSub = (key) => { clearTimeout(hoverTimer.current); setHovered(key); };
+  const hideSub = ()    => { hoverTimer.current = setTimeout(() => setHovered(null), 130); };
+
+  // Plugins NOT belonging to the 6 event categories → shown at bottom as flyouts
+  const extraPluginGroups = useMemo(() => {
+    const filtered = (pluginMeta || []).filter((p) => !EVENT_SUBMENU_CATS.has(p.category));
+    if (!filtered.length) return [];
+    const map = new Map();
+    for (const p of filtered) {
+      const key = p.category
+        ? p.category.charAt(0).toUpperCase() + p.category.slice(1) + ' Plugins'
+        : 'Plugins';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(p);
+    }
+    return Array.from(map.entries());
+  }, [pluginMeta]);
 
   const allItems = [
     ...palette,
-    ...(pluginMeta || []).map((p) => ({ type: p.type, label: p.label, color: p.color, icon: p.icon, _plugin: true })),
+    ...(pluginMeta || []).map((p) => ({ type: p.type, label: p.label, color: p.color })),
   ];
-
   const filtered = search.trim()
     ? allItems.filter((p) => p.label.toLowerCase().includes(search.toLowerCase()))
     : null;
+
+  // Helper: render a flyout panel
+  const SubMenu = ({ id, children }) => hoveredGroup !== id ? null : (
+    <div
+      className={`bl-ctx-submenu${flipLeft ? ' bl-ctx-submenu-left' : ''}`}
+      onMouseEnter={() => showSub(id)}
+      onMouseLeave={hideSub}
+    >
+      {children}
+    </div>
+  );
 
   return (
     <div className="bl-ctx-overlay" onMouseDown={onClose}>
@@ -73,6 +160,7 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
         />
 
         {filtered ? (
+          /* ── Search results (flat) ── */
           filtered.length === 0
             ? <div style={{ padding: '8px 10px', color: '#555', fontSize: 11 }}>No results</div>
             : filtered.map((p) => (
@@ -83,7 +171,63 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
             ))
         ) : (
           <>
-            {CATEGORIES.map((cat) => (
+            {/* ── Events ── */}
+            <div className="bl-ctx-cat">Events</div>
+
+            {/* All event types — submenu rows */}
+            {Object.entries(EVENT_SUBMENU_MAP).map(([type, folderCat]) => {
+              const p            = palette.find((x) => x.type === type);
+              if (!p) return null;
+              const folderPlugins = (pluginMeta || []).filter((x) => x.category === folderCat);
+              const shortLabel   = p.label.replace(' Event', '');
+
+              return (
+                <div
+                  key={type}
+                  className="bl-ctx-item bl-ctx-item-sub"
+                  onMouseEnter={() => showSub(type)}
+                  onMouseLeave={hideSub}
+                >
+                  <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+                  <span style={{ flex: 1 }}>{shortLabel}</span>
+                  <span className="bl-ctx-arrow">▶</span>
+
+                  <SubMenu id={type}>
+                    {/* Event node row */}
+                    <div className="bl-ctx-sub-section">Event Node</div>
+                    <div className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
+                      <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+                      {p.label}
+                    </div>
+
+                    {/* Plugins from plugins/{folderCat}/ */}
+                    {folderPlugins.length > 0 ? (
+                      <>
+                        <div className="bl-ctx-divider" />
+                        <div className="bl-ctx-sub-section">Plugins</div>
+                        {folderPlugins.map((pl) => (
+                          <div key={pl.type} className="bl-ctx-item" onMouseDown={() => { onAdd(pl.type); onClose(); }}>
+                            <span className="bl-ctx-item-dot" style={{ background: pl.color }} />
+                            {pl.label}
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <div className="bl-ctx-sub-empty">
+                        plugins/{folderCat}/
+                      </div>
+                    )}
+                  </SubMenu>
+                </div>
+              );
+            })}
+
+            {/* ── Commands, Actions, Logic ── */}
+            {[
+              { label: 'Commands', items: ['custom_command'] },
+              { label: 'Actions',  items: ['send_message'] },
+              { label: 'Logic',    items: ['condition_branch'] },
+            ].map((cat) => (
               <React.Fragment key={cat.label}>
                 <div className="bl-ctx-cat">{cat.label}</div>
                 {cat.items.map((type) => {
@@ -99,14 +243,29 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
               </React.Fragment>
             ))}
 
-            {pluginMeta && pluginMeta.length > 0 && (
+            {/* ── Extra plugin groups (non-event categories) — flyout ── */}
+            {extraPluginGroups.length > 0 && (
               <>
                 <div className="bl-ctx-divider" />
-                <div className="bl-ctx-cat">Plugins</div>
-                {pluginMeta.map((p) => (
-                  <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
-                    <span className="bl-ctx-item-dot" style={{ background: p.color }} />
-                    {p.label}
+                {extraPluginGroups.map(([label, items]) => (
+                  <div
+                    key={label}
+                    className="bl-ctx-item bl-ctx-item-sub"
+                    onMouseEnter={() => showSub(label)}
+                    onMouseLeave={hideSub}
+                  >
+                    <span className="bl-ctx-item-dot" style={{ background: items[0]?.color || '#555' }} />
+                    <span style={{ flex: 1 }}>{label}</span>
+                    <span className="bl-ctx-arrow">▶</span>
+
+                    <SubMenu id={label}>
+                      {items.map((p) => (
+                        <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
+                          <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+                          {p.label}
+                        </div>
+                      ))}
+                    </SubMenu>
                   </div>
                 ))}
               </>
@@ -380,6 +539,21 @@ function NPanel({ selectedNode, setNodes }) {
               <div style={{ color: '#666', fontSize: 11 }}>No editable properties.</div>
             )}
 
+            {EVENT_NODE_OPTIONS[selectedNode.type] && (
+              <div className="bl-prop-row">
+                <span className="bl-prop-label">Event</span>
+                <select
+                  className="bl-field-select"
+                  value={d.event || (EVENT_NODE_OPTIONS[selectedNode.type][0]?.value ?? '')}
+                  onChange={(e) => update('event', e.target.value)}
+                >
+                  {EVENT_NODE_OPTIONS[selectedNode.type].map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {selectedNode.type === 'custom_command' && (
               <>
                 <div className="bl-prop-row">
@@ -431,7 +605,7 @@ function NPanel({ selectedNode, setNodes }) {
       </div>
 
       {/* Discord Preview section — shown for any node that outputs something */}
-      {selectedNode.type !== 'event_message' && selectedNode.type !== 'condition_branch' && (
+      {!selectedNode.type.startsWith('event_') && selectedNode.type !== 'condition_branch' && (
         <div className="bl-npanel-section">
           <div className="bl-npanel-section-hdr" onClick={() => toggle('preview')}>
             <span className="arrow">{openSections.preview ? '▼' : '▶'}</span>

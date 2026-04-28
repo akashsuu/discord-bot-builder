@@ -21,10 +21,16 @@
   --bl-teal:      #3A9090;
 
   /* node header tones */
-  --nh-event:   #1E4030;
-  --nh-command: #1E2E46;
-  --nh-action:  #3A4A1A;
-  --nh-cond:    #4A3010;
+  --nh-event:    #1E4030;
+  --nh-channel:  #162040;
+  --nh-client:   #2A1840;
+  --nh-emoji:    #3A2800;
+  --nh-guild:    #0A2A1A;
+  --nh-member:   #1A2840;
+  --nh-role:     #3A1018;
+  --nh-command:  #1E2E46;
+  --nh-action:   #3A4A1A;
+  --nh-cond:     #4A3010;
 
   --select-col: #F07020;
 
@@ -557,6 +563,79 @@ code {
 
 .bl-ctx-divider { height: 1px; background: var(--bl-border); margin: 2px 0; }
 
+/* ── Flyout submenu rows ── */
+.bl-ctx-item-sub {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bl-ctx-arrow {
+  font-size: 7px;
+  color: var(--bl-text-mute);
+  flex-shrink: 0;
+  margin-left: 4px;
+  transition: color .1s;
+}
+.bl-ctx-item-sub:hover .bl-ctx-arrow { color: #fff; }
+
+/* Submenu panel — opens to the right by default */
+.bl-ctx-submenu {
+  position: absolute;
+  left: calc(100% + 3px);
+  top: -1px;
+  min-width: 190px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--bl-panel);
+  border: 1px solid #505050;
+  border-radius: var(--r);
+  box-shadow: 6px 6px 24px rgba(0,0,0,.8);
+  z-index: 1002;
+  animation: ctx-sub-in .08s ease;
+}
+
+/* Opens to the left when near right screen edge */
+.bl-ctx-submenu.bl-ctx-submenu-left {
+  left: auto;
+  right: calc(100% + 3px);
+}
+
+@keyframes ctx-sub-in {
+  from { opacity: 0; transform: translateX(4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.bl-ctx-submenu.bl-ctx-submenu-left {
+  animation-name: ctx-sub-in-left;
+}
+@keyframes ctx-sub-in-left {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Section header inside a submenu ("Event Node" / "Plugins") */
+.bl-ctx-sub-section {
+  padding: 4px 10px 3px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--bl-text-mute);
+  background: var(--bl-surface);
+  border-bottom: 1px solid var(--bl-border);
+}
+
+/* Hint shown when the folder has no plugins yet */
+.bl-ctx-sub-empty {
+  padding: 7px 10px;
+  font-size: 10px;
+  color: var(--bl-text-mute);
+  font-style: italic;
+  border-top: 1px solid var(--bl-border);
+  line-height: 1.5;
+}
+
 /* ────────────────────────────────────────────────────
    BLENDER NODES
 ──────────────────────────────────────────────────── */
@@ -620,6 +699,12 @@ code {
 .bl-node-hdr-title { color: #ddd; letter-spacing: 0.2px; }
 
 .bl-hdr-event   { background: var(--nh-event); }
+.bl-hdr-channel { background: var(--nh-channel); }
+.bl-hdr-client  { background: var(--nh-client); }
+.bl-hdr-emoji   { background: var(--nh-emoji); }
+.bl-hdr-guild   { background: var(--nh-guild); }
+.bl-hdr-member  { background: var(--nh-member); }
+.bl-hdr-role    { background: var(--nh-role); }
 .bl-hdr-command { background: var(--nh-command); }
 .bl-hdr-action  { background: var(--nh-action); }
 .bl-hdr-cond    { background: var(--nh-cond); }

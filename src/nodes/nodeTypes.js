@@ -1,13 +1,25 @@
-import EventMessageNode from './EventMessageNode';
+import EventMessageNode  from './EventMessageNode';
+import EventChannelNode  from './EventChannelNode';
+import EventClientNode   from './EventClientNode';
+import EventEmojiNode    from './EventEmojiNode';
+import EventGuildNode    from './EventGuildNode';
+import EventMemberNode   from './EventMemberNode';
+import EventRoleNode     from './EventRoleNode';
 import CustomCommandNode from './CustomCommandNode';
-import SendMessageNode from './SendMessageNode';
+import SendMessageNode   from './SendMessageNode';
 import ConditionBranchNode from './ConditionBranchNode';
 
 // Defined outside any component so React Flow never sees a new reference
 const nodeTypes = {
-  event_message: EventMessageNode,
-  custom_command: CustomCommandNode,
-  send_message: SendMessageNode,
+  event_message:    EventMessageNode,
+  event_channel:    EventChannelNode,
+  event_client:     EventClientNode,
+  event_emoji:      EventEmojiNode,
+  event_guild:      EventGuildNode,
+  event_member:     EventMemberNode,
+  event_role:       EventRoleNode,
+  custom_command:   CustomCommandNode,
+  send_message:     SendMessageNode,
   condition_branch: ConditionBranchNode,
 };
 
@@ -20,6 +32,48 @@ export const NODE_PALETTE = [
     icon: '⚡',
     color: '#9b59b6',
     description: 'Triggered on every Discord message',
+  },
+  {
+    type: 'event_channel',
+    label: 'Channel Event',
+    icon: '📢',
+    color: '#2980b9',
+    description: 'Triggered on channel create/delete/update',
+  },
+  {
+    type: 'event_client',
+    label: 'Client Event',
+    icon: '🤖',
+    color: '#7d3c98',
+    description: 'Triggered on bot client events (ready, warn)',
+  },
+  {
+    type: 'event_emoji',
+    label: 'Emoji Event',
+    icon: '😀',
+    color: '#ca6f1e',
+    description: 'Triggered on emoji create/delete/update',
+  },
+  {
+    type: 'event_guild',
+    label: 'Guild Event',
+    icon: '🏰',
+    color: '#1e8449',
+    description: 'Triggered on guild join/leave/update',
+  },
+  {
+    type: 'event_member',
+    label: 'Member Event',
+    icon: '👤',
+    color: '#1a5276',
+    description: 'Triggered on member join/leave/update',
+  },
+  {
+    type: 'event_role',
+    label: 'Role Event',
+    icon: '🎭',
+    color: '#922b21',
+    description: 'Triggered on role create/delete/update',
   },
   {
     type: 'custom_command',
@@ -45,8 +99,14 @@ export const NODE_PALETTE = [
 ];
 
 export const DEFAULT_NODE_DATA = {
-  event_message: { label: 'Message Event' },
-  custom_command: { label: 'Custom Command', command: '!hello', reply: 'Hello {user}!' },
-  send_message: { label: 'Send Message', text: 'Hello {user}!' },
+  event_message:    { label: 'Message Event' },
+  event_channel:    { label: 'Channel Event',  event: 'channelCreate' },
+  event_client:     { label: 'Client Event',   event: 'ready' },
+  event_emoji:      { label: 'Emoji Event',    event: 'emojiCreate' },
+  event_guild:      { label: 'Guild Event',    event: 'guildCreate' },
+  event_member:     { label: 'Member Event',   event: 'guildMemberAdd' },
+  event_role:       { label: 'Role Event',     event: 'roleCreate' },
+  custom_command:   { label: 'Custom Command', command: '!hello', reply: 'Hello {user}!' },
+  send_message:     { label: 'Send Message',   text: 'Hello {user}!' },
   condition_branch: { label: 'Condition Branch', condition: 'starts_with', value: '!test' },
 };

@@ -24,9 +24,6 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
 
-  // Open DevTools so errors are visible during development
-  mainWindow.webContents.openDevTools({ mode: 'detach' });
-
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
