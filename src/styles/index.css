@@ -230,7 +230,7 @@ input, textarea, select, button { font-family: inherit; font-size: 12px; color: 
   background: var(--bl-elevated); border: 1px solid var(--bl-divider);
   border-radius: var(--r); cursor: pointer; padding: 6px; font-size: 14px; line-height: 1;
 }
-.eye-btn:hover { background: #4A4A4A; }
+.eye-btn:hover { background: #2a1858; }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
 
 code {
