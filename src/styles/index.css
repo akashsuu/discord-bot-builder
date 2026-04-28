@@ -1,38 +1,38 @@
-/* ── Blender-exact design tokens ── */
+/* ── Obsidian dark-purple design tokens ── */
 :root {
-  --bl-bg:        #282828;
-  --bl-panel:     #1D1D1D;
-  --bl-header:    #1A1A1A;
-  --bl-input:     #111111;
-  --bl-surface:   #353535;
-  --bl-elevated:  #3D3D3D;
-  --bl-border:    #141414;
-  --bl-divider:   #3A3A3A;
+  --bl-bg:        #08080f;
+  --bl-panel:     #0e0e1c;
+  --bl-header:    #0a0a16;
+  --bl-input:     #060610;
+  --bl-surface:   #13132a;
+  --bl-elevated:  #18183a;
+  --bl-border:    #1e1a3c;
+  --bl-divider:   #26224e;
 
-  --bl-text:      #C8C8C8;
-  --bl-text-dim:  #888888;
-  --bl-text-mute: #555555;
+  --bl-text:      #ddd8f8;
+  --bl-text-dim:  #8878c0;
+  --bl-text-mute: #42386a;
 
-  --bl-orange:    #F07020;
-  --bl-yellow:    #C49C00;
-  --bl-green:     #4AA94A;
-  --bl-red:       #D04040;
-  --bl-blue:      #4488CC;
-  --bl-teal:      #3A9090;
+  --bl-orange:    #a855f7;
+  --bl-yellow:    #9333ea;
+  --bl-green:     #4ade80;
+  --bl-red:       #f87171;
+  --bl-blue:      #818cf8;
+  --bl-teal:      #a78bfa;
 
-  /* node header tones */
-  --nh-event:    #1E4030;
-  --nh-channel:  #162040;
-  --nh-client:   #2A1840;
-  --nh-emoji:    #3A2800;
-  --nh-guild:    #0A2A1A;
-  --nh-member:   #1A2840;
-  --nh-role:     #3A1018;
-  --nh-command:  #1E2E46;
-  --nh-action:   #3A4A1A;
-  --nh-cond:     #4A3010;
+  /* node header tones — all deep purple family */
+  --nh-event:    #1a0d40;
+  --nh-channel:  #0f1245;
+  --nh-client:   #200a42;
+  --nh-emoji:    #2a0a45;
+  --nh-guild:    #0a1838;
+  --nh-member:   #0d1050;
+  --nh-role:     #280838;
+  --nh-command:  #0a0c30;
+  --nh-action:   #0c1a10;
+  --nh-cond:     #1e0808;
 
-  --select-col: #F07020;
+  --select-col: #a855f7;
 
   --toolbar-h: 28px;
   --npanel-w:  240px;
