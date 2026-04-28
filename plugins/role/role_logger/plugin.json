@@ -1,0 +1,17 @@
+{
+  "name": "Role Logger",
+  "version": "1.0.0",
+  "description": "Logs role create/delete/update events to the system channel",
+  "author": "Akashsuu",
+  "icon": "🎭",
+  "nodeConfig": {
+    "label": "Role Logger",
+    "icon": "🎭",
+    "color": "#3A1018",
+    "hasInput": true,
+    "hasOutput": false,
+    "defaults": {
+      "output": "🎭 Role **{role}** was created in {server}!"
+    }
+  }
+}
