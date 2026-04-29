@@ -1,0 +1,22 @@
+{
+  "name": "Set Type",
+  "version": "1.0.0",
+  "description": "Converts a channel type by cloning",
+  "author": "Akashsuu",
+  "icon": "🔄",
+  "nodeConfig": {
+    "label": "Set Type",
+    "icon": "🔄",
+    "color": "#3A5A4A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "channelId": "",
+      "type": "text",
+      "deleteOriginal": false,
+      "message": "🔄 Converted {old} → {new}",
+      "useEmbed": true,
+      "color": "#57F287"
+    }
+  }
+}
