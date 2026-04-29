@@ -1,0 +1,17 @@
+{
+  "name": "Is Sendable",
+  "version": "1.0.0",
+  "description": "Checks if a channel is sendable",
+  "author": "Akashsuu",
+  "icon": "📤",
+  "nodeConfig": {
+    "label": "Is Sendable",
+    "icon": "📤",
+    "color": "#2A3A4A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "source": "message"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Is DM Based",
+  "version": "1.0.0",
+  "description": "Checks if message is from DM or server",
+  "author": "Akashsuu",
+  "icon": "📩",
+  "nodeConfig": {
+    "label": "Is DM Based",
+    "icon": "📩",
+    "color": "#3A2A4A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "mode": "dm"
+    }
+  }
+}

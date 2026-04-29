@@ -1,0 +1,21 @@
+{
+  "name": "Set Auto Archive",
+  "version": "1.0.0",
+  "description": "Sets default auto archive duration for threads",
+  "author": "Akashsuu",
+  "icon": "🗄️",
+  "nodeConfig": {
+    "label": "Set Auto Archive",
+    "icon": "🗄️",
+    "color": "#3A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "channelId": "",
+      "duration": "1440",
+      "message": "🗄️ Auto archive set to {duration} minutes for {channel}",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}

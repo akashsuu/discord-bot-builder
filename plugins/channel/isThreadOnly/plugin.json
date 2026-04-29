@@ -1,0 +1,17 @@
+{
+  "name": "Is Thread Only",
+  "version": "1.0.0",
+  "description": "Allows execution only if channel is a thread",
+  "author": "Akashsuu",
+  "icon": "🧵",
+  "nodeConfig": {
+    "label": "Thread Only",
+    "icon": "🧵",
+    "color": "#4A2A2A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "strict": true
+    }
+  }
+}

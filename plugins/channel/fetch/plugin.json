@@ -1,0 +1,21 @@
+{
+  "name": "Fetch Channel",
+  "version": "1.0.0",
+  "description": "Fetches a channel by ID or current context",
+  "author": "Akashsuu",
+  "icon": "📡",
+  "nodeConfig": {
+    "label": "Fetch Channel",
+    "icon": "📡",
+    "color": "#2A5A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "channelId": "",
+      "saveAs": "channel",
+      "output": "📡 Fetched channel: {channel}",
+      "useEmbed": true,
+      "color": "#3498db"
+    }
+  }
+}

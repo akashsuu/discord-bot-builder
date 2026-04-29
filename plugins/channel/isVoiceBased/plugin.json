@@ -1,0 +1,17 @@
+{
+  "name": "Is Voice Based",
+  "version": "1.0.0",
+  "description": "Checks if the channel is voice-based",
+  "author": "Akashsuu",
+  "icon": "🔊",
+  "nodeConfig": {
+    "label": "Is Voice Based",
+    "icon": "🔊",
+    "color": "#2A3A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "source": "auto"
+    }
+  }
+}
