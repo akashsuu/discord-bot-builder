@@ -1,0 +1,22 @@
+{
+  "name": "Value Of",
+  "version": "1.0.0",
+  "description": "Gets a value from context",
+  "author": "Akashsuu",
+  "icon": "📦",
+  "nodeConfig": {
+    "label": "Value Of",
+    "icon": "📦",
+    "color": "#2A5A3A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "key": "",
+      "path": "",
+      "saveAs": "value",
+      "output": "{value}",
+      "useEmbed": false,
+      "color": "#57F287"
+    }
+  }
+}
