@@ -1,0 +1,23 @@
+{
+  "name": "Channel Constructor",
+  "version": "1.0.0",
+  "description": "Creates a new channel with custom settings",
+  "author": "Akashsuu",
+  "icon": "🏗️",
+  "nodeConfig": {
+    "label": "Create Channel",
+    "icon": "🏗️",
+    "color": "#2A3A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "name": "new-channel",
+      "type": "text",
+      "categoryId": "",
+      "topic": "",
+      "sendMessage": "✅ Channel **{channel}** created!",
+      "useEmbed": true,
+      "color": "#57F287"
+    }
+  }
+}

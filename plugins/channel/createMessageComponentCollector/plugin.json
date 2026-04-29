@@ -1,0 +1,23 @@
+{
+  "name": "Component Collector",
+  "version": "1.0.0",
+  "description": "Collects button/select interactions over time",
+  "author": "Akashsuu",
+  "icon": "🧩",
+  "nodeConfig": {
+    "label": "Component Collector",
+    "icon": "🧩",
+    "color": "#4A2A3A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "customId": "",
+      "timeout": "15000",
+      "max": "5",
+      "reply": "",
+      "saveAs": "interactions",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}

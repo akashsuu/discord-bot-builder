@@ -1,0 +1,20 @@
+{
+  "name": "Created At",
+  "version": "1.0.0",
+  "description": "Shows creation date of user or channel",
+  "author": "Akashsuu",
+  "icon": "📅",
+  "nodeConfig": {
+    "label": "Created At",
+    "icon": "📅",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "target": "channel",
+      "output": "📅 {target} was created at: {date}",
+      "useEmbed": true,
+      "color": "#3498db"
+    }
+  }
+}

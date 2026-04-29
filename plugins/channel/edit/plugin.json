@@ -1,0 +1,25 @@
+{
+  "name": "Edit Channel",
+  "version": "1.0.0",
+  "description": "Edits channel settings",
+  "author": "Akashsuu",
+  "icon": "✏️",
+  "nodeConfig": {
+    "label": "Edit Channel",
+    "icon": "✏️",
+    "color": "#2A3A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "channelId": "",
+      "name": "",
+      "topic": "",
+      "slowmode": "",
+      "nsfw": "",
+      "categoryId": "",
+      "message": "✏️ Channel updated: {channel}",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}

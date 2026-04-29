@@ -1,0 +1,22 @@
+{
+  "name": "Message Collector",
+  "version": "1.0.0",
+  "description": "Collects messages over time from a user",
+  "author": "Akashsuu",
+  "icon": "📥",
+  "nodeConfig": {
+    "label": "Message Collector",
+    "icon": "📥",
+    "color": "#3A4A2A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "timeout": "15000",
+      "max": "5",
+      "prompt": "Send messages...",
+      "saveAs": "messages",
+      "useEmbed": true,
+      "color": "#57F287"
+    }
+  }
+}
