@@ -1,0 +1,19 @@
+{
+  "name": "Await Component",
+  "version": "1.0.0",
+  "description": "Waits for a button or select menu interaction",
+  "author": "Akashsuu",
+  "icon": "🧩",
+  "nodeConfig": {
+    "label": "Await Component",
+    "icon": "🧩",
+    "color": "#2A2E4A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "customId": "btn_1",
+      "timeout": "15000",
+      "reply": "Button clicked!"
+    }
+  }
+}
