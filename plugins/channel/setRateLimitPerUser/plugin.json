@@ -1,0 +1,21 @@
+{
+  "name": "Set Slowmode",
+  "version": "1.0.0",
+  "description": "Sets slowmode (rate limit per user)",
+  "author": "Akashsuu",
+  "icon": "⏱️",
+  "nodeConfig": {
+    "label": "Set Slowmode",
+    "icon": "⏱️",
+    "color": "#3A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "channelId": "",
+      "seconds": "5",
+      "message": "⏱️ Slowmode set to {seconds}s in {channel}",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}

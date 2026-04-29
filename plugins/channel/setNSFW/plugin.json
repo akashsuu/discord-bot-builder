@@ -1,0 +1,21 @@
+{
+  "name": "Set NSFW",
+  "version": "1.0.0",
+  "description": "Enable or disable NSFW on a channel",
+  "author": "Akashsuu",
+  "icon": "🔞",
+  "nodeConfig": {
+    "label": "Set NSFW",
+    "icon": "🔞",
+    "color": "#5A2A3A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "channelId": "",
+      "nsfw": true,
+      "message": "🔞 NSFW set to **{nsfw}** for {channel}",
+      "useEmbed": true,
+      "color": "#ED4245"
+    }
+  }
+}

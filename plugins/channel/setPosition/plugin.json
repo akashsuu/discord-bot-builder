@@ -1,0 +1,22 @@
+{
+  "name": "Set Position",
+  "version": "1.0.0",
+  "description": "Sets the position of a channel",
+  "author": "Akashsuu",
+  "icon": "📶",
+  "nodeConfig": {
+    "label": "Set Position",
+    "icon": "📶",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "channelId": "",
+      "position": "0",
+      "relative": false,
+      "message": "📶 Moved {channel} to position {position}",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}
