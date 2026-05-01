@@ -1,0 +1,21 @@
+{
+  "name": "Fetch Sticker",
+  "version": "1.0.0",
+  "description": "Fetches a sticker by ID",
+  "author": "Akashsuu",
+  "icon": "🧷",
+  "nodeConfig": {
+    "label": "Fetch Sticker",
+    "icon": "🧷",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "stickerId": "",
+      "saveAs": "sticker",
+      "output": "🧷 {name} | {type}",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}
