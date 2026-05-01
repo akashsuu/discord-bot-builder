@@ -1,0 +1,19 @@
+{
+  "name": "Add Listener",
+  "version": "1.0.0",
+  "description": "Adds a client event listener",
+  "author": "Akashsuu",
+  "icon": "🎧",
+  "nodeConfig": {
+    "label": "Add Listener",
+    "icon": "🎧",
+    "color": "#2A3A5A",
+    "hasInput": false,
+    "hasOutput": true,
+    "defaults": {
+      "event": "messageCreate",
+      "once": false,
+      "saveAs": "eventData"
+    }
+  }
+}
