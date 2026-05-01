@@ -1,0 +1,18 @@
+{
+  "name": "Once Event",
+  "version": "1.0.0",
+  "description": "Triggers only once on a client event",
+  "author": "Akashsuu",
+  "icon": "1️⃣",
+  "nodeConfig": {
+    "label": "Once",
+    "icon": "1️⃣",
+    "color": "#3A5A4A",
+    "hasInput": false,
+    "hasOutput": true,
+    "defaults": {
+      "event": "ready",
+      "saveAs": "event"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "On Event",
+  "version": "1.0.0",
+  "description": "Triggers flow on a client event",
+  "author": "Akashsuu",
+  "icon": "⚡",
+  "nodeConfig": {
+    "label": "On Event",
+    "icon": "⚡",
+    "color": "#2A3A5A",
+    "hasInput": false,
+    "hasOutput": true,
+    "defaults": {
+      "event": "messageCreate",
+      "once": false,
+      "saveAs": "event"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Client Login",
+  "version": "1.0.0",
+  "description": "Logs the Discord client in",
+  "author": "Akashsuu",
+  "icon": "🔐",
+  "nodeConfig": {
+    "label": "Login",
+    "icon": "🔐",
+    "color": "#2A5A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "token": "",
+      "useEnv": false
+    }
+  }
+}

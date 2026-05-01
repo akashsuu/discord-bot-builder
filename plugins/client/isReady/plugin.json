@@ -1,0 +1,15 @@
+{
+  "name": "Is Ready",
+  "version": "1.0.0",
+  "description": "Checks if the client is ready",
+  "author": "Akashsuu",
+  "icon": "🟢",
+  "nodeConfig": {
+    "label": "Is Ready",
+    "icon": "🟢",
+    "color": "#2A5A4A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {}
+  }
+}

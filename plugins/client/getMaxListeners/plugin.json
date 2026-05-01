@@ -1,0 +1,20 @@
+{
+  "name": "Get Max Listeners",
+  "version": "1.0.0",
+  "description": "Gets max listeners of the client",
+  "author": "Akashsuu",
+  "icon": "🎧",
+  "nodeConfig": {
+    "label": "Get Max Listeners",
+    "icon": "🎧",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "saveAs": "maxListeners",
+      "output": "🎧 Max listeners: {value}",
+      "useEmbed": false,
+      "color": "#5865F2"
+    }
+  }
+}

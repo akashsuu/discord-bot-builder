@@ -1,0 +1,20 @@
+{
+  "name": "Fetch Voice Regions",
+  "version": "1.0.0",
+  "description": "Fetches available voice regions",
+  "author": "Akashsuu",
+  "icon": "🌍",
+  "nodeConfig": {
+    "label": "Fetch Voice Regions",
+    "icon": "🌍",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "saveAs": "voiceRegions",
+      "output": "🌍 Found {count} regions",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}

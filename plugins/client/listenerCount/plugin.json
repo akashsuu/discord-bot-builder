@@ -1,0 +1,21 @@
+{
+  "name": "Listener Count",
+  "version": "1.0.0",
+  "description": "Gets number of listeners for an event",
+  "author": "Akashsuu",
+  "icon": "🎧",
+  "nodeConfig": {
+    "label": "Listener Count",
+    "icon": "🎧",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "event": "messageCreate",
+      "saveAs": "listenerCount",
+      "output": "🎧 {event}: {count} listeners",
+      "useEmbed": false,
+      "color": "#5865F2"
+    }
+  }
+}

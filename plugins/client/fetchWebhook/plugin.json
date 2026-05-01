@@ -1,0 +1,22 @@
+{
+  "name": "Fetch Webhook (Client)",
+  "version": "1.0.0",
+  "description": "Fetches a webhook using client",
+  "author": "Akashsuu",
+  "icon": "🪝",
+  "nodeConfig": {
+    "label": "Fetch Webhook",
+    "icon": "🪝",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "webhookId": "",
+      "webhookToken": "",
+      "saveAs": "webhook",
+      "output": "🪝 {name} | Channel: {channel}",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}

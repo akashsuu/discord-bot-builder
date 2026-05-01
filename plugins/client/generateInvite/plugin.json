@@ -1,0 +1,25 @@
+{
+  "name": "Create Invite",
+  "version": "1.0.0",
+  "description": "Generates an invite link for a channel",
+  "author": "Akashsuu",
+  "icon": "🔗",
+  "nodeConfig": {
+    "label": "Generate Invite",
+    "icon": "🔗",
+    "color": "#2A5A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "channelId": "",
+      "maxUses": "0",
+      "maxAge": "0",
+      "temporary": false,
+      "unique": true,
+      "saveAs": "invite",
+      "output": "🔗 Invite: {url}",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}

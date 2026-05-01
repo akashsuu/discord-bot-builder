@@ -1,0 +1,21 @@
+{
+  "name": "Remove Listener (Single)",
+  "version": "1.0.0",
+  "description": "Removes a specific event listener",
+  "author": "Akashsuu",
+  "icon": "🧯",
+  "nodeConfig": {
+    "label": "Remove Listener",
+    "icon": "🧯",
+    "color": "#5A2A2A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "event": "messageCreate",
+      "listenerKey": "listenerRef",
+      "message": "🧯 Listener removed",
+      "useEmbed": false,
+      "color": "#ED4245"
+    }
+  }
+}
