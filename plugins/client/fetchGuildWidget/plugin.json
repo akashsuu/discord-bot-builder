@@ -1,0 +1,21 @@
+{
+  "name": "Fetch Guild Widget",
+  "version": "1.0.0",
+  "description": "Fetches guild widget data",
+  "author": "Akashsuu",
+  "icon": "📡",
+  "nodeConfig": {
+    "label": "Fetch Widget",
+    "icon": "📡",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "guildId": "",
+      "saveAs": "guildWidget",
+      "output": "📡 {name} | Online: {online}",
+      "useEmbed": true,
+      "color": "#5865F2"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Fetch Invite (Client)",
+  "version": "1.0.0",
+  "description": "Fetches an invite using client",
+  "author": "Akashsuu",
+  "icon": "🔗",
+  "nodeConfig": {
+    "label": "Fetch Invite",
+    "icon": "🔗",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "invite": "",
+      "saveAs": "inviteData",
+      "output": "🔗 {code} | {guild}",
+      "useEmbed": false,
+      "color": "#5865F2"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Client Constructor",
+  "version": "1.0.0",
+  "description": "Creates and logs in the Discord client",
+  "author": "Akashsuu",
+  "icon": "🤖",
+  "nodeConfig": {
+    "label": "Client Constructor",
+    "icon": "🤖",
+    "color": "#2A5A5A",
+    "hasInput": false,
+    "hasOutput": true,
+    "defaults": {
+      "token": "",
+      "intents": [
+        "Guilds",
+        "GuildMessages",
+        "MessageContent"
+      ]
+    }
+  }
+}

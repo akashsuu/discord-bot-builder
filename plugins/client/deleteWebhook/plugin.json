@@ -1,0 +1,20 @@
+{
+  "name": "Delete Webhook",
+  "version": "1.0.0",
+  "description": "Deletes a webhook",
+  "author": "Akashsuu",
+  "icon": "🗑️",
+  "nodeConfig": {
+    "label": "Delete Webhook",
+    "icon": "🗑️",
+    "color": "#5A2A2A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "webhookId": "",
+      "message": "🗑️ Webhook deleted successfully",
+      "useEmbed": true,
+      "color": "#ED4245"
+    }
+  }
+}
