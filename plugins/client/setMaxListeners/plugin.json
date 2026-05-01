@@ -1,0 +1,20 @@
+{
+  "name": "Set Max Listeners",
+  "version": "1.0.0",
+  "description": "Sets max listener limit",
+  "author": "Akashsuu",
+  "icon": "🎚️",
+  "nodeConfig": {
+    "label": "Set Max Listeners",
+    "icon": "🎚️",
+    "color": "#2A4A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "value": "20",
+      "message": "🎚️ Max listeners set to {value}",
+      "useEmbed": false,
+      "color": "#5865F2"
+    }
+  }
+}
