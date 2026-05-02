@@ -1,0 +1,22 @@
+{
+  "name": "To JSON",
+  "version": "1.0.0",
+  "description": "Converts data to JSON string",
+  "author": "Akashsuu",
+  "icon": "🧾",
+  "nodeConfig": {
+    "label": "To JSON",
+    "icon": "🧾",
+    "color": "#2A5A5A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "source": "message",
+      "saveAs": "json",
+      "pretty": true,
+      "output": "```json\n{json}\n```",
+      "useEmbed": false,
+      "color": "#5865F2"
+    }
+  }
+}
