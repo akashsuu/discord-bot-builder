@@ -1,0 +1,18 @@
+{
+  "name": "Emoji Constructor",
+  "version": "1.0.0",
+  "description": "Creates an emoji object",
+  "author": "Akashsuu",
+  "icon": "😀",
+  "nodeConfig": {
+    "label": "Emoji Constructor",
+    "icon": "😀",
+    "color": "#F39C12",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "emoji": "👍",
+      "saveAs": "emoji"
+    }
+  }
+}
