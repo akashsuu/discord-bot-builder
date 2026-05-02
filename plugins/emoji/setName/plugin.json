@@ -1,0 +1,22 @@
+{
+  "name": "Emoji Set Name",
+  "version": "1.0.0",
+  "description": "Renames a guild emoji",
+  "author": "Akashsuu",
+  "icon": "🏷️",
+  "nodeConfig": {
+    "label": "Set Emoji Name",
+    "icon": "🏷️",
+    "color": "#5A3A2A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "emojiId": "",
+      "name": "",
+      "reason": "Renamed via bot",
+      "message": "🏷️ Emoji renamed to {name}",
+      "useEmbed": true,
+      "color": "#FAA61A"
+    }
+  }
+}
