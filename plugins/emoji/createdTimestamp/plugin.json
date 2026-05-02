@@ -1,0 +1,21 @@
+{
+  "name": "Emoji Created Timestamp",
+  "version": "1.0.0",
+  "description": "Gets creation timestamp of a custom emoji",
+  "author": "Akashsuu",
+  "icon": "⏱️",
+  "nodeConfig": {
+    "label": "Emoji Timestamp",
+    "icon": "⏱️",
+    "color": "#F39C12",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "source": "ctx",
+      "saveAs": "emojiTimestamp",
+      "output": "⏱️ Timestamp: {value}",
+      "useEmbed": false,
+      "color": "#5865F2"
+    }
+  }
+}
