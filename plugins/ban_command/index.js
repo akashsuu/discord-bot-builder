@@ -6,14 +6,16 @@ module.exports = {
   nodes: {
     ban_command: {
 
-      async execute(node, message) {
+      async execute(node, message, ctx) {
         // Ignore bots
         if (message.author.bot) return false;
 
         // Ignore DMs
         if (!message.guild) return false;
 
-        const cmd = (node.data.command || "!ban").trim();
+        const prefix = ctx?.prefix || '';
+        const rawCmd = (node.data.command || 'ban').trim();
+        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
 
         // Command match
         if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) {

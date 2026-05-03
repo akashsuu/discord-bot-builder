@@ -12,8 +12,8 @@ module.exports = {
 
         const template = node.data.output || '👋 Welcome **{member}** to the server! You are member #{count}.';
         const text = template
-          .replace(/\{member\}/g, member.user.username)
-          .replace(/\{tag\}/g,    member.user.tag)
+          .replace(/\{member\}/g, member.user?.username || 'Unknown')
+          .replace(/\{tag\}/g,    member.user?.tag      || 'Unknown')
           .replace(/\{count\}/g,  member.guild.memberCount);
 
         if (node.data.embedEnabled) {
@@ -33,8 +33,8 @@ module.exports = {
 const _welChan = member.guild?.systemChannel;
 if (_welChan) {
   const _msg = \`${tpl}\`
-    .replace(/\\{member\\}/g, member.user.username)
-    .replace(/\\{tag\\}/g,    member.user.tag)
+    .replace(/\\{member\\}/g, member.user?.username || 'Unknown')
+    .replace(/\\{tag\\}/g,    member.user?.tag      || 'Unknown')
     .replace(/\\{count\\}/g,  member.guild.memberCount);
   _welChan.send(_msg);
 }
