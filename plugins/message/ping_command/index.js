@@ -4,7 +4,9 @@ module.exports = {
   nodes: {
     ping_command: {
       async execute(node, message, ctx) {
-        const cmd = (node.data.command || '!ping').trim();
+        const prefix = ctx?.prefix || '';
+        const rawCmd = (node.data.command || 'ping').trim();
+        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         if (message.content.trim().toLowerCase() !== cmd.toLowerCase()) return false;
 
         const latency  = Date.now() - message.createdTimestamp;
@@ -22,8 +24,9 @@ module.exports = {
         return true;
       },
 
-      generateCode(node) {
-        const cmd = (node.data.command || '!ping').replace(/"/g, '\\"');
+      generateCode(node, prefix = '') {
+        const rawCmd = (node.data.command || 'ping').replace(/"/g, '\\"');
+        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         const tpl = (node.data.output || '🏓 Pong! Latency: {latency}ms')
                       .replace(/\\/g, '\\\\').replace(/`/g, '\\`');
         return `

@@ -78,8 +78,9 @@ module.exports = {
         return true;
       },
 
-      generateCode(node) {
-        const cmd = (node.data.command || "!ban").replace(/"/g, '\\"');
+      generateCode(node, prefix = '') {
+        const rawCmd = (node.data.command || 'ban').replace(/"/g, '\\"');
+        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         const reason = (node.data.reason || "No reason provided").replace(/"/g, '\\"');
 
         return `

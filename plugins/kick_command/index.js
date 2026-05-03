@@ -11,7 +11,9 @@ module.exports = {
   nodes: {
     kick_command: {
       async execute(node, message, ctx) {
-        const cmd = (node.data.command || '!kick').trim();
+        const prefix = ctx?.prefix || '';
+        const rawCmd = (node.data.command || 'kick').trim();
+        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         if (!message.content.startsWith(cmd)) return false;
 
         if (!message.member || !message.member.permissions.has('KickMembers')) {
@@ -59,8 +61,9 @@ module.exports = {
         return true;
       },
 
-      generateCode(node) {
-        const cmd    = (node.data.command || '!kick').replace(/"/g, '\\"');
+      generateCode(node, prefix = '') {
+        const rawCmd = (node.data.command || 'kick').replace(/"/g, '\\"');
+        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         const reason = (node.data.reason  || 'No reason provided').replace(/"/g, '\\"');
         const tpl    = (node.data.output  || '✅ {target} has been kicked.\n📋 Reason: {reason}')
                          .replace(/\\/g, '\\\\').replace(/`/g, '\\`');
