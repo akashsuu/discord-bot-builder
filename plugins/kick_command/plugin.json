@@ -11,7 +11,7 @@
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
-      "command": "!kick",
+      "command": "kick",
       "reason": "No reason provided",
       "output": "✅ {target} has been kicked.\n📋 Reason: {reason}"
     }

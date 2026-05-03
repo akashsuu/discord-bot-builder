@@ -89,10 +89,57 @@ export default function Toolbar({ nodes, edges }) {
         <button className="bl-btn" onClick={handleSave} title="Save (Ctrl+S)">{saveLabel}</button>
         <button className="bl-btn" onClick={handleExport} title="Export bot.js">📦 Export</button>
         <button className="bl-btn bl-btn-token" onClick={() => setTokenModal(true)} title="Bot Token">🔑 Token</button>
+        <button className="bl-btn" onClick={() => setPrefixModal(true)} title="Global command prefix">⚙ Prefix{projectData?.prefix ? ` (${projectData.prefix})` : ''}</button>
       </div>
 
-      {tokenModal && <TokenModal onClose={() => setTokenModal(false)} />}
+      {tokenModal  && <TokenModal  onClose={() => setTokenModal(false)}  />}
+      {prefixModal && <PrefixModal onClose={() => setPrefixModal(false)} />}
     </>
+  );
+}
+
+function PrefixModal({ onClose }) {
+  const { projectData, projectPath, updateProject } = useProject();
+  const [prefix, setPrefix] = useState(projectData?.prefix ?? '!');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const updated = { ...projectData, prefix: prefix.trim() };
+    await window.electronAPI.saveProject({ projectPath, projectData: updated });
+    updateProject({ prefix: prefix.trim() });
+    setSaving(false);
+    onClose();
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+        <h3 className="modal-title">⚙ Command Prefix</h3>
+        <p className="modal-desc">
+          A global prefix prepended to all command names (e.g. <code>!</code> turns <code>ping</code> into <code>!ping</code>).
+          Leave blank to use full command strings per node.
+        </p>
+        <div className="token-row">
+          <input
+            className="modal-input"
+            type="text"
+            value={prefix}
+            onChange={(e) => setPrefix(e.target.value)}
+            placeholder="e.g. ! or ? or $"
+            spellCheck={false}
+            autoFocus
+            maxLength={8}
+          />
+        </div>
+        <div className="modal-actions">
+          <button className="btn-ghost" onClick={onClose}>Cancel</button>
+          <button className="btn-primary" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving…' : 'Save Prefix'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
