@@ -7,9 +7,10 @@ function serializeNodes(nodes) {
 
 export default function Toolbar({ nodes, edges }) {
   const { projectData, projectPath, updateProject, botRunning, addLog } = useProject();
-  const [tokenModal, setTokenModal] = useState(false);
-  const [saveState, setSaveState] = useState('idle');
-  const [runLoading, setRunLoading] = useState(false);
+  const [tokenModal, setTokenModal]   = useState(false);
+  const [prefixModal, setPrefixModal] = useState(false);
+  const [saveState, setSaveState]     = useState('idle');
+  const [runLoading, setRunLoading]   = useState(false);
 
   const payload = useCallback(() => ({
     ...projectData,

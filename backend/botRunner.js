@@ -67,8 +67,9 @@ function buildEmbed(data, text) {
 // ─── Context passed to every plugin execute() as 3rd argument ─────────────────
 // eventType: the Discord event name, e.g. 'messageCreate', 'channelCreate'
 // eventData: the primary Discord object for this event
-function makePluginCtx(eventType, eventData) {
+function makePluginCtx(eventType, eventData, prefix) {
   return {
+    prefix: prefix || '',
     sendEmbed: async (message, data, text) => {
       // message is passed explicitly by plugins for backward compat
       const chan = message?.channel;
@@ -97,16 +98,16 @@ function getOutputNodes(nodeId, nodes, edges, handleId) {
 // ─── Execute a single node ─────────────────────────────────────────────────────
 // eventObj: the raw Discord object for the triggering event
 // eventType: Discord event name (e.g. 'messageCreate', 'channelCreate')
-async function executeNode(node, nodes, edges, eventObj, plugins, log, eventType) {
+async function executeNode(node, nodes, edges, eventObj, plugins, log, eventType, prefix) {
   log(`[Engine] ${node.type} → id:${node.id}`);
 
   // Plugin nodes take priority
   const plugin = plugins[node.type];
   if (plugin && typeof plugin.execute === 'function') {
-    const cont = await plugin.execute(node, eventObj, makePluginCtx(eventType, eventObj));
+    const cont = await plugin.execute(node, eventObj, makePluginCtx(eventType, eventObj, prefix));
     if (cont) {
       for (const next of getOutputNodes(node.id, nodes, edges)) {
-        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType);
+        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType, prefix);
       }
     }
     return;
@@ -122,13 +123,14 @@ async function executeNode(node, nodes, edges, eventObj, plugins, log, eventType
     case 'event_member':
     case 'event_role': {
       for (const next of getOutputNodes(node.id, nodes, edges)) {
-        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType);
+        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType, prefix);
       }
       break;
     }
 
     case 'custom_command': {
-      const cmd     = (node.data.command || '').trim();
+      const rawCmd  = (node.data.command || '').trim();
+      const cmd     = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
       const content = eventObj?.content || '';
       if (!cmd || !content.startsWith(cmd)) return;
 
@@ -142,7 +144,7 @@ async function executeNode(node, nodes, edges, eventObj, plugins, log, eventType
         }
       }
       for (const next of getOutputNodes(node.id, nodes, edges)) {
-        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType);
+        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType, prefix);
       }
       break;
     }
@@ -159,7 +161,7 @@ async function executeNode(node, nodes, edges, eventObj, plugins, log, eventType
         }
       }
       for (const next of getOutputNodes(node.id, nodes, edges)) {
-        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType);
+        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType, prefix);
       }
       break;
     }
@@ -176,7 +178,7 @@ async function executeNode(node, nodes, edges, eventObj, plugins, log, eventType
       }
       const branch = result ? 'true' : 'false';
       for (const next of getOutputNodes(node.id, nodes, edges, branch)) {
-        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType);
+        await executeNode(next, nodes, edges, eventObj, plugins, log, eventType, prefix);
       }
       break;
     }
@@ -193,7 +195,8 @@ async function start(projectData, plugins = {}, log = console.log, onInfo = () =
     return;
   }
 
-  const { nodes = [], edges = [], token } = projectData;
+  const { nodes = [], edges = [], token, prefix: rawPrefix = '' } = projectData;
+  const prefix = rawPrefix.trim();
 
   if (!token || !token.trim()) {
     throw new Error('Bot token is missing. Add it via the Token button.');
@@ -216,7 +219,7 @@ async function start(projectData, plugins = {}, log = console.log, onInfo = () =
     const eventNodes = nodes.filter((n) => n.type === 'event_message');
     for (const evNode of eventNodes) {
       try {
-        await executeNode(evNode, nodes, edges, message, plugins, log, 'messageCreate');
+        await executeNode(evNode, nodes, edges, message, plugins, log, 'messageCreate', prefix);
       } catch (err) {
         log(`[Error] ${err.message}`);
       }
@@ -235,7 +238,7 @@ async function start(projectData, plugins = {}, log = console.log, onInfo = () =
       );
       for (const evNode of matchingNodes) {
         try {
-          await executeNode(evNode, nodes, edges, eventData, plugins, log, discordEvent);
+          await executeNode(evNode, nodes, edges, eventData, plugins, log, discordEvent, prefix);
         } catch (err) {
           log(`[Error] ${err.message}`);
         }
