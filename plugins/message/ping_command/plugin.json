@@ -11,7 +11,7 @@
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
-      "command": "!ping",
+      "command": "ping",
       "output": "🏓 Pong! Latency: {latency}ms"
     }
   }
