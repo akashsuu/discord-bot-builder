@@ -145,20 +145,24 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
 
   // Build the content shown inside the fixed submenu panel
   const buildSubContent = (key) => {
-    if (key in EVENT_SUBMENU_MAP) {
-      const folderCat    = EVENT_SUBMENU_MAP[key];
-      const p            = palette.find((x) => x.type === key);
-      const folderPlugins = (pluginMeta || []).filter((x) => x.category === folderCat);
+    const catDef = CATEGORY_LIST.find((c) => c.key === key);
+    if (catDef) {
+      const eventNode    = catDef.eventType ? palette.find((x) => x.type === catDef.eventType) : null;
+      const folderPlugins = (pluginMeta || []).filter((x) => x.category === key);
       return (
         <>
-          <div className="bl-ctx-sub-section">Event Node</div>
-          <div className="bl-ctx-item" onMouseDown={() => { onAdd(key); onClose(); }}>
-            <span className="bl-ctx-item-dot" style={{ background: p?.color }} />
-            {p?.label}
-          </div>
+          {eventNode && (
+            <>
+              <div className="bl-ctx-sub-section">Event Node</div>
+              <div className="bl-ctx-item" onMouseDown={() => { onAdd(catDef.eventType); onClose(); }}>
+                <span className="bl-ctx-item-dot" style={{ background: eventNode.color }} />
+                {eventNode.label}
+              </div>
+            </>
+          )}
           {folderPlugins.length > 0 ? (
             <>
-              <div className="bl-ctx-divider" />
+              {eventNode && <div className="bl-ctx-divider" />}
               <div className="bl-ctx-sub-section">Plugins</div>
               {folderPlugins.map((pl) => (
                 <div key={pl.type} className="bl-ctx-item" onMouseDown={() => { onAdd(pl.type); onClose(); }}>
@@ -168,11 +172,12 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
               ))}
             </>
           ) : (
-            <div className="bl-ctx-sub-empty">plugins/{folderCat}/</div>
+            !eventNode && <div className="bl-ctx-sub-empty">plugins/{key}/ — empty</div>
           )}
         </>
       );
     }
+    // Fallback: unknown extra category
     const group = extraPluginGroups.find(([label]) => label === key);
     if (group) {
       return group[1].map((p) => (
