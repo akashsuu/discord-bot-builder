@@ -1,0 +1,17 @@
+{
+  "name": "Verify",
+  "version": "1.0.0",
+  "description": "Grants the Verified role to a mentioned member.",
+  "author": "Akashsuu",
+  "icon": "✔️",
+  "nodeConfig": {
+    "label": "Verify",
+    "icon": "✔️",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "verify"
+    }
+  }
+}

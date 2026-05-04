@@ -1,0 +1,17 @@
+{
+  "name": "Channel Mute",
+  "version": "1.0.0",
+  "description": "Prevents a mentioned member from sending messages in the current channel.",
+  "author": "Akashsuu",
+  "icon": "🔕",
+  "nodeConfig": {
+    "label": "Channel Mute",
+    "icon": "🔕",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "channelmute"
+    }
+  }
+}

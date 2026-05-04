@@ -1,0 +1,17 @@
+{
+  "name": "Whitelist",
+  "version": "1.0.0",
+  "description": "Removes a member from the blacklist.",
+  "author": "Akashsuu",
+  "icon": "✅",
+  "nodeConfig": {
+    "label": "Whitelist",
+    "icon": "✅",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "whitelist"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Channel Unmute",
+  "version": "1.0.0",
+  "description": "Removes the channel-level mute override for a mentioned member.",
+  "author": "Akashsuu",
+  "icon": "🔔",
+  "nodeConfig": {
+    "label": "Channel Unmute",
+    "icon": "🔔",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "channelunmute"
+    }
+  }
+}

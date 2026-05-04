@@ -1,0 +1,17 @@
+{
+  "name": "Anti Link",
+  "version": "1.0.0",
+  "description": "Deletes messages containing links. Toggle on/off with a command.",
+  "author": "Akashsuu",
+  "icon": "🔗",
+  "nodeConfig": {
+    "label": "Anti Link",
+    "icon": "🔗",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "antilink"
+    }
+  }
+}

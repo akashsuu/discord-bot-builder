@@ -1,0 +1,18 @@
+{
+  "name": "Anti Bad Word",
+  "version": "1.0.0",
+  "description": "Deletes messages containing configured bad words. Toggle on/off with a command.",
+  "author": "Akashsuu",
+  "icon": "🤬",
+  "nodeConfig": {
+    "label": "Anti Bad Word",
+    "icon": "🤬",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "antibadword",
+      "words": ""
+    }
+  }
+}

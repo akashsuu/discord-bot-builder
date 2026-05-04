@@ -1,0 +1,17 @@
+{
+  "name": "Blacklist",
+  "version": "1.0.0",
+  "description": "Blacklists a member — their messages will be auto-deleted.",
+  "author": "Akashsuu",
+  "icon": "🚫",
+  "nodeConfig": {
+    "label": "Blacklist",
+    "icon": "🚫",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "blacklist"
+    }
+  }
+}

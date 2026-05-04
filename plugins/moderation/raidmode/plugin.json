@@ -1,0 +1,17 @@
+{
+  "name": "Raid Mode",
+  "version": "1.0.0",
+  "description": "Toggles raid mode. When on, new members are kicked immediately.",
+  "author": "Akashsuu",
+  "icon": "🚧",
+  "nodeConfig": {
+    "label": "Raid Mode",
+    "icon": "🚧",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "raidmode"
+    }
+  }
+}
