@@ -83,13 +83,13 @@ function serialize(nodes) {
 
 // ── Event node types that get their own submenu column ───────────────────────
 const EVENT_SUBMENU_MAP = {
-  event_message: 'message',
-  event_channel: 'channel',
-  event_client:  'client',
-  event_emoji:   'emoji',
-  event_guild:   'guild',
-  event_member:  'member',
-  event_role:    'role',
+  event_message: 'games',
+  event_channel: 'utility',
+  event_client:  'music',
+  event_emoji:   'fun',
+  event_guild:   'moderation',
+  event_member:  'economy',
+  event_role:    'admin',
 };
 const EVENT_SUBMENU_CATS = new Set(Object.values(EVENT_SUBMENU_MAP));
 
