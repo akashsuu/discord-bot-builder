@@ -81,17 +81,25 @@ function serialize(nodes) {
   return nodes.map(({ id, type, position, data }) => ({ id, type, position, data }));
 }
 
-// ── Event node types that get their own submenu column ───────────────────────
-const EVENT_SUBMENU_MAP = {
-  event_message: 'games',
-  event_channel: 'utility',
-  event_client:  'music',
-  event_emoji:   'fun',
-  event_guild:   'moderation',
-  event_member:  'economy',
-  event_role:    'admin',
-};
-const EVENT_SUBMENU_CATS = new Set(Object.values(EVENT_SUBMENU_MAP));
+// ── Category definitions — all plugin folders shown in the right-click menu ──
+const CATEGORY_LIST = [
+  { key: 'moderation',   label: 'Moderation',   color: '#C0392B', eventType: 'event_guild'   },
+  { key: 'fun',          label: 'Fun',          color: '#F39C12', eventType: 'event_emoji'   },
+  { key: 'utility',      label: 'Utility',      color: '#2980B9', eventType: 'event_channel' },
+  { key: 'music',        label: 'Music',        color: '#8E44AD', eventType: 'event_client'  },
+  { key: 'economy',      label: 'Economy',      color: '#27AE60', eventType: 'event_member'  },
+  { key: 'games',        label: 'Games',        color: '#D35400', eventType: 'event_message' },
+  { key: 'admin',        label: 'Admin',        color: '#7F8C8D', eventType: 'event_role'    },
+  { key: 'info',         label: 'Info',         color: '#16A085', eventType: null            },
+  { key: 'ticketsystem', label: 'Ticket System',color: '#1ABC9C', eventType: null            },
+  { key: 'ai',           label: 'AI',           color: '#3498DB', eventType: null            },
+];
+
+// Derived maps kept for botRunner / codeExporter compatibility
+const EVENT_SUBMENU_MAP = Object.fromEntries(
+  CATEGORY_LIST.filter((c) => c.eventType).map((c) => [c.eventType, c.key])
+);
+const EVENT_SUBMENU_CATS = new Set(CATEGORY_LIST.map((c) => c.key));
 
 // ── Right-click context menu ──────────────────────────────────────────────────
 function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
