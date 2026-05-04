@@ -1,0 +1,17 @@
+{
+  "name": "Purge",
+  "version": "1.0.0",
+  "description": "Purges a specified number of messages from the channel.",
+  "author": "Akashsuu",
+  "icon": "💨",
+  "nodeConfig": {
+    "label": "Purge",
+    "icon": "💨",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "purge"
+    }
+  }
+}

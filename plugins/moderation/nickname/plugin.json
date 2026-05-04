@@ -1,0 +1,17 @@
+{
+  "name": "Nickname",
+  "version": "1.0.0",
+  "description": "Changes the nickname of a mentioned member.",
+  "author": "Akashsuu",
+  "icon": "✏️",
+  "nodeConfig": {
+    "label": "Nickname",
+    "icon": "✏️",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "nickname"
+    }
+  }
+}

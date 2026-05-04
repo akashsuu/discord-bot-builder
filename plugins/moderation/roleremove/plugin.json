@@ -1,0 +1,17 @@
+{
+  "name": "Role Remove",
+  "version": "1.0.0",
+  "description": "Removes a mentioned role from a mentioned member.",
+  "author": "Akashsuu",
+  "icon": "➖",
+  "nodeConfig": {
+    "label": "Role Remove",
+    "icon": "➖",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "roleremove"
+    }
+  }
+}
