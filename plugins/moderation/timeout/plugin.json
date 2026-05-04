@@ -1,0 +1,19 @@
+{
+  "name": "Timeout",
+  "version": "1.0.0",
+  "description": "Times out a member for a specified duration in minutes.",
+  "author": "Akashsuu",
+  "icon": "⏱️",
+  "nodeConfig": {
+    "label": "Timeout",
+    "icon": "⏱️",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "timeout",
+      "duration": 10,
+      "reason": "No reason provided"
+    }
+  }
+}

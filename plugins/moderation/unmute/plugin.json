@@ -1,0 +1,18 @@
+{
+  "name": "Unmute",
+  "version": "1.0.0",
+  "description": "Unmutes a member by removing the Muted role.",
+  "author": "Akashsuu",
+  "icon": "🔊",
+  "nodeConfig": {
+    "label": "Unmute",
+    "icon": "🔊",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "unmute",
+      "reason": "No reason provided"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Kick",
+  "version": "1.0.0",
+  "description": "Kicks a member from the server.",
+  "author": "Akashsuu",
+  "icon": "👢",
+  "nodeConfig": {
+    "label": "Kick",
+    "icon": "👢",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "kick",
+      "reason": "No reason provided"
+    }
+  }
+}

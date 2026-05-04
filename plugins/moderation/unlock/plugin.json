@@ -1,0 +1,17 @@
+{
+  "name": "Unlock",
+  "version": "1.0.0",
+  "description": "Unlocks the current channel by restoring @everyone send permissions.",
+  "author": "Akashsuu",
+  "icon": "🔓",
+  "nodeConfig": {
+    "label": "Unlock",
+    "icon": "🔓",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "unlock"
+    }
+  }
+}

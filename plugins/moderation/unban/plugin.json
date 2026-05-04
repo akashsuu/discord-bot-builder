@@ -1,0 +1,18 @@
+{
+  "name": "Unban",
+  "version": "1.0.0",
+  "description": "Unbans a user from the server by their user ID.",
+  "author": "Akashsuu",
+  "icon": "🔓",
+  "nodeConfig": {
+    "label": "Unban",
+    "icon": "🔓",
+    "color": "#C0392B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "unban",
+      "reason": "No reason provided"
+    }
+  }
+}
