@@ -225,19 +225,17 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
             <>
               {/* ── Events ── */}
               <div className="bl-ctx-cat">Events</div>
-              {Object.entries(EVENT_SUBMENU_MAP).map(([type]) => {
-                const p = palette.find((x) => x.type === type);
-                if (!p) return null;
-                const isActive = activeSub?.key === type;
+              {CATEGORY_LIST.map((cat) => {
+                const isActive = activeSub?.key === cat.key;
                 return (
                   <div
-                    key={type}
+                    key={cat.key}
                     className={`bl-ctx-item bl-ctx-item-sub${isActive ? ' bl-ctx-item-active' : ''}`}
-                    onMouseEnter={(e) => openSub(type, e.currentTarget)}
+                    onMouseEnter={(e) => openSub(cat.key, e.currentTarget)}
                     onMouseLeave={closeSub}
                   >
-                    <span className="bl-ctx-item-dot" style={{ background: p.color }} />
-                    <span style={{ flex: 1 }}>{p.label.replace(' Event', '')}</span>
+                    <span className="bl-ctx-item-dot" style={{ background: cat.color }} />
+                    <span style={{ flex: 1 }}>{cat.label}</span>
                     <span className="bl-ctx-arrow">▶</span>
                   </div>
                 );
