@@ -159,45 +159,10 @@ export default function PluginNode({ id, data, selected }) {
     }));
   }, [id, setNodes]);
 
-  // ── Pages updaters ────────────────────────────────────────────────────────
-  const updatePage = useCallback((index, key, val) => {
-    setNodes((ns) => ns.map((n) => {
-      if (n.id !== id) return n;
-      const pages = [...(n.data.pages || [])];
-      pages[index] = { ...pages[index], [key]: val };
-      return { ...n, data: { ...n.data, pages } };
-    }));
-  }, [id, setNodes]);
-
-  const addPage = useCallback(() => {
-    setNodes((ns) => ns.map((n) => {
-      if (n.id !== id) return n;
-      const pages = [...(n.data.pages || [])];
-      const num   = pages.length + 1;
-      pages.push({ id: `page${num}`, title: `Page ${num}`, content: '' });
-      return { ...n, data: { ...n.data, pages } };
-    }));
-  }, [id, setNodes]);
-
-  const removePage = useCallback((index) => {
-    setNodes((ns) => ns.map((n) => {
-      if (n.id !== id) return n;
-      const pages = (n.data.pages || []).filter((_, i) => i !== index);
-      return { ...n, data: { ...n.data, pages } };
-    }));
-    setPreviewPg((p) => Math.max(0, p - (p >= index ? 1 : 0)));
-  }, [id, setNodes]);
-
-  const movePage = useCallback((index, dir) => {
-    setNodes((ns) => ns.map((n) => {
-      if (n.id !== id) return n;
-      const pages  = [...(n.data.pages || [])];
-      const target = index + dir;
-      if (target < 0 || target >= pages.length) return n;
-      [pages[index], pages[target]] = [pages[target], pages[index]];
-      return { ...n, data: { ...n.data, pages } };
-    }));
-  }, [id, setNodes]);
+  // ── Pages: single immutable updater ─────────────────────────────────────
+  const updatePages = useCallback((pages) => {
+    update('pages', pages);
+  }, [update]);
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
@@ -341,111 +306,143 @@ export default function PluginNode({ id, data, selected }) {
               {/* Empty state */}
               {pgs.length === 0 && (
                 <div style={{ color: '#555', fontSize: 11, padding: '2px 0 4px', textAlign: 'center' }}>
-                  No pages yet — click + Add Page
+                  No pages yet
                 </div>
               )}
 
               {/* Page cards */}
               <div className="nowheel" style={{ maxHeight: 420, overflowY: 'auto' }}>
-              {pgs.map((page, i) => (
-                <div
-                  key={i}
-                  style={{
-                    background: '#16162A',
-                    border: `1px solid ${previewPg === i ? '#4A4A7A' : '#2A2A44'}`,
-                    borderRadius: 5,
-                    padding: '6px 7px',
-                    marginBottom: 5,
-                  }}
-                >
-                  {/* Card header: index, title input, reorder, remove */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginBottom: 5 }}>
-                    {/* Page number badge */}
-                    <span style={{
-                      background: previewPg === i ? '#3A3A6A' : '#1A1A2A',
-                      color: previewPg === i ? '#C8A0F0' : '#555',
-                      fontSize: 9, fontWeight: 700,
-                      padding: '1px 5px', borderRadius: 3,
-                      cursor: 'pointer', flexShrink: 0,
-                    }} onClick={() => setPreviewPg(i)} title="Preview this page">
-                      {i + 1}
-                    </span>
+                {(data.pages || []).map((page, i) => (
+                  <div
+                    key={page.id || i}
+                    style={{
+                      background: '#16162A',
+                      border: `1px solid ${previewPg === i ? '#4A4A7A' : '#2A2A44'}`,
+                      borderRadius: 5,
+                      padding: '6px 7px',
+                      marginBottom: 5,
+                    }}
+                  >
+                    {/* Card header: badge · title · ▲ · ▼ · ✕ */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginBottom: 5 }}>
 
-                    {/* Title input */}
-                    <input
-                      className="bl-node-input"
-                      value={page.title || ''}
-                      onChange={(e) => updatePage(i, 'title', e.target.value)}
+                      {/* Page number badge — click to set preview */}
+                      <span
+                        style={{
+                          background: previewPg === i ? '#3A3A6A' : '#1A1A2A',
+                          color: previewPg === i ? '#C8A0F0' : '#555',
+                          fontSize: 9, fontWeight: 700,
+                          padding: '1px 5px', borderRadius: 3,
+                          cursor: 'pointer', flexShrink: 0,
+                        }}
+                        onClick={() => setPreviewPg(i)}
+                        title="Preview this page"
+                      >
+                        {i + 1}
+                      </span>
+
+                      {/* Title input */}
+                      <input
+                        className="bl-node-input"
+                        value={page.title || ''}
+                        onChange={(e) => {
+                          const pages = [...data.pages];
+                          pages[i] = { ...pages[i], title: e.target.value };
+                          updatePages(pages);
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        placeholder="Page title…"
+                        spellCheck={false}
+                        style={{ flex: 1, minWidth: 0 }}
+                      />
+
+                      {/* Move up ▲ — disabled for first page */}
+                      <button
+                        disabled={i === 0}
+                        onClick={() => {
+                          const pages = [...data.pages];
+                          [pages[i - 1], pages[i]] = [pages[i], pages[i - 1]];
+                          updatePages(pages);
+                          setPreviewPg(i - 1);
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        title="Move up"
+                        style={{
+                          background: 'transparent', border: 'none',
+                          color: i === 0 ? '#2A2A2A' : '#666',
+                          cursor: i === 0 ? 'default' : 'pointer',
+                          padding: '0 2px', fontSize: 10,
+                        }}
+                      >▲</button>
+
+                      {/* Move down ▼ — disabled for last page */}
+                      <button
+                        disabled={i === pgs.length - 1}
+                        onClick={() => {
+                          const pages = [...data.pages];
+                          [pages[i], pages[i + 1]] = [pages[i + 1], pages[i]];
+                          updatePages(pages);
+                          setPreviewPg(i + 1);
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        title="Move down"
+                        style={{
+                          background: 'transparent', border: 'none',
+                          color: i === pgs.length - 1 ? '#2A2A2A' : '#666',
+                          cursor: i === pgs.length - 1 ? 'default' : 'pointer',
+                          padding: '0 2px', fontSize: 10,
+                        }}
+                      >▼</button>
+
+                      {/* Remove ✕ */}
+                      <button
+                        onClick={() => {
+                          const pages = data.pages.filter((_, idx) => idx !== i);
+                          updatePages(pages);
+                          setPreviewPg((p) => Math.max(0, p - (p >= i ? 1 : 0)));
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        title="Remove page"
+                        style={{
+                          background: '#3A1010', border: '1px solid #5A2020',
+                          color: '#FF7070', borderRadius: 3,
+                          cursor: 'pointer', padding: '1px 5px', fontSize: 10,
+                        }}
+                      >✕</button>
+                    </div>
+
+                    {/* Content textarea */}
+                    <textarea
+                      className="bl-node-textarea"
+                      value={page.content || ''}
+                      onChange={(e) => {
+                        const pages = [...data.pages];
+                        pages[i] = { ...pages[i], content: e.target.value };
+                        updatePages(pages);
+                      }}
                       onMouseDown={(e) => e.stopPropagation()}
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}
-                      placeholder="Page title…"
+                      onFocus={() => setPreviewPg(i)}
+                      placeholder={'Content… {user} {server} {date} {page} {totalPages}'}
                       spellCheck={false}
-                      style={{ flex: 1, minWidth: 0 }}
+                      rows={3}
+                      style={{ minHeight: 52, fontSize: 11 }}
                     />
-
-                    {/* Move up */}
-                    <button
-                      disabled={i === 0}
-                      onClick={() => movePage(i, -1)}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      title="Move up"
-                      style={{
-                        background: 'transparent', border: 'none',
-                        color: i === 0 ? '#2A2A2A' : '#666',
-                        cursor: i === 0 ? 'default' : 'pointer',
-                        padding: '0 2px', fontSize: 10,
-                      }}
-                    >▲</button>
-
-                    {/* Move down */}
-                    <button
-                      disabled={i === pgs.length - 1}
-                      onClick={() => movePage(i, 1)}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      title="Move down"
-                      style={{
-                        background: 'transparent', border: 'none',
-                        color: i === pgs.length - 1 ? '#2A2A2A' : '#666',
-                        cursor: i === pgs.length - 1 ? 'default' : 'pointer',
-                        padding: '0 2px', fontSize: 10,
-                      }}
-                    >▼</button>
-
-                    {/* Remove */}
-                    <button
-                      onClick={() => removePage(i)}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      title="Remove page"
-                      style={{
-                        background: '#3A1010', border: '1px solid #5A2020',
-                        color: '#FF7070', borderRadius: 3,
-                        cursor: 'pointer', padding: '1px 5px', fontSize: 10,
-                      }}
-                    >✕</button>
                   </div>
-
-                  {/* Content textarea */}
-                  <textarea
-                    className="bl-node-textarea"
-                    value={page.content || ''}
-                    onChange={(e) => updatePage(i, 'content', e.target.value)}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={(e) => e.stopPropagation()}
-                    onFocus={() => setPreviewPg(i)}
-                    placeholder={'Content… {user} {server} {date} {page} {totalPages}'}
-                    spellCheck={false}
-                    rows={3}
-                    style={{ minHeight: 52, fontSize: 11 }}
-                  />
-                </div>
-              ))}
+                ))}
               </div>
 
-              {/* Add page button */}
+              {/* Add Page button */}
               <button
-                onClick={addPage}
+                onClick={() => {
+                  const pages = [...(data.pages || [])];
+                  const num = pages.length + 1;
+                  pages.push({ id: `page_${num}_${Date.now()}`, title: `Page ${num}`, content: '' });
+                  updatePages(pages);
+                }}
                 onMouseDown={(e) => e.stopPropagation()}
                 style={{
                   width: '100%', background: '#1A2A1A',
@@ -457,10 +454,9 @@ export default function PluginNode({ id, data, selected }) {
                 + Add Page
               </button>
 
-              {/* ── Discord preview ──────────────────────────────────────── */}
+              {/* ── Inline Discord preview ──────────────────────────────── */}
               {pgs.length > 0 && (
                 <>
-                  {/* Page selector tabs */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 5 }}>
                     <span style={{ color: '#555', fontSize: 10, flexShrink: 0 }}>👁 Preview</span>
                     <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', flex: 1 }}>
@@ -483,12 +479,7 @@ export default function PluginNode({ id, data, selected }) {
                       ))}
                     </div>
                   </div>
-
-                  <DiscordPreviewInline
-                    pages={pgs}
-                    pageIdx={safePg}
-                    data={data}
-                  />
+                  <DiscordPreviewInline pages={pgs} pageIdx={safePg} data={data} />
                 </>
               )}
             </>
