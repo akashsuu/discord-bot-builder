@@ -298,150 +298,133 @@ export default function PluginNode({ id, data, selected }) {
             <>
               <div className="bl-node-divider" style={{ borderColor: '#2A2A4A' }} />
 
-              {/* Section heading + page count */}
-              <div className="bl-field">
-                <SectionHead color="#C8A0F0">📄 Pages ({pgs.length})</SectionHead>
-              </div>
-
-              {/* Empty state */}
-              {pgs.length === 0 && (
-                <div style={{ color: '#555', fontSize: 11, padding: '2px 0 4px', textAlign: 'center' }}>
-                  No pages yet
-                </div>
+              {/* SAFE ARRAY */}
+              {(!data.pages || data.pages.length === 0) && (
+                <p style={{ color: '#555', fontSize: 11, padding: '2px 0 4px', textAlign: 'center' }}>No pages yet</p>
               )}
 
-              {/* Page cards */}
               <div className="nowheel" style={{ maxHeight: 420, overflowY: 'auto' }}>
-                {(data.pages || []).map((page, i) => (
-                  <div
-                    key={page.id || i}
-                    style={{
-                      background: '#16162A',
-                      border: `1px solid ${previewPg === i ? '#4A4A7A' : '#2A2A44'}`,
-                      borderRadius: 5,
-                      padding: '6px 7px',
-                      marginBottom: 5,
-                    }}
-                  >
-                    {/* Card header: badge · title · ▲ · ▼ · ✕ */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginBottom: 5 }}>
+                {(data.pages || []).map((page, i) => {
+                  const pages = data.pages || [];
 
-                      {/* Page number badge — click to set preview */}
-                      <span
-                        style={{
-                          background: previewPg === i ? '#3A3A6A' : '#1A1A2A',
-                          color: previewPg === i ? '#C8A0F0' : '#555',
-                          fontSize: 9, fontWeight: 700,
-                          padding: '1px 5px', borderRadius: 3,
-                          cursor: 'pointer', flexShrink: 0,
-                        }}
-                        onClick={() => setPreviewPg(i)}
-                        title="Preview this page"
-                      >
-                        {i + 1}
-                      </span>
+                  return (
+                    <div key={page.id || i} style={{
+                      border: "1px solid #333",
+                      padding: "10px",
+                      marginBottom: "10px",
+                      borderRadius: "6px",
+                      background: '#16162A'
+                    }}>
 
-                      {/* Title input */}
+                      <strong style={{ display: 'block', marginBottom: 5, color: '#C8A0F0' }}>Page {i + 1}</strong>
+
+                      {/* TITLE */}
                       <input
                         className="bl-node-input"
-                        value={page.title || ''}
-                        onChange={(e) => {
-                          const pages = [...data.pages];
-                          pages[i] = { ...pages[i], title: e.target.value };
-                          updatePages(pages);
-                        }}
+                        value={page.title || ""}
+                        placeholder="Page Title"
                         onMouseDown={(e) => e.stopPropagation()}
                         onClick={(e) => e.stopPropagation()}
                         onKeyDown={(e) => e.stopPropagation()}
-                        placeholder="Page title…"
-                        spellCheck={false}
-                        style={{ flex: 1, minWidth: 0 }}
+                        onChange={(e) => {
+                          const newPages = [...pages];
+                          newPages[i] = { ...newPages[i], title: e.target.value };
+                          updatePages(newPages);
+                        }}
+                        style={{ width: '100%', marginBottom: 5 }}
                       />
 
-                      {/* Move up ▲ — disabled for first page */}
-                      <button
-                        disabled={i === 0}
-                        onClick={() => {
-                          const pages = [...data.pages];
-                          [pages[i - 1], pages[i]] = [pages[i], pages[i - 1]];
-                          updatePages(pages);
-                          setPreviewPg(i - 1);
-                        }}
+                      {/* CONTENT */}
+                      <textarea
+                        className="bl-node-textarea"
+                        value={page.content || ""}
+                        placeholder="Page Content"
                         onMouseDown={(e) => e.stopPropagation()}
-                        title="Move up"
-                        style={{
-                          background: 'transparent', border: 'none',
-                          color: i === 0 ? '#2A2A2A' : '#666',
-                          cursor: i === 0 ? 'default' : 'pointer',
-                          padding: '0 2px', fontSize: 10,
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        onFocus={() => setPreviewPg && setPreviewPg(i)}
+                        onChange={(e) => {
+                          const newPages = [...pages];
+                          newPages[i] = { ...newPages[i], content: e.target.value };
+                          updatePages(newPages);
                         }}
-                      >▲</button>
+                        style={{ width: '100%', minHeight: 52, marginBottom: 5 }}
+                      />
 
-                      {/* Move down ▼ — disabled for last page */}
-                      <button
-                        disabled={i === pgs.length - 1}
-                        onClick={() => {
-                          const pages = [...data.pages];
-                          [pages[i], pages[i + 1]] = [pages[i + 1], pages[i]];
-                          updatePages(pages);
-                          setPreviewPg(i + 1);
-                        }}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        title="Move down"
-                        style={{
-                          background: 'transparent', border: 'none',
-                          color: i === pgs.length - 1 ? '#2A2A2A' : '#666',
-                          cursor: i === pgs.length - 1 ? 'default' : 'pointer',
-                          padding: '0 2px', fontSize: 10,
-                        }}
-                      >▼</button>
+                      {/* ACTIONS */}
+                      <div style={{ marginTop: 5, display: 'flex', gap: 5 }}>
 
-                      {/* Remove ✕ */}
-                      <button
-                        onClick={() => {
-                          const pages = data.pages.filter((_, idx) => idx !== i);
-                          updatePages(pages);
-                          setPreviewPg((p) => Math.max(0, p - (p >= i ? 1 : 0)));
-                        }}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        title="Remove page"
-                        style={{
-                          background: '#3A1010', border: '1px solid #5A2020',
-                          color: '#FF7070', borderRadius: 3,
-                          cursor: 'pointer', padding: '1px 5px', fontSize: 10,
-                        }}
-                      >✕</button>
+                        <button
+                          disabled={i === 0}
+                          onClick={() => {
+                            if (i === 0) return;
+                            const newPages = [...pages];
+                            [newPages[i - 1], newPages[i]] = [newPages[i], newPages[i - 1]];
+                            updatePages(newPages);
+                            setPreviewPg(i - 1);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          style={{
+                            background: '#2A2A3A', border: '1px solid #4A4A5A', color: i === 0 ? '#555' : '#DCDDDE',
+                            padding: '2px 8px', borderRadius: 3, cursor: i === 0 ? 'default' : 'pointer'
+                          }}
+                        >
+                          ▲
+                        </button>
+
+                        <button
+                          disabled={i === pages.length - 1}
+                          onClick={() => {
+                            if (i === pages.length - 1) return;
+                            const newPages = [...pages];
+                            [newPages[i + 1], newPages[i]] = [newPages[i], newPages[i + 1]];
+                            updatePages(newPages);
+                            setPreviewPg(i + 1);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          style={{
+                            background: '#2A2A3A', border: '1px solid #4A4A5A', color: i === pages.length - 1 ? '#555' : '#DCDDDE',
+                            padding: '2px 8px', borderRadius: 3, cursor: i === pages.length - 1 ? 'default' : 'pointer'
+                          }}
+                        >
+                          ▼
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            const newPages = [...pages];
+                            newPages.splice(i, 1);
+                            updatePages(newPages);
+                            setPreviewPg((p) => Math.max(0, p - (p >= i ? 1 : 0)));
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          style={{
+                            background: '#3A1010', border: '1px solid #5A2020', color: '#FF7070',
+                            padding: '2px 8px', borderRadius: 3, cursor: 'pointer', marginLeft: 'auto'
+                          }}
+                        >
+                          ❌
+                        </button>
+
+                      </div>
                     </div>
-
-                    {/* Content textarea */}
-                    <textarea
-                      className="bl-node-textarea"
-                      value={page.content || ''}
-                      onChange={(e) => {
-                        const pages = [...data.pages];
-                        pages[i] = { ...pages[i], content: e.target.value };
-                        updatePages(pages);
-                      }}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
-                      onFocus={() => setPreviewPg(i)}
-                      placeholder={'Content… {user} {server} {date} {page} {totalPages}'}
-                      spellCheck={false}
-                      rows={3}
-                      style={{ minHeight: 52, fontSize: 11 }}
-                    />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
-              {/* Add Page button */}
+              {/* ADD PAGE */}
               <button
                 onClick={() => {
-                  const pages = [...(data.pages || [])];
-                  const num = pages.length + 1;
-                  pages.push({ id: `page_${num}_${Date.now()}`, title: `Page ${num}`, content: '' });
-                  updatePages(pages);
+                  const pages = data.pages || [];
+                  const newPages = [
+                    ...pages,
+                    {
+                      id: `page_${Date.now()}_${Math.random().toString(36).slice(2,5)}`,
+                      title: "New Page",
+                      content: ""
+                    }
+                  ];
+                  updatePages(newPages);
                 }}
                 onMouseDown={(e) => e.stopPropagation()}
                 style={{
@@ -451,7 +434,7 @@ export default function PluginNode({ id, data, selected }) {
                   padding: '5px 0', fontSize: 11, marginBottom: 6,
                 }}
               >
-                + Add Page
+                ➕ Add Page
               </button>
 
               {/* ── Inline Discord preview ──────────────────────────────── */}
