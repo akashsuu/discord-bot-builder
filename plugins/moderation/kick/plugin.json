@@ -1,0 +1,23 @@
+{
+  "name": "Kick",
+  "version": "2.0.0",
+  "description": "Kicks a mentioned member. Supports full template output, optional DM to kicked user, and embed.",
+  "author": "Akashsuu",
+  "icon": "👢",
+  "nodeConfig": {
+    "label": "Kick",
+    "icon": "👢",
+    "color": "#4A1E2A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "kick",
+      "reason": "No reason provided",
+      "output": "👢 **{target}** has been kicked by **{user}**.\n📋 Reason: {reason}",
+      "dmEnabled": false,
+      "dmMessage": "You have been kicked from **{server}**.\n📋 Reason: {reason}",
+      "embedEnabled": false,
+      "embedColor": "#C0392B"
+    }
+  }
+}
