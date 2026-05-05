@@ -376,10 +376,11 @@ function DiscordPreview({ node }) {
 
   // Keys that are never output text — skip them when searching for a preview string
   const PREVIEW_SKIP = new Set([
-    'embedColor', 'embedTitle', 'embedFooter',
+    'embedColor', 'embedTitle', 'embedFooter', 'embedTimestamp',
     'logoUrl', 'logoName', 'imageUrl', 'imagePosition',
     'denyMessage', 'cooldownMessage', 'usageMessage', 'errorMessage', 'dmMessage',
     'event', 'condition', 'value', 'permission', 'mode',
+    'pages', 'dropdown', 'buttons', 'totalPages',
     'collapsed',
   ]);
 
