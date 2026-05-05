@@ -33,12 +33,13 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(() => {
-  // Lazy-load backend modules so app opens fast
-  botRunner = require('./backend/botRunner');
+app.whenReady().then(async () => {
+  botRunner    = require('./backend/botRunner');
   pluginLoader = require('./backend/pluginLoader');
 
-  pluginLoader.loadPlugins(path.join(__dirname, 'plugins'));
+  // loadPlugins is now async — await it so plugins are registered before
+  // the window opens and IPC handlers start receiving requests.
+  await pluginLoader.loadPlugins(path.join(__dirname, 'plugins'));
 
   createWindow();
 
