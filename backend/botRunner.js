@@ -149,13 +149,16 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
   // created properly for any plugins loaded after login.
   pluginLoader.setClient(client);
 
-  const helpers = makeBuiltinHelpers(prefix);
+  const staticHelpers = makeStaticHelpers(prefix);
 
   // ── messageCreate ───────────────────────────────────────────────────────────
   client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     const eventNodes = nodes.filter((n) => n.type === 'event_message');
     for (const evNode of eventNodes) {
+      // Fresh flow state per message so one command's allowedUsers/args
+      // don't bleed into a concurrent command execution.
+      const helpers = makeEventHelpers(staticHelpers);
       await engine.executeGraph(evNode, nodes, edges, message, 'messageCreate', prefix, helpers);
     }
   });
@@ -169,6 +172,7 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
         (n) => n.type === nodeType && (n.data?.event || defaultEv) === discordEvent
       );
       for (const evNode of matching) {
+        const helpers = makeEventHelpers(staticHelpers);
         await engine.executeGraph(evNode, nodes, edges, eventData, discordEvent, prefix, helpers);
       }
     });

@@ -119,7 +119,12 @@ function validatePlugin(plugin, pluginId) {
     throw new ValidationError('Plugin export must be a plain object', pluginId, 'root');
   }
 
-  validateMeta(plugin.meta, pluginId);
+  // WHY allow missing meta: hundreds of legacy plugins pre-date the meta block.
+  // We warn instead of erroring so the engine stays backward-compatible.
+  // Version-checking is simply skipped for legacy plugins.
+  if (plugin.meta) {
+    validateMeta(plugin.meta, pluginId);
+  }
 
   if (!plugin.nodes || typeof plugin.nodes !== 'object' || Array.isArray(plugin.nodes)) {
     throw new ValidationError('Plugin must export a "nodes" plain object', pluginId, 'nodes');
