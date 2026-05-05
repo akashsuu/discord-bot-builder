@@ -4,44 +4,46 @@ import { Handle, Position, useReactFlow } from 'reactflow';
 function pluginPreview(template, data) {
   const d = data || {};
   return (template || '')
-    // Sender
     .replace(/\{user\}/g,          'Akashsuu')
     .replace(/\{tag\}/g,           'Akashsuu#0000')
     .replace(/\{id\}/g,            '123456789012345678')
     .replace(/\{mention\}/g,       '@Akashsuu')
-    // Target
     .replace(/\{target\}/g,        'OwO#8456')
     .replace(/\{targetName\}/g,    'OwO')
     .replace(/\{targetId\}/g,      '987654321098765432')
     .replace(/\{targetMention\}/g, '@OwO')
-    // Command
     .replace(/\{command\}/g,       d.command || '!command')
     .replace(/\{args\}/g,          'hello world')
     .replace(/\{reason\}/g,        d.reason  || 'No reason provided')
-    // Server / channel
     .replace(/\{server\}/g,        'My Server')
     .replace(/\{channel\}/g,       'general')
     .replace(/\{memberCount\}/g,   '1,234')
-    // Utility
     .replace(/\{latency\}/g,       '42')
     .replace(/\{date\}/g,          '2026-05-05')
     .replace(/\{time\}/g,          '12:00:00');
 }
 
-// Keys managed internally — never rendered as plain text inputs in the node body.
-// Includes: embed settings, DM settings, structured objects (pages/dropdown/buttons).
 const EMBED_KEYS = new Set([
   'embedEnabled', 'embedColor', 'embedTitle', 'embedFooter', 'embedTimestamp',
   'logoUrl', 'logoName', 'imageUrl', 'imagePosition',
   'dmEnabled', 'dmMessage',
-  // Page menu — arrays/objects that can't be edited as plain text inputs
   'pages', 'dropdown', 'buttons',
 ]);
+
+// ── Section header ────────────────────────────────────────────────────────────
+function SectionHead({ color = '#888', children }) {
+  return (
+    <div style={{ color, fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', padding: '2px 0 3px', userSelect: 'none' }}>
+      {children}
+    </div>
+  );
+}
 
 export default function PluginNode({ id, data, selected }) {
   const { setNodes } = useReactFlow();
   const collapsed = !!data.collapsed;
 
+  // ── Top-level field updater ────────────────────────────────────────────────
   const update = useCallback((key, val) => {
     setNodes((ns) => ns.map((n) =>
       n.id === id ? { ...n, data: { ...n.data, [key]: val } } : n
@@ -54,14 +56,78 @@ export default function PluginNode({ id, data, selected }) {
     ));
   }, [id, setNodes]);
 
+  // ── Dropdown updater ──────────────────────────────────────────────────────
+  const updateDropdown = useCallback((key, val) => {
+    setNodes((ns) => ns.map((n) => {
+      if (n.id !== id) return n;
+      const dd = { enabled: false, placeholder: '', usePages: true, ...(n.data.dropdown || {}), [key]: val };
+      return { ...n, data: { ...n.data, dropdown: dd } };
+    }));
+  }, [id, setNodes]);
+
+  // ── Buttons updater ───────────────────────────────────────────────────────
+  const updateButtons = useCallback((key, val) => {
+    setNodes((ns) => ns.map((n) => {
+      if (n.id !== id) return n;
+      const bt = { enabled: false, navigation: true, list: [], ...(n.data.buttons || {}), [key]: val };
+      return { ...n, data: { ...n.data, buttons: bt } };
+    }));
+  }, [id, setNodes]);
+
+  // ── Pages updaters ────────────────────────────────────────────────────────
+  const updatePage = useCallback((index, key, val) => {
+    setNodes((ns) => ns.map((n) => {
+      if (n.id !== id) return n;
+      const pages = [...(n.data.pages || [])];
+      pages[index] = { ...pages[index], [key]: val };
+      return { ...n, data: { ...n.data, pages } };
+    }));
+  }, [id, setNodes]);
+
+  const addPage = useCallback(() => {
+    setNodes((ns) => ns.map((n) => {
+      if (n.id !== id) return n;
+      const pages = [...(n.data.pages || [])];
+      const num   = pages.length + 1;
+      pages.push({ id: `page${num}`, title: `Page ${num}`, content: '' });
+      return { ...n, data: { ...n.data, pages } };
+    }));
+  }, [id, setNodes]);
+
+  const removePage = useCallback((index) => {
+    setNodes((ns) => ns.map((n) => {
+      if (n.id !== id) return n;
+      const pages = (n.data.pages || []).filter((_, i) => i !== index);
+      return { ...n, data: { ...n.data, pages } };
+    }));
+  }, [id, setNodes]);
+
+  const movePage = useCallback((index, dir) => {
+    setNodes((ns) => ns.map((n) => {
+      if (n.id !== id) return n;
+      const pages  = [...(n.data.pages || [])];
+      const target = index + dir;
+      if (target < 0 || target >= pages.length) return n;
+      [pages[index], pages[target]] = [pages[target], pages[index]];
+      return { ...n, data: { ...n.data, pages } };
+    }));
+  }, [id, setNodes]);
+
   const inputFields = Object.entries(data).filter(
     ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k)
   );
   const hasOutput   = 'output' in data;
   const previewText = hasOutput ? pluginPreview(data.output, data) : null;
+  const hasPages    = 'pages'    in data;
+  const hasDropdown = 'dropdown' in data;
+  const hasButtons  = 'buttons'  in data;
+
+  const dd  = data.dropdown || {};
+  const bt  = data.buttons  || {};
+  const pgs = Array.isArray(data.pages) ? data.pages : [];
 
   return (
-    <div className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`} style={{ minWidth: 220 }}>
+    <div className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`} style={{ minWidth: 240 }}>
       <div className="bl-node-hdr" style={{ background: data._color || '#2A2A3A' }}>
         <button className="bl-collapse-btn" onClick={toggle} title={collapsed ? 'Expand' : 'Minimize'}>
           {collapsed ? '▶' : '▼'}
@@ -85,7 +151,7 @@ export default function PluginNode({ id, data, selected }) {
             </div>
           )}
 
-          {/* ── Command / input fields ── */}
+          {/* ── Standard input fields ─────────────────────────────────── */}
           {inputFields.length > 0 && <div className="bl-node-divider" />}
           {inputFields.map(([key, val]) => (
             <div key={key} className="bl-field">
@@ -94,7 +160,7 @@ export default function PluginNode({ id, data, selected }) {
             </div>
           ))}
 
-          {/* ── Output message template ── */}
+          {/* ── Output message template ───────────────────────────────── */}
           {hasOutput && (
             <>
               <div className="bl-node-divider" />
@@ -109,14 +175,10 @@ export default function PluginNode({ id, data, selected }) {
                   rows={3}
                 />
                 <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
-                  <span style={{ color: '#7EB8F7' }}>{'{user}  {tag}  {id}  {mention}'}</span>
-                  {'  ·  '}
-                  <span style={{ color: '#E07070' }}>{'{target}  {targetName}  {targetId}  {targetMention}'}</span>
-                  {'  ·  '}
-                  <span style={{ color: '#A8D08D' }}>{'{reason}  {command}  {args}'}</span>
-                  {'  ·  '}
-                  <span style={{ color: '#C8A0F0' }}>{'{server}  {channel}  {memberCount}'}</span>
-                  {'  ·  '}
+                  <span style={{ color: '#7EB8F7' }}>{'{user}  {tag}  {id}  {mention}'}</span>{'  ·  '}
+                  <span style={{ color: '#E07070' }}>{'{target}  {targetName}  {targetId}  {targetMention}'}</span>{'  ·  '}
+                  <span style={{ color: '#A8D08D' }}>{'{reason}  {command}  {args}'}</span>{'  ·  '}
+                  <span style={{ color: '#C8A0F0' }}>{'{server}  {channel}  {memberCount}'}</span>{'  ·  '}
                   <span style={{ color: '#888' }}>{'{date}  {time}  {latency}'}</span>
                 </span>
               </div>
@@ -129,7 +191,7 @@ export default function PluginNode({ id, data, selected }) {
             </>
           )}
 
-          {/* ── DM section (only shown if plugin sets dmEnabled in defaults) ── */}
+          {/* ── DM section ────────────────────────────────────────────── */}
           {'dmEnabled' in data && (
             <>
               <div className="bl-node-divider" />
@@ -155,7 +217,186 @@ export default function PluginNode({ id, data, selected }) {
             </>
           )}
 
-          {/* ── Embed section ── */}
+          {/* ══════════════════════════════════════════════════════════════
+              PAGES EDITOR
+          ══════════════════════════════════════════════════════════════ */}
+          {hasPages && (
+            <>
+              <div className="bl-node-divider" style={{ borderColor: '#2A2A4A' }} />
+              <div className="bl-field">
+                <SectionHead color="#C8A0F0">📄 Pages ({pgs.length})</SectionHead>
+              </div>
+
+              {pgs.length === 0 && (
+                <div style={{ color: '#555', fontSize: 11, padding: '2px 0 4px', textAlign: 'center' }}>
+                  No pages yet — click + Add Page
+                </div>
+              )}
+
+              {pgs.map((page, i) => (
+                <div
+                  key={i}
+                  style={{ background: '#16162A', border: '1px solid #2A2A44', borderRadius: 5, padding: '6px 7px', marginBottom: 5 }}
+                >
+                  {/* Page header row */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 5 }}>
+                    <span style={{ color: '#555', fontSize: 10, minWidth: 18, textAlign: 'right' }}>#{i + 1}</span>
+                    <input
+                      className="bl-node-input"
+                      value={page.title || ''}
+                      onChange={(e) => updatePage(i, 'title', e.target.value)}
+                      placeholder="Page title"
+                      spellCheck={false}
+                      style={{ flex: 1, minWidth: 0 }}
+                    />
+                    {/* Move up */}
+                    <button
+                      disabled={i === 0}
+                      onClick={() => movePage(i, -1)}
+                      title="Move up"
+                      style={{ background: 'transparent', border: 'none', color: i === 0 ? '#333' : '#888', cursor: i === 0 ? 'default' : 'pointer', padding: '0 3px', fontSize: 11 }}
+                    >▲</button>
+                    {/* Move down */}
+                    <button
+                      disabled={i === pgs.length - 1}
+                      onClick={() => movePage(i, 1)}
+                      title="Move down"
+                      style={{ background: 'transparent', border: 'none', color: i === pgs.length - 1 ? '#333' : '#888', cursor: i === pgs.length - 1 ? 'default' : 'pointer', padding: '0 3px', fontSize: 11 }}
+                    >▼</button>
+                    {/* Remove */}
+                    <button
+                      onClick={() => removePage(i)}
+                      title="Remove page"
+                      style={{ background: '#3A1010', border: '1px solid #5A1A1A', color: '#FF6060', borderRadius: 3, cursor: 'pointer', padding: '1px 6px', fontSize: 11, lineHeight: 1.4 }}
+                    >✕</button>
+                  </div>
+
+                  {/* Page content */}
+                  <textarea
+                    className="bl-node-textarea"
+                    value={page.content || ''}
+                    onChange={(e) => updatePage(i, 'content', e.target.value)}
+                    placeholder="Content… supports {user}, {server}, {date}, etc."
+                    spellCheck={false}
+                    rows={2}
+                    style={{ minHeight: 40, fontSize: 11 }}
+                  />
+                </div>
+              ))}
+
+              <button
+                onClick={addPage}
+                style={{
+                  width: '100%', background: '#1A2A1A', border: '1px solid #2A4A2A',
+                  color: '#6AAA4A', borderRadius: 4, cursor: 'pointer',
+                  padding: '4px 0', fontSize: 11, marginTop: 2,
+                }}
+              >
+                + Add Page
+              </button>
+            </>
+          )}
+
+          {/* ══════════════════════════════════════════════════════════════
+              DROPDOWN MENU
+          ══════════════════════════════════════════════════════════════ */}
+          {hasDropdown && (
+            <>
+              <div className="bl-node-divider" style={{ borderColor: '#2A3A2A' }} />
+              <div className="bl-field">
+                <label className="bl-embed-toggle">
+                  <input
+                    type="checkbox"
+                    checked={!!dd.enabled}
+                    onChange={(e) => updateDropdown('enabled', e.target.checked)}
+                  />
+                  <SectionHead color="#6AAA4A">▼ Dropdown Menu</SectionHead>
+                </label>
+              </div>
+
+              {dd.enabled && (
+                <>
+                  <div className="bl-field">
+                    <span className="bl-field-lbl">Placeholder</span>
+                    <input
+                      className="bl-node-input"
+                      value={dd.placeholder || ''}
+                      onChange={(e) => updateDropdown('placeholder', e.target.value)}
+                      placeholder="Select a page…"
+                      spellCheck={false}
+                    />
+                  </div>
+                  <div className="bl-field">
+                    <label className="bl-embed-toggle" style={{ fontSize: 11 }}>
+                      <input
+                        type="checkbox"
+                        checked={dd.usePages !== false}
+                        onChange={(e) => updateDropdown('usePages', e.target.checked)}
+                      />
+                      Auto-generate options from Pages
+                    </label>
+                  </div>
+                  {!dd.usePages && (
+                    <div style={{ color: '#666', fontSize: 10, padding: '2px 0', textAlign: 'center' }}>
+                      Custom options can be set in project.json
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
+
+          {/* ══════════════════════════════════════════════════════════════
+              BUTTON ROW
+          ══════════════════════════════════════════════════════════════ */}
+          {hasButtons && (
+            <>
+              <div className="bl-node-divider" style={{ borderColor: '#2A2A3A' }} />
+              <div className="bl-field">
+                <label className="bl-embed-toggle">
+                  <input
+                    type="checkbox"
+                    checked={!!bt.enabled}
+                    onChange={(e) => updateButtons('enabled', e.target.checked)}
+                  />
+                  <SectionHead color="#7EB8F7">⬛ Button Row</SectionHead>
+                </label>
+              </div>
+
+              {bt.enabled && (
+                <>
+                  <div className="bl-field">
+                    <label className="bl-embed-toggle" style={{ fontSize: 11 }}>
+                      <input
+                        type="checkbox"
+                        checked={bt.navigation !== false}
+                        onChange={(e) => updateButtons('navigation', e.target.checked)}
+                      />
+                      Navigation Buttons
+                    </label>
+                  </div>
+                  {bt.navigation !== false && (
+                    <div style={{ display: 'flex', gap: 4, padding: '3px 0 2px' }}>
+                      {['⬅ Prev', 'Next ➡', '❌ Close'].map((lbl) => (
+                        <span
+                          key={lbl}
+                          style={{
+                            flex: 1, textAlign: 'center', fontSize: 10,
+                            background: '#1A2A3A', border: '1px solid #2A3A4A',
+                            borderRadius: 3, padding: '3px 0', color: '#7EB8F7',
+                          }}
+                        >{lbl}</span>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
+
+          {/* ══════════════════════════════════════════════════════════════
+              EMBED SECTION
+          ══════════════════════════════════════════════════════════════ */}
           <div className="bl-node-divider" />
           <div className="bl-field">
             <label className="bl-embed-toggle">
@@ -166,7 +407,6 @@ export default function PluginNode({ id, data, selected }) {
 
           {data.embedEnabled && (
             <>
-              {/* Embed color */}
               <div className="bl-field">
                 <span className="bl-field-lbl">Color</span>
                 <div className="bl-color-field">
@@ -175,7 +415,6 @@ export default function PluginNode({ id, data, selected }) {
                 </div>
               </div>
 
-              {/* Top-left logo */}
               <div className="bl-node-divider" style={{ borderColor: '#2A3A4A' }} />
               <div className="bl-field">
                 <span className="bl-field-lbl" style={{ color: '#4A8ACA' }}>▲ Logo (top-left)</span>
@@ -189,7 +428,6 @@ export default function PluginNode({ id, data, selected }) {
                 <input className="bl-node-input" value={data.logoName || ''} onChange={(e) => update('logoName', e.target.value)} placeholder="Bot name" spellCheck={false} />
               </div>
 
-              {/* Bottom image */}
               <div className="bl-node-divider" style={{ borderColor: '#2A3A4A' }} />
               <div className="bl-field">
                 <span className="bl-field-lbl" style={{ color: '#4A8ACA' }}>▬ Image (bottom)</span>
@@ -199,7 +437,6 @@ export default function PluginNode({ id, data, selected }) {
                 <input className="bl-node-input" value={data.imageUrl || ''} onChange={(e) => update('imageUrl', e.target.value)} placeholder="https://…image.png" spellCheck={false} />
               </div>
 
-              {/* Footer */}
               <div className="bl-field">
                 <span className="bl-field-lbl">Footer</span>
                 <input className="bl-node-input" value={data.embedFooter || ''} onChange={(e) => update('embedFooter', e.target.value)} placeholder="Footer text" spellCheck={false} />
