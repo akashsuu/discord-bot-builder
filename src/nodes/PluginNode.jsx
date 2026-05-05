@@ -2,15 +2,30 @@ import React, { useCallback } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
 function pluginPreview(template, data) {
+  const d = data || {};
   return (template || '')
-    .replace(/\{target\}/g,  'OwO#8456')
-    .replace(/\{latency\}/g, '42')
-    .replace(/\{reason\}/g,  data.reason  || 'No reason provided')
-    .replace(/\{command\}/g, data.command || '!command')
-    .replace(/\{user\}/g,    'Akashsuu')
-    .replace(/\{args\}/g,    'world')
-    .replace(/\{tag\}/g,     'Akashsuu#0000')
-    .replace(/\{channel\}/g, 'general');
+    // Sender
+    .replace(/\{user\}/g,          'Akashsuu')
+    .replace(/\{tag\}/g,           'Akashsuu#0000')
+    .replace(/\{id\}/g,            '123456789012345678')
+    .replace(/\{mention\}/g,       '@Akashsuu')
+    // Target
+    .replace(/\{target\}/g,        'OwO#8456')
+    .replace(/\{targetName\}/g,    'OwO')
+    .replace(/\{targetId\}/g,      '987654321098765432')
+    .replace(/\{targetMention\}/g, '@OwO')
+    // Command
+    .replace(/\{command\}/g,       d.command || '!command')
+    .replace(/\{args\}/g,          'hello world')
+    .replace(/\{reason\}/g,        d.reason  || 'No reason provided')
+    // Server / channel
+    .replace(/\{server\}/g,        'My Server')
+    .replace(/\{channel\}/g,       'general')
+    .replace(/\{memberCount\}/g,   '1,234')
+    // Utility
+    .replace(/\{latency\}/g,       '42')
+    .replace(/\{date\}/g,          '2026-05-05')
+    .replace(/\{time\}/g,          '12:00:00');
 }
 
 // internal keys managed by the embed section — not rendered as plain inputs

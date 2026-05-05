@@ -304,19 +304,9 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
   );
 }
 
-// ── Variable substitution for preview (built-in + plugin vars) ───────────────
-function demoSub(text, nodeData) {
-  const d = nodeData || {};
-  return (text || '')
-    .replace(/\{target\}/g,  'OwO#8456')
-    .replace(/\{latency\}/g, '42')
-    .replace(/\{reason\}/g,  d.reason  || 'No reason provided')
-    .replace(/\{command\}/g, d.command || '!command')
-    .replace(/\{user\}/g,    'Akashsuu')
-    .replace(/\{args\}/g,    'world')
-    .replace(/\{tag\}/g,     'Akashsuu#0000')
-    .replace(/\{channel\}/g, 'general');
-}
+// ── Variable substitution for preview — import from shared util ──────────────
+// Re-exported here so DiscordPreview can call it without a separate import path.
+import { demoSub } from '../utils/variables';
 
 // ── Discord embed block ───────────────────────────────────────────────────────
 function DiscordEmbed({ data, text }) {
@@ -386,14 +376,28 @@ function DiscordPreview({ node }) {
   const d = node.data;
   let rawText = '';
 
+  // Keys that are never output text — skip them when searching for a preview string
+  const PREVIEW_SKIP = new Set([
+    'embedColor', 'embedTitle', 'embedFooter',
+    'logoUrl', 'logoName', 'imageUrl', 'imagePosition',
+    'denyMessage', 'cooldownMessage', 'usageMessage', 'errorMessage', 'dmMessage',
+    'event', 'condition', 'value', 'permission', 'mode',
+    'collapsed',
+  ]);
+
   if (node.type === 'custom_command')    rawText = d.reply  || '';
   else if (node.type === 'send_message') rawText = d.text   || '';
   else {
-    // Plugin node — prefer the 'output' field template, then fall back to first string field
+    // Plugin node — prefer `output`, then first non-skip string field that looks like content
     if (d.output !== undefined) {
       rawText = d.output || '';
     } else {
-      const entry = Object.entries(d).find(([k, v]) => !k.startsWith('_') && k !== 'collapsed' && typeof v === 'string');
+      const entry = Object.entries(d).find(([k, v]) =>
+        !k.startsWith('_') &&
+        !PREVIEW_SKIP.has(k) &&
+        typeof v === 'string' &&
+        v.trim().length > 0
+      );
       rawText = entry ? entry[1] : '';
     }
   }
