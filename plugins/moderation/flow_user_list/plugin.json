@@ -1,0 +1,18 @@
+{
+  "name": "Flow User List",
+  "version": "1.0.0",
+  "description": "Loads a static list of allowed user IDs into ctx.allowedUsers. Always passes the flow so it can be chained before a Permission Gate.",
+  "author": "Akashsuu",
+  "icon": "👥",
+  "nodeConfig": {
+    "label": "User List",
+    "icon": "👥",
+    "color": "#1A3A4A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "userIds": "",
+      "mode": "add"
+    }
+  }
+}

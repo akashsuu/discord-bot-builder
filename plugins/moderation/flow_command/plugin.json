@@ -1,0 +1,20 @@
+{
+  "name": "Flow Command",
+  "version": "1.0.0",
+  "description": "Command trigger with alias support, cooldown, and argument parsing. Initialises the shared flow context for downstream nodes.",
+  "author": "Akashsuu",
+  "icon": "⚡",
+  "nodeConfig": {
+    "label": "Flow Command",
+    "icon": "⚡",
+    "color": "#1E3A5F",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "kick",
+      "aliases": "",
+      "cooldown": 0,
+      "cooldownMessage": "⏱️ Please wait **{remaining}s** before using this command again."
+    }
+  }
+}
