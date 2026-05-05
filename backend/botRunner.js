@@ -60,10 +60,13 @@ function buildEmbed(data, text) {
   return embed;
 }
 
-// Helpers passed into every graph execution so built-in nodes and legacy
-// plugins (execute(node, eventObj, ctx)) can use them without importing
-// internal engine modules.
-function makeBuiltinHelpers(prefix) {
+// ── Persistent cross-event cooldown store ─────────────────────────────────────
+// WHY module-level: cooldowns must survive across individual message events.
+// key format: `${guildId}:${userId}:${command}`
+const _cooldowns = new Map();
+
+// ── Static helpers (shared across ALL events — no mutable state here) ─────────
+function makeStaticHelpers(prefix) {
   return {
     prefix,
     substitute,
@@ -77,6 +80,36 @@ function makeBuiltinHelpers(prefix) {
         await chan.send(text);
       }
     },
+  };
+}
+
+// ── Per-event flow helpers ─────────────────────────────────────────────────────
+// WHY per-event: the flow plugin system (command → user_list → permission_gate →
+// action) needs shared mutable state that persists across every node in ONE
+// graph execution run but resets for the next message.
+//
+// Reference types (Set, Map, Array, plain object) are spread into each node's
+// ctx by executionEngine. Because they are references, mutations made by
+// plugin A (e.g. ctx.allowedUsers.add(id)) are visible in plugin B's ctx
+// without any further wiring.
+//
+// Primitive values (command string, targetMember) live in ctx.flow — a shared
+// object reference — so plugins write ctx.flow.command = '...' rather than
+// ctx.command = '...' (which would only mutate the local ctx copy).
+function makeEventHelpers(staticHelpers) {
+  const flow = {
+    command:      null,
+    targetMember: null,
+    targetUser:   null,
+    reason:       null,
+  };
+  return {
+    ...staticHelpers,
+    allowedUsers: new Set(),   // ctx.allowedUsers.add(id) — shared Set
+    allowedRoles: new Set(),   // ctx.allowedRoles.add(id) — shared Set
+    cooldowns:    _cooldowns,  // ctx.cooldowns.get/set    — shared persistent Map
+    args:         [],          // ctx.args.push(...)       — shared Array
+    flow,                      // ctx.flow.command = '...' — shared plain object
   };
 }
 
