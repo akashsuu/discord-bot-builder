@@ -42,6 +42,28 @@ async function loadPlugin(pluginDir, client) {
   // Support both ES-module-style { default: ... } and CommonJS direct export
   const plugin = pluginModule?.default ?? pluginModule;
 
+  // ── Read plugin.json for UI metadata (optional — legacy plugins have it) ──
+  // WHY: plugin.json carries label, icon, color, hasInput/Output, and full
+  // defaults (including complex objects like pages[], dropdown, buttons).
+  // index.js configSchema only has simple scalar defaults.
+  // We store both and let getNodeMetaList() merge them so the canvas palette
+  // and node.data initialisation get the complete defaults.
+  let uiMeta = null;
+  const jsonPath = path.join(pluginDir, 'plugin.json');
+  if (fs.existsSync(jsonPath)) {
+    try { uiMeta = JSON.parse(fs.readFileSync(jsonPath, 'utf-8')); }
+    catch { /* malformed plugin.json — continue without it */ }
+  }
+
+  // Build an effectiveMeta so registry.getMetaList() never crashes on undefined
+  const effectiveMeta = plugin.meta || {
+    name:          uiMeta?.name        || pluginId,
+    version:       uiMeta?.version     || '1.0.0',
+    author:        uiMeta?.author      || 'Unknown',
+    description:   uiMeta?.description || '',
+    engineVersion: '*',
+  };
+
   // ── Validation ───────────────────────────────────────────────────────────
   try {
     validatePlugin(plugin, pluginId);
@@ -99,11 +121,12 @@ async function loadPlugin(pluginDir, client) {
   // ── Register ──────────────────────────────────────────────────────────────
   try {
     registry.register(pluginId, {
-      meta:     plugin.meta,
+      meta:     effectiveMeta,
       nodes:    plugin.nodes,
       onUnload: plugin.onUnload ?? null,
-      category: category === 'plugins' ? null : category, // root-level has no category
+      category: category === 'plugins' ? null : category,
       safeAPI,
+      uiMeta,   // full plugin.json content — used by getNodeMetaList()
     });
   } catch (err) {
     logger.error(`Registration failed for "${pluginId}": ${err.message}`);
@@ -112,7 +135,7 @@ async function loadPlugin(pluginDir, client) {
 
   _loadedPaths.set(pluginId, indexPath);
   logger.info(
-    `Loaded "${pluginId}" v${plugin.meta.version} [${category}] — ${Object.keys(plugin.nodes).length} node(s)`,
+    `Loaded "${pluginId}" v${effectiveMeta.version} [${category}] — ${Object.keys(plugin.nodes).length} node(s)`,
     { nodeTypes: Object.keys(plugin.nodes) }
   );
   return pluginId;

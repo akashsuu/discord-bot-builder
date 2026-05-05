@@ -55,7 +55,12 @@ export function demoSub(text, nodeData) {
     // Utility
     .replace(/\{latency\}/g,       '42')
     .replace(/\{date\}/g,          '2026-05-05')
-    .replace(/\{time\}/g,          '12:00:00');
+    .replace(/\{time\}/g,          '12:00:00')
+    // Page menu
+    .replace(/\{page\}/g,       d.page       ?? '1')
+    .replace(/\{totalPages\}/g, d.totalPages ?? '1')
+    .replace(/\{selected\}/g,   d.selected   ?? '')
+    .replace(/\{button\}/g,     d.button     ?? '');
 }
 
 /** Variable names available in standard command / message nodes */

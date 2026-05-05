@@ -8,6 +8,7 @@ import EventRoleNode     from './EventRoleNode';
 import CustomCommandNode from './CustomCommandNode';
 import SendMessageNode   from './SendMessageNode';
 import ConditionBranchNode from './ConditionBranchNode';
+import PluginNode        from './PluginNode';
 
 // Defined outside any component so React Flow never sees a new reference
 const nodeTypes = {
@@ -21,11 +22,19 @@ const nodeTypes = {
   custom_command:   CustomCommandNode,
   send_message:     SendMessageNode,
   condition_branch: ConditionBranchNode,
+  page_menu:        PluginNode,
 };
 
 export default nodeTypes;
 
 export const NODE_PALETTE = [
+  {
+    type: 'page_menu',
+    label: 'Page Menu',
+    icon: '📖',
+    color: '#D35400',
+    description: 'Multi-page embed with optional dropdown & buttons',
+  },
   {
     type: 'event_message',
     label: 'Message Event',
@@ -109,4 +118,24 @@ export const DEFAULT_NODE_DATA = {
   custom_command:   { label: 'Custom Command', command: '!hello', reply: 'Hello {user}!' },
   send_message:     { label: 'Send Message',   text: 'Hello {user}!' },
   condition_branch: { label: 'Condition Branch', condition: 'starts_with', value: '!test' },
+  page_menu: {
+    _label:       'Page Menu',
+    _icon:        '📖',
+    _color:       '#3A1E00',
+    _hasInput:    true,
+    _hasOutput:   true,
+    embedEnabled: true,
+    embedColor:   '#D35400',
+    embedFooter:  'Page {page} of {totalPages}',
+    logoUrl:      '',
+    logoName:     '',
+    imageUrl:     '',
+    pages: [
+      { id: 'page1', title: 'Page 1', content: 'Welcome, {user}! This is the first page.' },
+      { id: 'page2', title: 'Page 2', content: 'Here is some more info, {user}.' },
+      { id: 'page3', title: 'Page 3', content: 'That\'s everything! Thanks for reading.' },
+    ],
+    dropdown: { enabled: false, placeholder: 'Select a page…', usePages: true },
+    buttons:  { enabled: true,  navigation: true, list: [] },
+  },
 };

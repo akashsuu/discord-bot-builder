@@ -38,7 +38,7 @@ const MINIMAP_NODE_COLOR = {
 const CATEGORIES = [
   { label: 'Events',   items: ['event_message', 'event_channel', 'event_client', 'event_emoji', 'event_guild', 'event_member', 'event_role'] },
   { label: 'Commands', items: ['custom_command'] },
-  { label: 'Actions',  items: ['send_message'] },
+  { label: 'Actions',  items: ['send_message', 'page_menu'] },
   { label: 'Logic',    items: ['condition_branch'] },
 ];
 
@@ -244,7 +244,7 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
               {/* ── Commands, Actions, Logic ── */}
               {[
                 { label: 'Commands', items: ['custom_command'] },
-                { label: 'Actions',  items: ['send_message'] },
+                { label: 'Actions',  items: ['send_message', 'page_menu'] },
                 { label: 'Logic',    items: ['condition_branch'] },
               ].map((cat) => (
                 <React.Fragment key={cat.label}>
@@ -384,11 +384,21 @@ function DiscordPreview({ node }) {
     'collapsed',
   ]);
 
+  // Page index state lives here so NPanel preview can be paginated
+  const [nPanelPage, setNPanelPage] = React.useState(0);
+
+  let embedTitleOverride = null;
+
   if (node.type === 'custom_command')    rawText = d.reply  || '';
   else if (node.type === 'send_message') rawText = d.text   || '';
   else {
-    // Plugin node — prefer `output`, then first non-skip string field that looks like content
-    if (d.output !== undefined) {
+    if (Array.isArray(d.pages) && d.pages.length > 0) {
+      // Page menu node — preview the selected page
+      const safePg = Math.min(nPanelPage, d.pages.length - 1);
+      const page   = d.pages[safePg] || d.pages[0];
+      rawText            = page.content || '';
+      embedTitleOverride = page.title   || null;
+    } else if (d.output !== undefined) {
       rawText = d.output || '';
     } else {
       const entry = Object.entries(d).find(([k, v]) =>
@@ -401,7 +411,22 @@ function DiscordPreview({ node }) {
     }
   }
 
-  const text = demoSub(rawText, d);
+  const isPageMenu  = Array.isArray(d.pages) && d.pages.length > 0;
+  const totalPages  = isPageMenu ? d.pages.length : 0;
+  const safePgIdx   = Math.min(nPanelPage, Math.max(0, totalPages - 1));
+
+  // Pass page-specific demo values into demoSub
+  const extraTokens = isPageMenu
+    ? { page: String(safePgIdx + 1), totalPages: String(totalPages) }
+    : {};
+
+  const text = demoSub(rawText, { ...d, ...extraTokens });
+
+  // Build effective embed data: if page menu, inject page title as embed title
+  const effectiveData = embedTitleOverride
+    ? { ...d, embedTitle: embedTitleOverride }
+    : d;
+
   const hasContent = text || d.embedEnabled;
 
   if (!hasContent) {
@@ -417,8 +442,32 @@ function DiscordPreview({ node }) {
 
   return (
     <div className="dc-wrap">
+      {/* Page selector tabs — shown only for page menu nodes */}
+      {isPageMenu && totalPages > 1 && (
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', padding: '0 4px 6px' }}>
+          {d.pages.map((p, i) => (
+            <button
+              key={i}
+              onClick={() => setNPanelPage(i)}
+              style={{
+                background:   safePgIdx === i ? '#2A2A5A' : '#1A1A2A',
+                border:       `1px solid ${safePgIdx === i ? '#5865F2' : '#2A2A3A'}`,
+                color:        safePgIdx === i ? '#7EB8F7' : '#555',
+                borderRadius: 3, cursor: 'pointer',
+                padding: '1px 8px', fontSize: 10,
+                fontWeight: safePgIdx === i ? 700 : 400,
+              }}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <span style={{ color: '#444', fontSize: 10, alignSelf: 'center', marginLeft: 2 }}>
+            {d.pages[safePgIdx]?.title || ''}
+          </span>
+        </div>
+      )}
+
       <div className="dc-msg">
-        {/* Avatar: real bot avatar if online, otherwise placeholder */}
         {botInfo?.avatarURL
           ? <img
               src={botInfo.avatarURL}
@@ -436,8 +485,8 @@ function DiscordPreview({ node }) {
             {botTag && <span className="dc-bot-tag-label">#{botTag.split('#')[1]}</span>}
             <span className="dc-timestamp">Today at {time}</span>
           </div>
-          {d.embedEnabled ? (
-            <DiscordEmbed data={d} text={text} />
+          {effectiveData.embedEnabled ? (
+            <DiscordEmbed data={effectiveData} text={text} />
           ) : (
             <div className="dc-plain">{text}</div>
           )}
@@ -569,6 +618,26 @@ function NPanel({ selectedNode, setNodes }) {
               <div style={{ color: '#666', fontSize: 11 }}>No editable properties.</div>
             )}
 
+            {selectedNode.type === 'page_menu' && (
+              <>
+                <div style={{ color: '#888', fontSize: 10, lineHeight: 1.6, marginBottom: 4 }}>
+                  Edit pages, dropdown &amp; buttons directly on the node.<br />
+                  Quick settings below:
+                </div>
+                <div className="bl-prop-row">
+                  <span className="bl-prop-label">Embed Color</span>
+                  <div className="bl-color-field">
+                    <input type="color" className="bl-color-pick" value={d.embedColor || '#D35400'} onChange={(e) => update('embedColor', e.target.value)} />
+                    <input type="text" className="bl-field-input" value={d.embedColor || '#D35400'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
+                  </div>
+                </div>
+                <div className="bl-prop-row">
+                  <span className="bl-prop-label">Footer</span>
+                  <input className="bl-field-input" value={d.embedFooter || ''} onChange={(e) => update('embedFooter', e.target.value)} placeholder="Page {page} of {totalPages}" spellCheck={false} />
+                </div>
+              </>
+            )}
+
             {EVENT_NODE_OPTIONS[selectedNode.type] && (
               <div className="bl-prop-row">
                 <span className="bl-prop-label">Event</span>
@@ -635,7 +704,7 @@ function NPanel({ selectedNode, setNodes }) {
       </div>
 
       {/* Discord Preview section — shown for any node that outputs something */}
-      {!selectedNode.type.startsWith('event_') && selectedNode.type !== 'condition_branch' && (
+      {(!selectedNode.type.startsWith('event_') && selectedNode.type !== 'condition_branch') && (
         <div className="bl-npanel-section">
           <div className="bl-npanel-section-hdr" onClick={() => toggle('preview')}>
             <span className="arrow">{openSections.preview ? '▼' : '▶'}</span>
@@ -740,7 +809,8 @@ function EditorInner() {
     let data;
     const builtin = DEFAULT_NODE_DATA[type];
     if (builtin) {
-      data = { ...builtin };
+      // Deep-clone so we don't share array/object references between nodes
+      data = JSON.parse(JSON.stringify(builtin));
     } else {
       // Plugin node — seed embed fields first so they're always present,
       // then plugin defaults override anything they define

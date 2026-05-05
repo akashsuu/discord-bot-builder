@@ -53,6 +53,16 @@ html, body, #root {
   user-select: none;
 }
 
+/* Allow text selection inside interactive node elements */
+input, textarea, select {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* React Flow drag/wheel passthrough prevention helpers */
+.nodrag { cursor: default !important; }
+.nowheel { overflow-y: auto; }
+
 input, textarea, select, button { font-family: inherit; font-size: 12px; color: var(--bl-text); }
 
 /* ── scrollbars ── */

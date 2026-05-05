@@ -82,26 +82,45 @@ class PluginRegistry {
     }));
   }
 
-  // Flat list of node-type metadata — used by the UI to populate the palette
+  // Flat list of node-type metadata — used by the UI palette and addNodeAtPos()
   getNodeMetaList() {
-    return [...this._nodes.entries()].map(([type, entry]) => ({
-      type,
-      pluginId:   entry.pluginId,
-      category:   entry.category,
-      label:      entry.definition.label,
-      icon:       entry.definition.icon        ?? '🔌',
-      color:      entry.definition.color       ?? '#2A2A3A',
-      hasInput:   entry.definition.inputs?.length  > 0,
-      hasOutput:  entry.definition.outputs?.length > 0,
-      defaults:   entry.definition.configSchema
+    return [...this._nodes.entries()].map(([type, entry]) => {
+      const def   = entry.definition;
+      const pluginEntry = this._plugins.get(entry.pluginId) || {};
+
+      // plugin.json nodeConfig — used by legacy plugins for label/icon/color/defaults
+      const uiCfg      = pluginEntry.uiMeta?.nodeConfig || {};
+      const uiDefaults = uiCfg.defaults || {};
+
+      // configSchema scalar defaults from index.js (authoritative for simple fields)
+      const schemaDefaults = def.configSchema
         ? Object.fromEntries(
-            Object.entries(entry.definition.configSchema)
+            Object.entries(def.configSchema)
               .filter(([, d]) => d.default !== undefined)
               .map(([k, d]) => [k, d.default])
           )
-        : {},
-      description: entry.definition.description ?? '',
-    }));
+        : {};
+
+      // WHY merge order: uiDefaults first (complex objects: pages[], dropdown, buttons),
+      // then schemaDefaults override (authoritative scalar values like command, embedColor).
+      // This means pages/dropdown/buttons from plugin.json survive, while simple fields
+      // from configSchema take precedence.
+      const mergedDefaults = { ...uiDefaults, ...schemaDefaults };
+
+      return {
+        type,
+        pluginId:    entry.pluginId,
+        category:    entry.category,
+        label:       def.label      || uiCfg.label    || type,
+        icon:        def.icon       || uiCfg.icon     || '🔌',
+        color:       def.color      || uiCfg.color    || '#2A2A3A',
+        // hasInput/Output: prefer index.js ports array, fall back to plugin.json flag
+        hasInput:    def.inputs?.length  > 0 || uiCfg.hasInput  !== false,
+        hasOutput:   def.outputs?.length > 0 || uiCfg.hasOutput !== false,
+        defaults:    mergedDefaults,
+        description: def.description || pluginEntry.uiMeta?.description || '',
+      };
+    });
   }
 }
 
