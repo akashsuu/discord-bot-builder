@@ -1,0 +1,21 @@
+{
+  "name": "Server Info",
+  "version": "1.0.0",
+  "description": "Shows detailed server information: members, channels, roles, boosts, verification level, and more. Supports rich embed and plain-text output.",
+  "author": "Akashsuu",
+  "icon": "🏠",
+  "nodeConfig": {
+    "label": "Server Info",
+    "icon": "🏠",
+    "color": "#1A4A7A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "serverinfo",
+      "output": "📊 **{server}** `{serverId}` · 👥 {memberCount} members · 👑 Owner: {owner} · 🚀 Boost Level {boostLevel}",
+      "embedEnabled": true,
+      "embedColor": "#5865F2",
+      "embedFooter": "Server ID: {serverId}"
+    }
+  }
+}
