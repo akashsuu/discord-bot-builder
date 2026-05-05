@@ -18,7 +18,7 @@ import builtinNodeTypes, { DEFAULT_NODE_DATA, NODE_PALETTE } from '../nodes/node
 import PluginNode from '../nodes/PluginNode';
 import Toolbar from '../components/Toolbar';
 import LogPanel from '../components/LogPanel';
-import { varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
+import { demoSub, varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
 
 let _nc = 1;
 
@@ -304,9 +304,7 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
   );
 }
 
-// ── Variable substitution for preview — import from shared util ──────────────
-// Re-exported here so DiscordPreview can call it without a separate import path.
-import { demoSub } from '../utils/variables';
+// demoSub is imported at the top of this file from '../utils/variables'
 
 // ── Discord embed block ───────────────────────────────────────────────────────
 function DiscordEmbed({ data, text }) {

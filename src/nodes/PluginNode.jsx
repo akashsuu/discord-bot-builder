@@ -28,8 +28,12 @@ function pluginPreview(template, data) {
     .replace(/\{time\}/g,          '12:00:00');
 }
 
-// internal keys managed by the embed section — not rendered as plain inputs
-const EMBED_KEYS = new Set(['embedEnabled', 'embedColor', 'logoUrl', 'logoName', 'imageUrl', 'embedFooter']);
+// Keys managed internally (embed panel, node meta) — never rendered as plain text inputs
+const EMBED_KEYS = new Set([
+  'embedEnabled', 'embedColor', 'embedTitle', 'embedFooter',
+  'logoUrl', 'logoName', 'imageUrl', 'imagePosition',
+  'dmEnabled', 'dmMessage',
+]);
 
 export default function PluginNode({ id, data, selected }) {
   const { setNodes } = useReactFlow();
@@ -101,12 +105,48 @@ export default function PluginNode({ id, data, selected }) {
                   spellCheck={false}
                   rows={3}
                 />
-                <span className="bl-field-hint">{'{target}  {reason}  {latency}  {user}  {command}'}</span>
+                <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                  <span style={{ color: '#7EB8F7' }}>{'{user}  {tag}  {id}  {mention}'}</span>
+                  {'  ·  '}
+                  <span style={{ color: '#E07070' }}>{'{target}  {targetName}  {targetId}  {targetMention}'}</span>
+                  {'  ·  '}
+                  <span style={{ color: '#A8D08D' }}>{'{reason}  {command}  {args}'}</span>
+                  {'  ·  '}
+                  <span style={{ color: '#C8A0F0' }}>{'{server}  {channel}  {memberCount}'}</span>
+                  {'  ·  '}
+                  <span style={{ color: '#888' }}>{'{date}  {time}  {latency}'}</span>
+                </span>
               </div>
               {previewText && (
                 <div className="bl-out-preview">
                   <div className="bl-out-preview-lbl">Output preview</div>
                   {previewText}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ── DM section (only shown if plugin sets dmEnabled in defaults) ── */}
+          {'dmEnabled' in data && (
+            <>
+              <div className="bl-node-divider" />
+              <div className="bl-field">
+                <label className="bl-embed-toggle">
+                  <input type="checkbox" checked={!!data.dmEnabled} onChange={(e) => update('dmEnabled', e.target.checked)} />
+                  DM Target
+                </label>
+              </div>
+              {data.dmEnabled && (
+                <div className="bl-field">
+                  <span className="bl-field-lbl">DM Message</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    style={{ minHeight: 44 }}
+                    value={data.dmMessage || ''}
+                    onChange={(e) => update('dmMessage', e.target.value)}
+                    spellCheck={false}
+                    rows={2}
+                  />
                 </div>
               )}
             </>
