@@ -1,11 +1,12 @@
 'use strict';
 
 const { Client, GatewayIntentBits } = require('discord.js');
-const { substitute }  = require('./variables');
-const engine          = require('./engine');
-const pluginLoader    = require('./pluginLoader');
-const rootLogger      = require('./engine/logger');
-const log             = rootLogger.child('BotRunner');
+const { substitute }         = require('./variables');
+const engine                 = require('./engine');
+const pluginLoader           = require('./pluginLoader');
+const rootLogger             = require('./engine/logger');
+const { attachToClient, detach } = require('./engine/interactionHandler');
+const log                    = rootLogger.child('BotRunner');
 
 let client  = null;
 let running = false;
@@ -149,6 +150,9 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
   // created properly for any plugins loaded after login.
   pluginLoader.setClient(client);
 
+  // Attach the global interaction handler (buttons / dropdowns from pagemenu etc.)
+  attachToClient(client);
+
   const staticHelpers = makeStaticHelpers(prefix);
 
   // ── messageCreate ───────────────────────────────────────────────────────────
@@ -206,6 +210,8 @@ async function stop() {
     client = null;
   }
   running = false;
+  // Reset interaction handler so it re-attaches cleanly on next start
+  detach();
   log.info('Bot stopped.');
 }
 

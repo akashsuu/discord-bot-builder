@@ -28,11 +28,14 @@ function pluginPreview(template, data) {
     .replace(/\{time\}/g,          '12:00:00');
 }
 
-// Keys managed internally (embed panel, node meta) — never rendered as plain text inputs
+// Keys managed internally — never rendered as plain text inputs in the node body.
+// Includes: embed settings, DM settings, structured objects (pages/dropdown/buttons).
 const EMBED_KEYS = new Set([
-  'embedEnabled', 'embedColor', 'embedTitle', 'embedFooter',
+  'embedEnabled', 'embedColor', 'embedTitle', 'embedFooter', 'embedTimestamp',
   'logoUrl', 'logoName', 'imageUrl', 'imagePosition',
   'dmEnabled', 'dmMessage',
+  // Page menu — arrays/objects that can't be edited as plain text inputs
+  'pages', 'dropdown', 'buttons',
 ]);
 
 export default function PluginNode({ id, data, selected }) {
