@@ -39,7 +39,7 @@ module.exports = {
     moderation_slowmode: {
       label: 'Slowmode',
       icon: 'SM',
-      color: '#7C3AED',
+      color: '#B91C1C',
       description: 'Prefix command to set slowmode. Usage: slowmode [seconds] or slowmode #channel [seconds]',
       inputs: [{ id: 'in', label: 'Trigger', type: 'flow' }],
       outputs: [{ id: 'out', label: 'Continue', type: 'flow' }],
@@ -63,11 +63,11 @@ module.exports = {
         if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
 
         if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
-          await message.reply('I need Manage Channels permission.').catch(() => {});
+          await message.reply('I need Manage Channels permission.').catch(() => { });
           return false;
         }
         if (!message.member?.permissions.has(PermissionFlagsBits.ManageChannels)) {
-          await message.reply('You need Manage Channels permission.').catch(() => {});
+          await message.reply('You need Manage Channels permission.').catch(() => { });
           return false;
         }
 
@@ -77,11 +77,11 @@ module.exports = {
 
         const targetChannel = resolveTargetChannel(message, channelToken);
         if (!targetChannel) {
-          await message.reply(`Usage: \`${cmd} [seconds]\` or \`${cmd} #channel [seconds]\``).catch(() => {});
+          await message.reply(`Usage: \`${cmd} [seconds]\` or \`${cmd} #channel [seconds]\``).catch(() => { });
           return false;
         }
         if (!targetChannel.isTextBased() || targetChannel.type === ChannelType.DM || !('setRateLimitPerUser' in targetChannel)) {
-          await message.reply('Please choose a text channel that supports slowmode.').catch(() => {});
+          await message.reply('Please choose a text channel that supports slowmode.').catch(() => { });
           return false;
         }
 
@@ -92,7 +92,7 @@ module.exports = {
         try {
           await targetChannel.setRateLimitPerUser(seconds, `Slowmode set by ${message.author.tag}`);
         } catch (err) {
-          await message.reply(`Failed to set slowmode: ${err.message}`).catch(() => {});
+          await message.reply(`Failed to set slowmode: ${err.message}`).catch(() => { });
           return false;
         }
 
@@ -105,7 +105,7 @@ module.exports = {
           if (ctx.sendEmbed) await ctx.sendEmbed(message, node.data, text);
           else await message.channel.send(text);
         } catch {
-          await message.channel.send(text).catch(() => {});
+          await message.channel.send(text).catch(() => { });
         }
 
         return true;

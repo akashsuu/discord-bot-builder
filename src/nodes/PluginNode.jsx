@@ -48,6 +48,8 @@ const EMBED_KEYS = new Set([
   'channelsTemplate', 'rolesTemplate', 'boostTemplate', 'verificationTemplate',
 ]);
 
+const PLUGIN_HEADER_PURPLE = '#7c3aed';
+
 // ── Small section heading ──────────────────────────────────────────────────────
 function SectionHead({ color = '#888', children }) {
   return (
@@ -259,7 +261,7 @@ export default function PluginNode({ id, type, data, selected }) {
       style={{ minWidth: 260 }}
     >
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="bl-node-hdr" style={{ background: data._color || '#2A2A3A' }}>
+      <div className="bl-node-hdr" style={{ background: PLUGIN_HEADER_PURPLE }}>
         <button className="bl-collapse-btn" onClick={toggle} title={collapsed ? 'Expand' : 'Minimize'}>
           {collapsed ? '▶' : '▼'}
         </button>

@@ -1,6 +1,7 @@
 'use strict';
 
 const { PermissionFlagsBits } = require('discord.js');
+const warningsStore = globalThis.__warningsStore ?? (globalThis.__warningsStore = new Map());
 
 function applyTemplate(template, vars) {
   return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
@@ -20,6 +21,11 @@ function buildVars(message, target, reason) {
     server: message.guild?.name || 'Unknown',
     channel: message.channel?.name || 'Unknown'
   };
+}
+
+function getGuildWarnings(guildId) {
+  if (!warningsStore.has(guildId)) warningsStore.set(guildId, new Map());
+  return warningsStore.get(guildId);
 }
 
 module.exports = {
@@ -89,6 +95,15 @@ module.exports = {
           || 'No reason provided';
 
         const vars = buildVars(message, target, reason);
+
+        const guildWarnings = getGuildWarnings(message.guild.id);
+        if (!guildWarnings.has(target.id)) guildWarnings.set(target.id, []);
+        guildWarnings.get(target.id).push({
+          userId: target.id,
+          moderatorId: message.author.id,
+          reason,
+          at: Date.now()
+        });
 
         if (node.data?.dmEnabled) {
           const dmText = applyTemplate(

@@ -1,6 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 /* ── Blender-exact design tokens ── */
 :root {
-  --bl-bg:        #282828;
+  --bl-bg:        #0a0a0a;
   --bl-panel:     #1D1D1D;
   --bl-header:    #1A1A1A;
   --bl-input:     #111111;
@@ -269,11 +272,17 @@ code {
   flex: 1;
   position: relative;
   height: 100%;
-  background: var(--bl-bg);
+  background: #0f0f0f;
 }
 
 /* React Flow overrides */
-.react-flow__renderer { background: var(--bl-bg) !important; }
+.node-editor-flow,
+.node-editor-flow .react-flow__renderer,
+.node-editor-flow .react-flow__pane,
+.node-editor-flow .react-flow__viewport,
+.node-editor-flow .react-flow__background {
+  background: #0f0f0f !important;
+}
 .react-flow__attribution { display: none !important; }
 .react-flow__pane { cursor: default; }
 
@@ -299,8 +308,12 @@ code {
   fill: var(--bl-text) !important;
 }
 
-.react-flow__edge-path { stroke-width: 1.5px !important; }
-.react-flow__connection-path { stroke-width: 1.5px !important; }
+.react-flow__edge-path,
+.react-flow__connection-path {
+  stroke: #a855f7 !important;
+  stroke-width: 2px !important;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, .85));
+}
 
 .canvas-info {
   background: rgba(0,0,0,.5);
@@ -669,84 +682,59 @@ code {
 }
 
 /* ────────────────────────────────────────────────────
-   BLENDER NODES
+   BLENDER NODES -> OBSIDIAN/AI THEME
 ──────────────────────────────────────────────────── */
+.glass-panel {
+  @apply bg-black/60 backdrop-blur-xl border border-purple-900/40 rounded-2xl shadow-[0_4px_30px_rgba(139,92,246,0.1)];
+}
+
+.node-card {
+  @apply min-w-[260px] bg-black/80 backdrop-blur-xl border border-purple-900/40 rounded-2xl shadow-lg transition-all duration-300 text-[11px] hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] hover:-translate-y-0.5;
+}
+
+.purple-glow {
+  @apply border-[#8B5CF6] shadow-[0_0_25px_rgba(139,92,246,0.4)] !important;
+}
+
 .bl-node {
-  min-width: 190px;
-  border-radius: var(--r);
-  border: 1px solid var(--bl-border);
-  box-shadow: 0 2px 8px rgba(0,0,0,.5);
-  transition: none;
-  font-size: 11px;
+  @apply node-card;
 }
 
 .bl-node.selected {
-  border-color: var(--select-col) !important;
-  box-shadow: 0 0 0 1px var(--select-col), 0 2px 10px rgba(0,0,0,.6) !important;
+  @apply purple-glow;
 }
 
 .bl-node-hdr {
-  height: 22px;
-  display: flex;
-  align-items: center;
-  padding: 0 8px 0 4px;
-  border-radius: var(--r) var(--r) 0 0;
-  font-size: 11px;
-  font-weight: 600;
-  gap: 4px;
-  cursor: default;
-  position: relative;
+  @apply h-8 flex items-center px-3 border-b border-purple-900/40 rounded-t-2xl text-[11px] font-semibold gap-2 cursor-default relative bg-gradient-to-r from-purple-500/20 to-fuchsia-500/10;
 }
 
 /* minimized: round all corners, no bottom border radius gap */
 .bl-node-min .bl-node-hdr {
-  border-radius: var(--r);
+  @apply rounded-2xl border-b-0;
 }
 .bl-node-min {
-  min-width: 150px !important;
+  @apply !min-w-[150px];
 }
 
 .bl-collapse-btn {
-  background: none;
-  border: none;
-  color: rgba(255,255,255,0.35);
-  cursor: pointer;
-  font-size: 8px;
-  padding: 2px 2px;
-  line-height: 1;
-  border-radius: 2px;
-  transition: color .1s, background .1s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
+  @apply bg-transparent border-none text-zinc-500 cursor-pointer text-[9px] p-1 rounded-md transition-colors flex items-center justify-center w-5 h-5 shrink-0 hover:text-zinc-200 hover:bg-zinc-800;
 }
-.bl-collapse-btn:hover {
-  color: #fff;
-  background: rgba(255,255,255,0.12);
-}
-.bl-node-hdr-icon { font-size: 11px; }
-.bl-node-hdr-title { color: #ddd; letter-spacing: 0.2px; }
+.bl-node-hdr-icon { @apply text-sm; }
+.bl-node-hdr-title { @apply text-zinc-200 tracking-wide font-['Outfit']; }
 
-.bl-hdr-event   { background: var(--nh-event); }
+.bl-hdr-event   { background: #555; }
 .bl-hdr-channel { background: var(--nh-channel); }
 .bl-hdr-client  { background: var(--nh-client); }
 .bl-hdr-emoji   { background: var(--nh-emoji); }
-.bl-hdr-guild   { background: var(--nh-guild); }
+.bl-hdr-guild   { background: #555; }
 .bl-hdr-member  { background: var(--nh-member); }
 .bl-hdr-role    { background: var(--nh-role); }
-.bl-hdr-command { background: var(--nh-command); }
+.bl-hdr-command { background: #555; }
 .bl-hdr-action  { background: var(--nh-action); }
 .bl-hdr-cond    { background: var(--nh-cond); }
 
 .bl-node-body {
-  background: var(--bl-elevated);
-  border-radius: 0 0 var(--r) var(--r);
-  padding: 4px 0;
-  display: flex;
-  flex-direction: column;
+  @apply bg-[#0d0b14]/80 rounded-b-2xl p-2 flex flex-col gap-1;
 }
 
 /* socket rows */
@@ -784,44 +772,17 @@ code {
 
 /* node input fields */
 .bl-field {
-  padding: 2px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  @apply px-2 py-1 flex flex-col gap-1.5;
 }
 .bl-field-lbl {
-  font-size: 10px;
-  color: var(--bl-text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 1px;
+  @apply text-[10px] text-zinc-400 font-semibold tracking-wider uppercase font-['Outfit'];
 }
 .bl-node-input {
-  width: 100%;
-  background: #222;
-  border: 1px solid #1A1A1A;
-  border-radius: 2px;
-  color: var(--bl-text);
-  padding: 3px 6px;
-  font-size: 11px;
-  outline: none;
-  transition: border-color .12s;
+  @apply w-full bg-black/50 border border-purple-900/40 rounded-lg text-zinc-200 px-2.5 py-1.5 text-[11px] outline-none transition-all focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] hover:bg-[#0d0b14];
 }
-.bl-node-input:focus { border-color: var(--select-col); }
 .bl-node-textarea {
-  width: 100%;
-  background: #222;
-  border: 1px solid #1A1A1A;
-  border-radius: 2px;
-  color: var(--bl-text);
-  padding: 3px 6px;
-  font-size: 11px;
-  outline: none;
-  resize: vertical;
-  min-height: 48px;
-  transition: border-color .12s;
+  @apply w-full bg-black/50 border border-purple-900/40 rounded-lg text-zinc-200 px-2.5 py-1.5 text-[11px] outline-none transition-all focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] hover:bg-[#0d0b14] min-h-[48px] resize-y;
 }
-.bl-node-textarea:focus { border-color: var(--select-col); }
 .bl-node-select {
   width: 100%;
   background: #222;
@@ -876,12 +837,7 @@ code {
    DISCORD PREVIEW PANEL (N-panel section)
 ──────────────────────────────────────────────────── */
 .dc-wrap {
-  background: #313338;
-  margin: 6px;
-  border-radius: 4px;
-  padding: 10px 8px;
-  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
-  font-size: 13px;
+  @apply bg-[#313338] m-1.5 rounded-xl p-3 font-['gg_sans',_'Noto_Sans',_Arial,_sans-serif] text-[13px] shadow-lg border border-zinc-800/50;
 }
 
 .dc-no-out {
@@ -970,12 +926,8 @@ code {
 
 /* Discord Embed */
 .dc-embed {
-  margin-top: 4px;
-  background: #2b2d31;
+  @apply mt-1.5 bg-[#2b2d31] rounded-r-xl rounded-l-md px-3 py-2.5 max-w-full shadow-sm;
   border-left: 4px solid #5865F2;
-  border-radius: 0 4px 4px 0;
-  padding: 10px 12px 10px 10px;
-  max-width: 100%;
 }
 
 .dc-embed-inner {

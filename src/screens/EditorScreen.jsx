@@ -10,8 +10,10 @@ import ReactFlow, {
   ReactFlowProvider,
   BackgroundVariant,
   Panel,
+  SelectionMode,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { useProject } from '../context/ProjectContext';
 import builtinNodeTypes, { DEFAULT_NODE_DATA, NODE_PALETTE } from '../nodes/nodeTypes';
@@ -572,11 +574,11 @@ function NPanel({ selectedNode, setNodes }) {
 
   if (!selectedNode) {
     return (
-      <div className="bl-npanel">
-        <div className="bl-npanel-empty">
+      <div className="w-72 min-w-[288px] bg-zinc-950/40 backdrop-blur-3xl border-l border-zinc-800/50 flex flex-col overflow-hidden text-xs text-zinc-400 absolute right-0 top-12 bottom-0 z-50 shadow-2xl">
+        <div className="flex items-center justify-center flex-1 text-center p-6 leading-relaxed">
           Select a node<br />to see properties
         </div>
-        <div className="bl-npanel-hint">Press N to hide this panel</div>
+        <div className="p-3 text-[10px] text-zinc-500 border-t border-zinc-800/50">Press N to hide this panel</div>
       </div>
     );
   }
@@ -585,7 +587,13 @@ function NPanel({ selectedNode, setNodes }) {
   const d = selectedNode.data;
 
   return (
-    <div className="bl-npanel">
+    <motion.div 
+      initial={{ x: 300, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: 300, opacity: 0 }}
+      transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
+      className="w-80 min-w-[320px] bg-zinc-900/60 backdrop-blur-2xl border border-zinc-800 rounded-2xl flex flex-col overflow-hidden text-xs absolute right-4 top-4 bottom-4 z-50 shadow-2xl shadow-black/50"
+    >
       {/* Node section */}
       <div className="bl-npanel-section">
         <div className="bl-npanel-section-hdr" onClick={() => toggle('node')}>
@@ -725,17 +733,21 @@ function NPanel({ selectedNode, setNodes }) {
 
       {/* Discord Preview section — shown for any node that outputs something */}
       {(!selectedNode.type.startsWith('event_') && selectedNode.type !== 'condition_branch') && (
-        <div className="bl-npanel-section">
-          <div className="bl-npanel-section-hdr" onClick={() => toggle('preview')}>
-            <span className="arrow">{openSections.preview ? '▼' : '▶'}</span>
+        <div className="border-b border-zinc-800/50">
+          <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900/80 cursor-pointer text-[11px] font-semibold text-zinc-400 uppercase tracking-wider select-none hover:text-zinc-200" onClick={() => toggle('preview')}>
+            <span className="text-[9px]">{openSections.preview ? '▼' : '▶'}</span>
             Discord Preview
           </div>
-          {openSections.preview && <DiscordPreview node={selectedNode} />}
+          {openSections.preview && (
+            <div className="p-3 bg-zinc-950/50">
+              <DiscordPreview node={selectedNode} />
+            </div>
+          )}
         </div>
       )}
 
-      <div className="bl-npanel-hint">Press N to toggle panel</div>
-    </div>
+      <div className="p-3 text-[10px] text-zinc-500 border-t border-zinc-800/50 mt-auto">Press N to toggle panel</div>
+    </motion.div>
   );
 }
 
@@ -756,6 +768,26 @@ function EditorInner() {
       setPluginMeta(types || []);
     }).catch(() => {});
   }, []);
+
+  // Keep existing plugin nodes visually in sync with latest plugin metadata
+  // (e.g. when a plugin color/icon/label is changed on disk).
+  useEffect(() => {
+    if (!pluginMeta.length) return;
+    const pluginByType = new Map(pluginMeta.map((p) => [p.type, p]));
+    setNodes((prev) => prev.map((n) => {
+      const meta = pluginByType.get(n.type);
+      if (!meta) return n;
+      return {
+        ...n,
+        data: {
+          ...n.data,
+          _color: meta.color || n.data?._color,
+          _icon: meta.icon || n.data?._icon,
+          _label: meta.label || n.data?._label,
+        },
+      };
+    }));
+  }, [pluginMeta, setNodes]);
 
   // Build combined nodeTypes: builtins + one PluginNode component per plugin type
   const nodeTypes = useMemo(() => {
@@ -809,7 +841,11 @@ function EditorInner() {
     setEdges((eds) => addEdge({
       ...params,
       type: 'default',
-      style: { stroke: '#C49C00', strokeWidth: 1.5 },
+      style: {
+        stroke: '#a855f7',
+        strokeWidth: 2,
+        filter: 'drop-shadow(0 0 6px rgba(168,85,247,0.85))',
+      },
     }, eds));
   }, [setEdges]);
 
@@ -880,26 +916,50 @@ function EditorInner() {
             deleteKeyCode="Delete"
             snapToGrid
             snapGrid={[10, 10]}
+            selectionOnDrag={true}
+            panOnDrag={[1, 2]}
+            panOnScroll={false}
+            zoomOnScroll={true}
+            selectionMode={SelectionMode.Partial}
+            minZoom={0.1}
+            maxZoom={2}
             defaultEdgeOptions={{
               type: 'default',
-              style: { stroke: '#C49C00', strokeWidth: 1.5 },
+              style: { stroke: '#a855f7', strokeWidth: 2, filter: 'drop-shadow(0 0 5px rgba(168,85,247,0.5))' },
             }}
-            connectionLineStyle={{ stroke: '#C49C00', strokeWidth: 1.5 }}
+            connectionLineStyle={{
+              stroke: '#a855f7',
+              strokeWidth: 2,
+              filter: 'drop-shadow(0 0 6px rgba(168,85,247,0.85))',
+            }}
+            className="node-editor-flow"
           >
+            {/* Base line grid — thin grey lines on black */}
             <Background
-              variant={BackgroundVariant.Dots}
-              gap={20}
+              id="1"
+              variant={BackgroundVariant.Lines}
+              gap={40}
               size={1}
-              color="#333"
+              color="#787878"
             />
-            <Controls showInteractive={false} />
+            {/* Intersection dots — brighter so grid nodes are clear */}
+            <Background
+              id="2"
+              variant={BackgroundVariant.Dots}
+              gap={40}
+              size={3}
+              color="#cfcfcf"
+            />
+            <Controls className="bg-black/60 backdrop-blur-xl border border-purple-900/30 rounded-xl overflow-hidden shadow-xl" />
             <MiniMap
-              nodeColor={(n) => MINIMAP_NODE_COLOR[n.type] || '#3D3D3D'}
-              maskColor="rgba(13,13,13,0.75)"
-              style={{ background: '#1D1D1D', border: '1px solid #111' }}
+              nodeColor={(n) => MINIMAP_NODE_COLOR[n.type] || '#2e1a47'}
+              maskColor="rgba(0, 0, 0, 0.7)"
+              style={{ background: '#0d0b14', border: '1px solid #2e1a47', borderRadius: '12px' }}
             />
             <Panel position="top-right">
-              <div className="canvas-info">{nodes.length} nodes · {edges.length} edges · RMB = add</div>
+              <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full px-4 py-1.5 text-[10px] font-medium text-zinc-400 shadow-xl select-none">
+                {nodes.length} nodes · {edges.length} edges · RMB = add
+              </div>
             </Panel>
           </ReactFlow>
         </div>

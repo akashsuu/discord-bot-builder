@@ -7,7 +7,7 @@
   "nodeConfig": {
     "label": "Slowmode",
     "icon": "SM",
-    "color": "#7C3AED",
+    "color": "#B91C1C",
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
