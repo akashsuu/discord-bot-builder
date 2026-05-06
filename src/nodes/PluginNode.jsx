@@ -43,6 +43,9 @@ const EMBED_KEYS = new Set([
   'logoUrl', 'logoName', 'imageUrl', 'imagePosition',
   'dmEnabled', 'dmMessage',
   'pages', 'dropdown', 'buttons',
+  // serverinfo template sections
+  'ownerTemplate', 'serverIdTemplate', 'createdTemplate', 'membersTemplate',
+  'channelsTemplate', 'rolesTemplate', 'boostTemplate', 'verificationTemplate',
 ]);
 
 // ── Small section heading ──────────────────────────────────────────────────────
@@ -122,8 +125,64 @@ function DiscordPreviewInline({ pages, pageIdx, data }) {
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
-export default function PluginNode({ id, data, selected }) {
+// ── Server Info inline Discord preview ───────────────────────────────────────
+const SI_DEMO = {
+  server: 'My Server',  serverId: '123456789012345678',
+  memberCount: '1,234', humanCount: '1,200', botCount: '34',
+  owner: 'ServerOwner', ownerMention: '@ServerOwner', ownerId: '987654321098765432',
+  boostTier: 'No Level', boostBar: 'No boosts yet', boostCount: '0',
+  roles: '25', textChannels: '13', voiceChannels: '4', categories: '6',
+  verification: '🔒 Low',
+  createdAt: 'January 1, 2023',
+  createdTimestamp: 'January 1, 2023 (2 years ago)',
+  user: 'Akashsuu', command: 'serverinfo',
+  date: '2026-05-06', time: '12:00:00',
+};
+
+function siApply(template, extra = {}) {
+  const vars = { ...SI_DEMO, ...extra };
+  return String(template || '').replace(/\{(\w+)\}/g, (m, k) =>
+    Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m
+  );
+}
+
+function DiscordPreviewServerInfo({ data }) {
+  const color = data.embedColor || '#5865F2';
+
+  const sections = [
+    data.ownerTemplate        || '👑 Owner\n{ownerMention} ({owner})',
+    data.serverIdTemplate     || '🆔 Server ID\n{serverId}',
+    data.createdTemplate      || '📅 Created\n{createdAt} ({createdTimestamp})',
+    data.membersTemplate      || '👥 Members\n{memberCount} total\n👤 Humans: {humanCount}\n🤖 Bots: {botCount}',
+    data.channelsTemplate     || '💬 Channels\n💬 Text: {textChannels}\n🔊 Voice: {voiceChannels}\n📂 Categories: {categories}',
+    data.rolesTemplate        || '🎭 Roles\n{roles} roles',
+    data.boostTemplate        || '🚀 Boost — {boostTier}\n{boostBar}\n{boostCount} boosts',
+    data.verificationTemplate || '🔒 Verification\n{verification}',
+  ].map((t) => siApply(t)).join('\n\n');
+
+  const title  = siApply(data.embedTitle  || '🏠 {server}');
+  const footer = siApply(data.embedFooter || 'Server ID: {serverId}');
+
+  return (
+    <div style={{ background: '#36393F', borderRadius: 5, padding: '7px 8px', fontSize: 11, marginTop: 6 }}>
+      {/* Bot row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+        <div style={{ width: 26, height: 26, borderRadius: '50%', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, flexShrink: 0 }}>🏠</div>
+        <span style={{ color: '#FFF', fontWeight: 700, fontSize: 12 }}>YourBot</span>
+        <span style={{ background: '#5865F2', color: '#FFF', fontSize: 9, padding: '1px 4px', borderRadius: 3, fontWeight: 700 }}>BOT</span>
+        <span style={{ color: '#72767D', fontSize: 10, marginLeft: 'auto' }}>Today at 12:00</span>
+      </div>
+      {/* Embed */}
+      <div style={{ borderLeft: `4px solid ${color}`, background: '#2F3136', borderRadius: '0 4px 4px 0', padding: '8px 10px' }}>
+        <div style={{ color: '#FFF', fontWeight: 700, fontSize: 12, marginBottom: 5 }}>{title}</div>
+        <div style={{ color: '#DCDDDE', fontSize: 10, whiteSpace: 'pre-wrap', lineHeight: 1.6, wordBreak: 'break-word' }}>{sections}</div>
+        <div style={{ color: '#72767D', fontSize: 10, marginTop: 6, borderTop: '1px solid #40444B', paddingTop: 4 }}>{footer}</div>
+      </div>
+    </div>
+  );
+}
+
+export default function PluginNode({ id, type, data, selected }) {
   const { setNodes }    = useReactFlow();
   const collapsed       = !!data.collapsed;
   const [previewPg, setPreviewPg] = useState(0);
@@ -166,13 +225,26 @@ export default function PluginNode({ id, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k)
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const hasOutput   = 'output' in data;
   const previewText = hasOutput ? pluginPreview(data.output, data, {}) : null;
-  const hasPages    = 'pages'    in data;
+
+  // Show page editor if pages key exists OR if this is a known page-menu node type
+  const PAGE_MENU_TYPES = new Set(['page_menu', 'util_pagemenu', 'util_helpmenu']);
+  const isPageMenuType  = PAGE_MENU_TYPES.has(type || '');
+  const hasPages    = 'pages' in data || isPageMenuType;
   const hasDropdown = 'dropdown' in data;
   const hasButtons  = 'buttons'  in data;
+
+  // Auto-seed a blank pages array on first render if this is a page-menu type
+  // but arrived without pages (e.g. old saved project before fix)
+  React.useEffect(() => {
+    if (isPageMenuType && !Array.isArray(data.pages)) {
+      update('pages', [{ id: `page_1`, title: 'Page 1', content: 'Edit this text' }]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const dd  = data.dropdown || {};
   const bt  = data.buttons  || {};
@@ -229,7 +301,7 @@ export default function PluginNode({ id, data, selected }) {
           ))}
 
           {/* ── Output message template (for non-page plugins) ───────────── */}
-          {hasOutput && (
+          {hasOutput && type !== 'util_serverinfo' && (
             <>
               <div className="bl-node-divider" />
               <div className="bl-field">
@@ -261,6 +333,69 @@ export default function PluginNode({ id, data, selected }) {
               )}
             </>
           )}
+
+          {/* ══════════════════════════════════════════════════════════════
+              SERVER INFO — editable embed section templates
+          ══════════════════════════════════════════════════════════════ */}
+          {type === 'util_serverinfo' && (() => {
+            const SI_FIELDS = [
+              { key: 'embedTitle',          label: '🏠 Embed Title',    hint: '{server}' },
+              { key: 'ownerTemplate',       label: '👑 Owner',          hint: '{ownerMention} {owner} {ownerId}' },
+              { key: 'serverIdTemplate',    label: '🆔 Server ID',      hint: '{serverId}' },
+              { key: 'createdTemplate',     label: '📅 Created',        hint: '{createdAt} {createdTimestamp}' },
+              { key: 'membersTemplate',     label: '👥 Members',        hint: '{memberCount} {humanCount} {botCount}' },
+              { key: 'channelsTemplate',    label: '💬 Channels',       hint: '{textChannels} {voiceChannels} {categories}' },
+              { key: 'rolesTemplate',       label: '🎭 Roles',          hint: '{roles}' },
+              { key: 'boostTemplate',       label: '🚀 Boost',          hint: '{boostTier} {boostBar} {boostCount}' },
+              { key: 'verificationTemplate',label: '🔒 Verification',   hint: '{verification}' },
+              { key: 'embedFooter',         label: '📝 Footer',         hint: '{serverId} {server} {user}' },
+            ];
+            return (
+              <>
+                <div className="bl-node-divider" style={{ borderColor: '#1A3A5A' }} />
+                <div className="bl-field">
+                  <SectionHead color="#7EB8F7">🏠 Server Info Sections</SectionHead>
+                </div>
+                <div className="nowheel" style={{ maxHeight: 480, overflowY: 'auto' }}>
+                  {SI_FIELDS.map(({ key, label, hint }) => (
+                    <div key={key} style={{ marginBottom: 8 }}>
+                      <span style={{ color: '#9AAFBF', fontSize: 10, fontWeight: 600, display: 'block', marginBottom: 3 }}>
+                        {label}
+                      </span>
+                      <textarea
+                        className="bl-node-textarea"
+                        value={data[key] || ''}
+                        onChange={(e) => update(key, e.target.value)}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        placeholder={hint}
+                        spellCheck={false}
+                        rows={key === 'embedTitle' || key === 'embedFooter' ? 1 : 3}
+                        style={{ fontSize: 11, minHeight: key === 'embedTitle' || key === 'embedFooter' ? 28 : 52 }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div style={{ color: '#3A5A7A', fontSize: 10, padding: '2px 0 4px', lineHeight: 1.6 }}>
+                  <span style={{ color: '#7EB8F7' }}>{'{server} {serverId} {memberCount}'}</span>
+                  {' · '}
+                  <span style={{ color: '#A8D08D' }}>{'{owner} {ownerMention} {ownerId}'}</span>
+                  {' · '}
+                  <span style={{ color: '#C8A0F0' }}>{'{roles} {verification} {createdAt}'}</span>
+                </div>
+
+                {/* ── Live Discord preview ── */}
+                <div className="bl-node-divider" style={{ borderColor: '#1A3A5A' }} />
+                <div className="bl-field">
+                  <SectionHead color="#72767D">👁 Discord Preview</SectionHead>
+                </div>
+                <DiscordPreviewServerInfo data={data} />
+              </>
+            );
+          })()}
+
+
 
           {/* ── DM target ────────────────────────────────────────────────── */}
           {'dmEnabled' in data && (
@@ -332,6 +467,22 @@ export default function PluginNode({ id, data, selected }) {
                           updatePages(newPages);
                         }}
                         style={{ width: '100%', marginBottom: 5 }}
+                      />
+
+                      {/* DESCRIPTION */}
+                      <input
+                        className="bl-node-input"
+                        value={page.description || ""}
+                        placeholder="Dropdown Description (Optional)"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          const newPages = [...pages];
+                          newPages[i] = { ...newPages[i], description: e.target.value };
+                          updatePages(newPages);
+                        }}
+                        style={{ width: '100%', marginBottom: 5, fontSize: 10 }}
                       />
 
                       {/* CONTENT */}

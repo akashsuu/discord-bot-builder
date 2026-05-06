@@ -1,0 +1,25 @@
+{
+  "name": "Anti Link",
+  "version": "1.0.0",
+  "description": "Detects and blocks links in server messages.",
+  "author": "Akashsuu",
+  "icon": "LINK",
+  "nodeConfig": {
+    "label": "Anti Link",
+    "icon": "LINK",
+    "color": "#22577A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "enabled": true,
+      "deleteMessage": true,
+      "warnUser": true,
+      "ignoreAdmins": true,
+      "blockDiscordInvites": true,
+      "allowDomains": "",
+      "output": "{mention}, links are not allowed here.\nBlocked: `{link}`",
+      "embedEnabled": false,
+      "embedColor": "#E74C3C"
+    }
+  }
+}

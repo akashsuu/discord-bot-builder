@@ -618,7 +618,7 @@ function NPanel({ selectedNode, setNodes }) {
               <div style={{ color: '#666', fontSize: 11 }}>No editable properties.</div>
             )}
 
-            {selectedNode.type === 'page_menu' && (
+            {['page_menu', 'util_pagemenu', 'util_helpmenu'].includes(selectedNode.type) && (
               <>
                 <div style={{ color: '#888', fontSize: 10, lineHeight: 1.6, marginBottom: 4 }}>
                   Edit pages, dropdown &amp; buttons directly on the node.<br />
@@ -634,6 +634,26 @@ function NPanel({ selectedNode, setNodes }) {
                 <div className="bl-prop-row">
                   <span className="bl-prop-label">Footer</span>
                   <input className="bl-field-input" value={d.embedFooter || ''} onChange={(e) => update('embedFooter', e.target.value)} placeholder="Page {page} of {totalPages}" spellCheck={false} />
+                </div>
+              </>
+            )}
+
+            {selectedNode.type === 'util_serverinfo' && (
+              <>
+                <div style={{ color: '#888', fontSize: 10, lineHeight: 1.6, marginBottom: 4 }}>
+                  Edit each section directly on the node.<br />
+                  Quick settings below:
+                </div>
+                <div className="bl-prop-row">
+                  <span className="bl-prop-label">Embed Color</span>
+                  <div className="bl-color-field">
+                    <input type="color" className="bl-color-pick" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} />
+                    <input type="text" className="bl-field-input" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
+                  </div>
+                </div>
+                <div className="bl-prop-row">
+                  <span className="bl-prop-label">Command</span>
+                  <input className="bl-field-input" value={d.command || 'serverinfo'} onChange={(e) => update('command', e.target.value)} spellCheck={false} />
                 </div>
               </>
             )}
@@ -828,7 +848,7 @@ function EditorInner() {
         logoName:     '',
         imageUrl:     '',
         embedFooter:  '',
-        ...(pm.defaults || {}),
+        ...JSON.parse(JSON.stringify(pm.defaults || {})),
       };
     }
 

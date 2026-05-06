@@ -36,26 +36,26 @@ function relativeTimestamp(date) {
 
 module.exports = {
   meta: {
-    name:          'Server Info',
-    version:       '1.0.0',
-    author:        'Akashsuu',
-    description:   'Sends detailed server information as a rich embed or plain text.',
+    name: 'Server Info',
+    version: '1.0.0',
+    author: 'Akashsuu',
+    description: 'Sends detailed server information as a rich embed or plain text.',
     engineVersion: '>=1.0.0',
   },
 
   nodes: {
     util_serverinfo: {
-      label:       'Server Info',
-      icon:        '🏠',
-      color:       '#1A4A7A',
+      label: 'Server Info',
+      icon: '🏠',
+      color: '#1A4A7A',
       description: 'Shows server stats. Supports {server}, {serverId}, {memberCount}, {humanCount}, {botCount}, {owner}, {ownerId}, {boostLevel}, {boostCount}, {roles}, {textChannels}, {voiceChannels}, {categories}, {channels}, {verification}, {createdAt}, {description}, {user}.',
-      inputs:  [{ id: 'in',  label: 'Trigger',  type: 'flow' }],
+      inputs: [{ id: 'in', label: 'Trigger', type: 'flow' }],
       outputs: [{ id: 'out', label: 'Continue', type: 'flow' }],
 
       configSchema: {
-        command:     { type: 'string', default: 'serverinfo', required: true  },
-        output:      { type: 'string', default: '📊 **{server}** `{serverId}` · 👥 {memberCount} members · 👑 Owner: {owner} · 🚀 Boost Level {boostLevel}', required: false },
-        embedColor:  { type: 'string', default: '#5865F2',    required: false },
+        command: { type: 'string', default: 'serverinfo', required: true },
+        output: { type: 'string', default: '📊 **{server}** `{serverId}` · 👥 {memberCount} members · 👑 Owner: {owner} · 🚀 Boost Level {boostLevel}', required: false },
+        embedColor: { type: 'string', default: '#5865F2', required: false },
         embedFooter: { type: 'string', default: 'Server ID: {serverId}', required: false },
       },
 
@@ -64,9 +64,9 @@ module.exports = {
         if (!message.guild) return false;
 
         // ── 1. Command match ────────────────────────────────────────────────
-        const prefix  = ctx?.prefix || '';
-        const rawCmd  = (node.data?.command || 'serverinfo').trim();
-        const cmd     = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
+        const prefix = ctx?.prefix || '';
+        const rawCmd = (node.data?.command || 'serverinfo').trim();
+        const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         const content = message.content;
 
         if (!content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
@@ -86,18 +86,18 @@ module.exports = {
           try { members = (await guild.members.fetch()).values(); members = guild.members.cache; }
           catch { /* use cached data */ }
         }
-        const totalMembers  = guild.memberCount;
-        const botCount      = guild.members.cache.filter((m) => m.user.bot).size;
-        const humanCount    = totalMembers - botCount;
+        const totalMembers = guild.memberCount;
+        const botCount = guild.members.cache.filter((m) => m.user.bot).size;
+        const humanCount = totalMembers - botCount;
 
         // ── 4. Gather channel stats ─────────────────────────────────────────
-        const channels       = guild.channels.cache;
-        const textChannels   = channels.filter((c) => c.type === ChannelType.GuildText).size;
-        const voiceChannels  = channels.filter((c) => c.type === ChannelType.GuildVoice).size;
-        const stageChannels  = channels.filter((c) => c.type === ChannelType.GuildStageVoice).size;
-        const forumChannels  = channels.filter((c) => c.type === ChannelType.GuildForum).size;
-        const categories     = channels.filter((c) => c.type === ChannelType.GuildCategory).size;
-        const totalChannels  = channels.size;
+        const channels = guild.channels.cache;
+        const textChannels = channels.filter((c) => c.type === ChannelType.GuildText).size;
+        const voiceChannels = channels.filter((c) => c.type === ChannelType.GuildVoice).size;
+        const stageChannels = channels.filter((c) => c.type === ChannelType.GuildStageVoice).size;
+        const forumChannels = channels.filter((c) => c.type === ChannelType.GuildForum).size;
+        const categories = channels.filter((c) => c.type === ChannelType.GuildCategory).size;
+        const totalChannels = channels.size;
 
         // ── 5. Roles ────────────────────────────────────────────────────────
         const roleCount = guild.roles.cache.size - 1; // exclude @everyone
@@ -107,7 +107,7 @@ module.exports = {
         try {
           const ownerMember = await guild.fetchOwner();
           ownerName = ownerMember.user.username;
-          ownerId   = ownerMember.user.id;
+          ownerId = ownerMember.user.id;
         } catch { /* owner might not be fetchable */ }
 
         // ── 7. Boost ────────────────────────────────────────────────────────
@@ -115,8 +115,8 @@ module.exports = {
         const boostCount = guild.premiumSubscriptionCount ?? 0;
 
         // ── 8. Verification & features ──────────────────────────────────────
-        const verLabel    = VER_LEVEL[guild.verificationLevel] ?? '❓ Unknown';
-        const features    = (guild.features || [])
+        const verLabel = VER_LEVEL[guild.verificationLevel] ?? '❓ Unknown';
+        const features = (guild.features || [])
           .map((f) => f.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase()))
           .sort();
 
@@ -126,27 +126,27 @@ module.exports = {
 
         // ── 10. Build variable map for templates ────────────────────────────
         const vars = {
-          server:       guild.name,
-          serverName:   guild.name,
-          serverId:     guild.id,
-          memberCount:  fmt(totalMembers),
-          humanCount:   fmt(humanCount),
-          botCount:     fmt(botCount),
-          owner:        ownerName,
+          server: guild.name,
+          serverName: guild.name,
+          serverId: guild.id,
+          memberCount: fmt(totalMembers),
+          humanCount: fmt(humanCount),
+          botCount: fmt(botCount),
+          owner: ownerName,
           ownerId,
-          boostLevel:   String(boostLevel),
-          boostTier:    BOOST_TIER[boostLevel] ?? 'No Level',
-          boostCount:   String(boostCount),
-          roles:        String(roleCount),
+          boostLevel: String(boostLevel),
+          boostTier: BOOST_TIER[boostLevel] ?? 'No Level',
+          boostCount: String(boostCount),
+          roles: String(roleCount),
           textChannels: String(textChannels),
           voiceChannels: String(voiceChannels),
-          categories:   String(categories),
-          channels:     String(totalChannels),
+          categories: String(categories),
+          channels: String(totalChannels),
           verification: verLabel,
-          createdAt:    createdAtStr,
-          description:  guild.description || '',
-          user:         message.author?.username || 'Unknown',
-          command:      cmd,
+          createdAt: createdAtStr,
+          description: guild.description || '',
+          user: message.author?.username || 'Unknown',
+          command: cmd,
         };
 
         // ── 11. Send response ───────────────────────────────────────────────
@@ -158,13 +158,13 @@ module.exports = {
             createdTimestamp, features, ownerId, ownerName,
           });
         } else {
-          const tpl  = node.data?.output || '📊 **{server}** `{serverId}` · 👥 {memberCount} members';
+          const tpl = node.data?.output || '📊 **{server}** `{serverId}` · 👥 {memberCount} members';
           const text = applyTemplate(tpl, vars);
           try {
             if (ctx?.sendEmbed) await ctx.sendEmbed(message, { ...node.data, embedEnabled: false }, text);
-            else                await message.channel.send(text);
+            else await message.channel.send(text);
           } catch {
-            await message.channel.send(text).catch(() => {});
+            await message.channel.send(text).catch(() => { });
           }
         }
 
@@ -173,8 +173,8 @@ module.exports = {
 
       generateCode(node, prefix = '') {
         const rawCmd = (node.data?.command || 'serverinfo').replace(/"/g, '\\"');
-        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
-        const color  = hexToInt(node.data?.embedColor || '#5865F2');
+        const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
+        const color = hexToInt(node.data?.embedColor || '#5865F2');
         return `
 // ── Server Info ──────────────────────────────────────────────────────
 if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
@@ -226,107 +226,168 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
 // ── Rich embed builder ────────────────────────────────────────────────────────
 async function sendServerEmbed(message, guild, vars, nodeData, stats) {
   const {
-    textChannels, voiceChannels, stageChannels, forumChannels, categories,
-    boostLevel, boostCount, boostTier, humanCount, botCount, totalMembers,
-    roleCount, verLabel, createdTimestamp, features, ownerId, ownerName,
+    textChannels,
+    voiceChannels,
+    stageChannels,
+    forumChannels,
+    categories,
+    boostLevel,
+    boostCount,
+    boostTier,
+    humanCount,
+    botCount,
+    totalMembers,
+    roleCount,
+    verLabel,
+    createdTimestamp,
+    features,
+    ownerId,
+    ownerName,
   } = stats;
 
-  const color     = hexToInt(nodeData?.embedColor || '#5865F2');
-  const iconURL   = guild.iconURL({ size: 256, extension: 'png', dynamic: true }) || null;
-  const bannerURL = guild.bannerURL({ size: 1024, extension: 'png' }) || null;
-  const ts        = Math.floor(guild.createdAt.getTime() / 1000);
+  const color = hexToInt(nodeData?.embedColor || '#5865F2');
 
-  // Build channel detail string
-  const chanParts = [`💬 Text: **${textChannels}**`, `🔊 Voice: ${voiceChannels}`];
-  if (stageChannels > 0) chanParts.push(`🎙️ Stage: ${stageChannels}`);
-  if (forumChannels > 0) chanParts.push(`📋 Forum: ${forumChannels}`);
-  chanParts.push(`📂 Categories: ${categories}`);
+  const iconURL =
+    guild.iconURL({ size: 256, extension: 'png', dynamic: true }) || null;
 
-  // Build boost string
-  const boostBar = boostCount > 0
-    ? '🟣'.repeat(Math.min(boostCount, 10)) + (boostCount > 10 ? `+${boostCount - 10}` : '')
-    : 'No boosts yet';
+  const bannerURL =
+    guild.bannerURL({ size: 1024, extension: 'png' }) || null;
 
+  // ── Boost bar ─────────────────────────────────────────────────────────────
+  const boostBar =
+    boostCount > 0
+      ? '🟣'.repeat(Math.min(boostCount, 10)) +
+      (boostCount > 10 ? `+${boostCount - 10}` : '')
+      : 'No boosts yet';
+
+  // ── Extended template vars ───────────────────────────────────────────────
+  const fullVars = {
+    ...vars,
+
+    ownerMention: `<@${ownerId}>`,
+    createdTimestamp,
+
+    textChannels,
+    voiceChannels,
+    stageChannels,
+    forumChannels,
+    categories,
+
+    boostBar,
+    boostTier,
+    boostCount,
+
+    roles: roleCount,
+
+    verification: verLabel,
+  };
+
+  // ── Default editable templates ───────────────────────────────────────────
+  const ownerTemplate =
+    nodeData?.ownerTemplate ||
+    `👑 Owner
+{ownerMention} ({owner})`;
+
+  const serverIdTemplate =
+    nodeData?.serverIdTemplate ||
+    `🆔 Server ID
+{serverId}`;
+
+  const createdTemplate =
+    nodeData?.createdTemplate ||
+    `📅 Created
+{createdAt} ({createdTimestamp})`;
+
+  const membersTemplate =
+    nodeData?.membersTemplate ||
+    `👥 Members
+{memberCount} total
+👤 Humans: {humanCount}
+🤖 Bots: {botCount}`;
+
+  const channelsTemplate =
+    nodeData?.channelsTemplate ||
+    `💬 Channels
+💬 Text: {textChannels}
+🔊 Voice: {voiceChannels}
+📂 Categories: {categories}`;
+
+  const rolesTemplate =
+    nodeData?.rolesTemplate ||
+    `🎭 Roles
+{roles} roles`;
+
+  const boostTemplate =
+    nodeData?.boostTemplate ||
+    `🚀 Boost — {boostTier}
+{boostBar}
+{boostCount} boosts`;
+
+  const verificationTemplate =
+    nodeData?.verificationTemplate ||
+    `🔒 Verification
+{verification}`;
+
+  // ── Build embed ──────────────────────────────────────────────────────────
   const embed = {
-    title:  `🏠 ${guild.name}`,
+    title: applyTemplate(
+      nodeData?.embedTitle || '🏠 {server}',
+      fullVars
+    ),
+
     color,
+
     thumbnail: iconURL ? { url: iconURL } : undefined,
-    image:     bannerURL ? { url: bannerURL } : undefined,
-    description: guild.description || null,
 
-    fields: [
-      // Row 1 — identity
-      {
-        name:   '👑 Owner',
-        value:  `<@${ownerId}> (${ownerName})`,
-        inline: true,
-      },
-      {
-        name:   '🆔 Server ID',
-        value:  `\`${guild.id}\``,
-        inline: true,
-      },
-      {
-        name:   '📅 Created',
-        value:  `<t:${ts}:D> (<t:${ts}:R>)`,
-        inline: false,
-      },
+    image: bannerURL ? { url: bannerURL } : undefined,
 
-      // Row 2 — members
-      {
-        name:   '👥 Members',
-        value:  `**${fmt(totalMembers)}** total\n👤 Humans: ${fmt(humanCount)}\n🤖 Bots: ${fmt(botCount)}`,
-        inline: true,
-      },
-
-      // Row 3 — channels
-      {
-        name:   '💬 Channels',
-        value:  chanParts.join('\n'),
-        inline: true,
-      },
-
-      // Row 4 — roles
-      {
-        name:   '🎭 Roles',
-        value:  `**${roleCount}** roles`,
-        inline: true,
-      },
-
-      // Row 5 — boost
-      {
-        name:   `🚀 Boost — ${boostTier}`,
-        value:  `${boostBar}\n${boostCount} boost${boostCount !== 1 ? 's' : ''}`,
-        inline: true,
-      },
-
-      // Row 6 — verification
-      {
-        name:   '🔒 Verification',
-        value:  verLabel,
-        inline: true,
-      },
-    ],
+    description: [
+      applyTemplate(ownerTemplate, fullVars),
+      '',
+      applyTemplate(serverIdTemplate, fullVars),
+      '',
+      applyTemplate(createdTemplate, fullVars),
+      '',
+      applyTemplate(membersTemplate, fullVars),
+      '',
+      applyTemplate(channelsTemplate, fullVars),
+      '',
+      applyTemplate(rolesTemplate, fullVars),
+      '',
+      applyTemplate(boostTemplate, fullVars),
+      '',
+      applyTemplate(verificationTemplate, fullVars),
+    ].join('\n'),
 
     footer: {
       text: applyTemplate(
         nodeData?.embedFooter || 'Server ID: {serverId}',
-        vars
+        fullVars
       ),
     },
+
     timestamp: new Date().toISOString(),
   };
 
-  // Optional: server features
+  // ── Optional features field ──────────────────────────────────────────────
   if (features.length > 0) {
     const shown = features.slice(0, 8);
-    const extra = features.length > 8 ? ` +${features.length - 8} more` : '';
-    embed.fields.push({
-      name:   `✨ Features (${features.length})`,
-      value:  shown.join('\n') + extra,
-      inline: false,
-    });
+    const extra =
+      features.length > 8
+        ? ` +${features.length - 8} more`
+        : '';
+
+    embed.fields = [
+      {
+        name: `✨ Features (${features.length})`,
+        value: shown.join('\n') + extra,
+        inline: false,
+      },
+    ];
   }
 
-  await message.channel.send({ embeds: [embed] });
+  // ── Send ─────────────────────────────────────────────────────────────────
+  await message.channel.send({
+    embeds: [embed],
+  });
 }
