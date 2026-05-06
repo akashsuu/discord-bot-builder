@@ -1,0 +1,21 @@
+{
+  "name": "Channel Mute",
+  "version": "1.0.0",
+  "description": "Prefix command to mute a channel by disabling send messages for @everyone.",
+  "author": "Akashsuu",
+  "icon": "CM",
+  "nodeConfig": {
+    "label": "Channel Mute",
+    "icon": "CM",
+    "color": "#7C2D12",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "channelmute",
+      "reason": "No reason provided",
+      "output": "Channel {channelMention} has been muted by {mention}.\nReason: {reason}",
+      "embedEnabled": false,
+      "embedColor": "#B45309"
+    }
+  }
+}

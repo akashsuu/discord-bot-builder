@@ -1,0 +1,21 @@
+{
+  "name": "Slowmode",
+  "version": "1.0.0",
+  "description": "Prefix command to set channel slowmode duration.",
+  "author": "Akashsuu",
+  "icon": "SM",
+  "nodeConfig": {
+    "label": "Slowmode",
+    "icon": "SM",
+    "color": "#7C3AED",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "slowmode",
+      "defaultSeconds": 10,
+      "output": "{mention} set slowmode in {channelMention} to **{seconds}s**.",
+      "embedEnabled": false,
+      "embedColor": "#8B5CF6"
+    }
+  }
+}

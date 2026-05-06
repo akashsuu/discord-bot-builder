@@ -1,0 +1,22 @@
+{
+  "name": "Mute User",
+  "version": "1.0.0",
+  "description": "Prefix command to timeout (mute) a mentioned user.",
+  "author": "Akashsuu",
+  "icon": "MUTE",
+  "nodeConfig": {
+    "label": "Mute User",
+    "icon": "MUTE",
+    "color": "#6B21A8",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "mute",
+      "duration": "10m",
+      "reason": "No reason provided",
+      "output": "{targetMention} has been muted by {mention} for {duration}.\nReason: {reason}",
+      "embedEnabled": false,
+      "embedColor": "#7E22CE"
+    }
+  }
+}

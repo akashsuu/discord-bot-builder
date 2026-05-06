@@ -1,0 +1,21 @@
+{
+  "name": "Channel Unmute",
+  "version": "1.0.0",
+  "description": "Prefix command to unmute a channel by enabling send messages for @everyone.",
+  "author": "Akashsuu",
+  "icon": "CU",
+  "nodeConfig": {
+    "label": "Channel Unmute",
+    "icon": "CU",
+    "color": "#14532D",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "channelunmute",
+      "reason": "No reason provided",
+      "output": "Channel {channelMention} has been unmuted by {mention}.\nReason: {reason}",
+      "embedEnabled": false,
+      "embedColor": "#16A34A"
+    }
+  }
+}

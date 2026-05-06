@@ -1,0 +1,21 @@
+{
+  "name": "Whitelist",
+  "version": "1.0.0",
+  "description": "Prefix command to manage per-guild whitelisted user IDs.",
+  "author": "Akashsuu",
+  "icon": "WL",
+  "nodeConfig": {
+    "label": "Whitelist",
+    "icon": "WL",
+    "color": "#1D4ED8",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "whitelist",
+      "output": "{mention} whitelist {action} successful for `{targetId}`.",
+      "listOutput": "Whitelisted IDs ({count}): {ids}",
+      "embedEnabled": false,
+      "embedColor": "#2563EB"
+    }
+  }
+}

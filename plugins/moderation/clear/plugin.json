@@ -1,0 +1,22 @@
+{
+  "name": "Clear Chat",
+  "version": "1.0.0",
+  "description": "Prefix command to bulk delete messages from a channel.",
+  "author": "Akashsuu",
+  "icon": "CLR",
+  "nodeConfig": {
+    "label": "Clear Chat",
+    "icon": "CLR",
+    "color": "#374151",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "clear",
+      "defaultAmount": 10,
+      "maxAmount": 100,
+      "output": "Deleted **{deleted}** message(s) in {channelMention}.",
+      "embedEnabled": false,
+      "embedColor": "#4B5563"
+    }
+  }
+}

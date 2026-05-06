@@ -1,0 +1,22 @@
+{
+  "name": "Soft Ban",
+  "version": "1.0.0",
+  "description": "Prefix command to ban and immediately unban a user.",
+  "author": "Akashsuu",
+  "icon": "SB",
+  "nodeConfig": {
+    "label": "Soft Ban",
+    "icon": "SB",
+    "color": "#9A3412",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "softban",
+      "reason": "No reason provided",
+      "deleteDays": 1,
+      "output": "{targetMention} has been softbanned by {mention}.\nReason: {reason}",
+      "embedEnabled": false,
+      "embedColor": "#C2410C"
+    }
+  }
+}

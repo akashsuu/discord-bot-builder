@@ -1,0 +1,23 @@
+{
+  "name": "Lockdown",
+  "version": "1.0.0",
+  "description": "Prefix command to lock all lockable channels in a guild.",
+  "author": "Akashsuu",
+  "icon": "LD",
+  "nodeConfig": {
+    "label": "Lockdown",
+    "icon": "LD",
+    "color": "#7F1D1D",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "lockdown",
+      "reason": "Server lockdown",
+      "includeForum": true,
+      "includeVoice": false,
+      "output": "Lockdown complete by {mention}. Locked: {lockedCount}, Failed: {failedCount}. Reason: {reason}",
+      "embedEnabled": false,
+      "embedColor": "#991B1B"
+    }
+  }
+}

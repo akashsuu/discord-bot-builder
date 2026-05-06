@@ -1,0 +1,21 @@
+{
+  "name": "Unmute User",
+  "version": "1.0.0",
+  "description": "Prefix command to remove timeout (unmute) from a mentioned user.",
+  "author": "Akashsuu",
+  "icon": "UNM",
+  "nodeConfig": {
+    "label": "Unmute User",
+    "icon": "UNM",
+    "color": "#15803D",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "unmute",
+      "reason": "No reason provided",
+      "output": "{targetMention} has been unmuted by {mention}.\nReason: {reason}",
+      "embedEnabled": false,
+      "embedColor": "#16A34A"
+    }
+  }
+}

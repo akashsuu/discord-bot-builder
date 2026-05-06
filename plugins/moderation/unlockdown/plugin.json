@@ -1,0 +1,23 @@
+{
+  "name": "Unlockdown",
+  "version": "1.0.0",
+  "description": "Prefix command to unlock channels previously locked by lockdown.",
+  "author": "Akashsuu",
+  "icon": "ULD",
+  "nodeConfig": {
+    "label": "Unlockdown",
+    "icon": "ULD",
+    "color": "#166534",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "unlockdown",
+      "reason": "Server unlockdown",
+      "includeForum": true,
+      "includeVoice": false,
+      "output": "Unlockdown complete by {mention}. Unlocked: {unlockedCount}, Failed: {failedCount}. Reason: {reason}",
+      "embedEnabled": false,
+      "embedColor": "#16A34A"
+    }
+  }
+}

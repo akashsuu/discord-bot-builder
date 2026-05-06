@@ -1,0 +1,23 @@
+{
+  "name": "Guild Logger",
+  "version": "1.0.0",
+  "description": "Logs guild lifecycle events to the system channel.",
+  "author": "Akashsuu",
+  "icon": "GL",
+  "nodeConfig": {
+    "label": "Guild Logger",
+    "icon": "GL",
+    "color": "#1F4B7A",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "output": "Guild event: {event} in **{guild}** ({guildId})",
+      "outputJoin": "Joined guild **{guild}** ({guildId}). Members: {memberCount}",
+      "outputLeave": "Left guild **{guild}** ({guildId}).",
+      "outputUpdate": "Guild updated: **{guild}** ({guildId}).",
+      "outputAvailable": "Guild is available again: **{guild}** ({guildId}).",
+      "embedEnabled": false,
+      "embedColor": "#1F4B7A"
+    }
+  }
+}
