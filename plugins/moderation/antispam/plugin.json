@@ -1,0 +1,26 @@
+{
+  "name": "Anti Spam",
+  "version": "1.0.0",
+  "description": "Detects and blocks users sending too many messages too quickly.",
+  "author": "Akashsuu",
+  "icon": "SPAM",
+  "nodeConfig": {
+    "label": "Anti Spam",
+    "icon": "SPAM",
+    "color": "#B45309",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "enabled": true,
+      "maxMessages": 5,
+      "intervalSeconds": 8,
+      "deleteMessage": true,
+      "warnUser": true,
+      "ignoreAdmins": true,
+      "timeoutSeconds": 0,
+      "output": "{mention}, slow down. Spam is not allowed here.",
+      "embedEnabled": false,
+      "embedColor": "#F59E0B"
+    }
+  }
+}

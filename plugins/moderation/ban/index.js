@@ -1,151 +1,182 @@
 'use strict';
 
-// ════════════════════════════════════════════════════════════════════
-//  EXAMPLE of the v2 plugin format — read this as the reference impl.
-//
-//  Key differences from the legacy format:
-//  1. Top-level `meta` block with engineVersion semver range.
-//  2. execute(ctx) receives ONE structured context object.
-//     Legacy 3-arg signature (node, eventObj, legacyCtx) is still
-//     supported by the engine's backward-compat adapter — but new
-//     plugins should use the single-ctx style.
-//  3. Per-node configSchema declares types, defaults, and constraints
-//     so the GUI can auto-generate property panels.
-//  4. Lifecycle hooks (onLoad / onUnload) for setup and cleanup.
-// ════════════════════════════════════════════════════════════════════
-
 const { PermissionFlagsBits } = require('discord.js');
 
-module.exports = {
+function applyTemplate(template, vars) {
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) && vars[key] !== null && vars[key] !== undefined
+      ? String(vars[key])
+      : match
+  );
+}
 
-  // ── 1. Meta ──────────────────────────────────────────────────────
-  // engineVersion is a semver range. The loader rejects the plugin if
-  // the running engine version does not satisfy it — prevents silent
-  // breakage when the engine makes a breaking change.
+function buildVars(message, target, reason, command) {
+  const now = new Date();
+
+  return {
+    user: message.author?.username || 'Unknown',
+    tag: message.author?.tag || 'Unknown#0000',
+    id: message.author?.id || '0',
+    mention: `<@${message.author?.id || '0'}>`,
+    target: target.user?.tag || target.user?.username || 'Unknown',
+    targetName: target.user?.username || 'Unknown',
+    targetId: target.user?.id || '0',
+    targetMention: `<@${target.user?.id || '0'}>`,
+    reason,
+    command,
+    server: message.guild?.name || 'Unknown',
+    channel: message.channel?.name || 'Unknown',
+    date: now.toISOString().slice(0, 10),
+    time: now.toTimeString().slice(0, 8),
+  };
+}
+
+module.exports = {
   meta: {
-    name:          'Ban',
-    version:       '2.0.0',
-    author:        'Akashsuu',
-    description:   'Permanently bans a member from the server.',
+    name: 'Ban',
+    version: '1.0.0',
+    author: 'Akashsuu',
+    description: 'Bans a mentioned member from the server.',
     engineVersion: '>=1.0.0',
   },
 
-  // ── 2. Optional global plugin config ─────────────────────────────
-  config: {
-    schema: {
-      auditLog: { type: 'boolean', default: true, description: 'Post to audit-log channel' },
-    },
-    defaults: { auditLog: true },
-  },
-
-  // ── 3. Lifecycle hooks ────────────────────────────────────────────
-  async onLoad(api) {
-    // api is the safeAPI — proxied client, scoped logger, frozen config.
-    // Use this for one-time setup: registering listeners, loading caches, etc.
-    api?.log.info('Ban plugin ready');
-  },
-
-  async onUnload() {
-    // Clean up timers, intervals, or external connections here.
-    // Called when the plugin is removed at runtime.
-  },
-
-  // ── 4. Nodes ──────────────────────────────────────────────────────
   nodes: {
-    mod_ban: {
-      // Visual metadata used by the GUI palette
-      label:       'Ban',
-      description: 'Permanently bans a mentioned member.',
-      icon:        '🔨',
-      color:       '#C0392B',
-
-      // Port declarations — used by the GUI to draw connectors
-      inputs:  [{ id: 'in',  label: 'Trigger',  type: 'flow' }],
+    moderation_ban: {
+      label: 'Ban',
+      icon: 'BAN',
+      color: '#C0392B',
+      description: 'Bans a mentioned user with reason and optional message history deletion.',
+      inputs: [{ id: 'in', label: 'Trigger', type: 'flow' }],
       outputs: [{ id: 'out', label: 'Continue', type: 'flow' }],
 
-      // Config schema: drives GUI property panel + runtime validation
-      // type / default / required / min / max / description are all supported
       configSchema: {
-        command:    { type: 'string',  default: 'ban',               required: true  },
-        reason:     { type: 'string',  default: 'No reason provided', required: false },
-        deleteDays: { type: 'number',  default: 0, min: 0, max: 7,   required: false },
+        command: { type: 'string', default: 'ban', required: true },
+        reason: { type: 'string', default: 'No reason provided', required: false },
+        deleteDays: {
+          type: 'number',
+          default: 0,
+          min: 0,
+          max: 7,
+          required: false,
+          description: 'Delete message history from the banned user (0-7 days).'
+        },
+        output: {
+          type: 'string',
+          default: '**{target}** has been banned by **{user}**.\nReason: {reason}',
+          required: false
+        },
       },
 
-      // ── execute(ctx) — the runtime handler ────────────────────────
-      // ctx shape:
-      //   node        — graph node (id, type, data)
-      //   message     — Discord Message (null for non-message events)
-      //   eventData   — raw Discord event object
-      //   eventType   — string, e.g. 'messageCreate'
-      //   prefix      — global command prefix string
-      //   api         — safeAPI (proxied client, log, config, utils)
-      //   sendEmbed   — helper: sendEmbed(message, nodeData, text)
-      //   buildEmbed  — helper: buildEmbed(nodeData, text) → embed object
       async execute(ctx) {
-        const { node, message, prefix, api } = ctx;
-        if (!message || message.author.bot || !message.guild) return false;
+        const { node, message, prefix } = ctx;
+        if (!message || !message.guild || message.author?.bot) return false;
 
         const rawCmd = (node.data?.command || 'ban').trim();
-        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
+        const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
 
-        if (!message.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-          await message.reply('❌ You need **Ban Members** permission.');
+        if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.BanMembers)) {
+          await message.reply('I need Ban Members permission.').catch(() => {});
           return false;
         }
 
-        const target = message.mentions.members?.first();
+        if (!message.member?.permissions.has(PermissionFlagsBits.BanMembers)) {
+          await message.reply('You need Ban Members permission.').catch(() => {});
+          return false;
+        }
+
+        const target = ctx?.flow?.targetMember || message.mentions.members?.first() || null;
         if (!target) {
-          await message.reply(`❌ Usage: \`${cmd} @user [reason]\``);
-          return false;
-        }
-        if (target.id === message.author.id || target.id === message.client.user.id) {
-          await message.reply('❌ You cannot ban yourself or me.');
-          return false;
-        }
-        if (!target.bannable) {
-          await message.reply('❌ I cannot ban that user (role too high?).');
+          await message.reply(`Usage: \`${cmd} @user [reason]\``).catch(() => {});
           return false;
         }
 
-        const after      = message.content.slice(cmd.length).trim();
-        const reason     = after.replace(/<@!?\d+>/g, '').trim() || node.data?.reason || 'No reason provided';
+        if (target.id === message.author.id) {
+          await message.reply('You cannot ban yourself.').catch(() => {});
+          return false;
+        }
+
+        if (target.id === message.client.user.id) {
+          await message.reply('I cannot ban myself.').catch(() => {});
+          return false;
+        }
+
+        if (!target.bannable) {
+          await message.reply('I cannot ban that user (role may be higher than mine).').catch(() => {});
+          return false;
+        }
+
         const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays ?? 0), 0), 7);
 
-        await target.ban({ reason, deleteMessageSeconds: deleteDays * 86_400 });
-        await message.channel.send(`🔨 **${target.user.tag}** has been banned.\n📋 Reason: ${reason}`);
+        const afterCmd = message.content.slice(cmd.length).trim();
+        const reason = afterCmd.replace(/<@!?\d+>/g, '').replace(/\s+/g, ' ').trim()
+          || ctx?.flow?.reason
+          || node.data?.reason
+          || 'No reason provided';
 
-        api?.log.info(`Banned ${target.user.tag} in "${message.guild.name}" — ${reason}`);
-        return true; // return true to continue traversing output edges
+        try {
+          await target.ban({ reason, deleteMessageSeconds: deleteDays * 86400 });
+        } catch (err) {
+          await message.reply(`Failed to ban: ${err.message}`).catch(() => {});
+          return false;
+        }
+
+        const vars = buildVars(message, target, reason, cmd);
+        const outputTpl = node.data?.output || '**{target}** has been banned by **{user}**.\nReason: {reason}';
+        const text = applyTemplate(outputTpl, vars);
+
+        try {
+          if (ctx?.sendEmbed) {
+            await ctx.sendEmbed(message, node.data, text);
+          } else {
+            await message.channel.send(text);
+          }
+        } catch {
+          await message.channel.send(text).catch(() => {});
+        }
+
+        return true;
       },
 
-      // ── generateCode(node, prefix) — for the Export feature ───────
-      // Must return a self-contained JS snippet that fits inside the
-      // generated bot.js messageCreate handler.
       generateCode(node, prefix = '') {
         const rawCmd = (node.data?.command || 'ban').replace(/"/g, '\\"');
-        const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
+        const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         const reason = (node.data?.reason || 'No reason provided').replace(/"/g, '\\"');
-        const days   = Math.min(Math.max(Number(node.data?.deleteDays ?? 0), 0), 7);
+        const output = (node.data?.output || '**{target}** has been banned by **{user}**.\nReason: {reason}')
+          .replace(/\\/g, '\\\\')
+          .replace(/`/g, '\\`');
+        const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays ?? 0), 0), 7);
+
         return `
-// ── Ban ─────────────────────────────────────────────────────────
+// Ban
 if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
-  if (!message.member?.permissions.has("BanMembers")) {
-    message.reply("❌ You need Ban Members permission.");
+  if (!message.guild.members.me?.permissions.has("BanMembers")) {
+    message.reply("I need Ban Members permission.").catch(() => {});
+  } else if (!message.member?.permissions.has("BanMembers")) {
+    message.reply("You need Ban Members permission.").catch(() => {});
   } else {
-    const _t = message.mentions.members?.first();
-    if (!_t) {
-      message.reply(\`❌ Usage: \\\`${cmd} @user [reason]\\\`\`);
-    } else if (!_t.bannable) {
-      message.reply("❌ I cannot ban that user.");
+    const _bn_t = message.mentions.members?.first();
+    if (!_bn_t) {
+      message.reply(\`Usage: \\\`${cmd} @user [reason]\\\`\`).catch(() => {});
+    } else if (!_bn_t.bannable) {
+      message.reply("I cannot ban that user.").catch(() => {});
     } else {
-      const _r = message.content.slice("${cmd}".length).trim()
-                   .replace(/<@!?\\d+>/g, "").trim() || "${reason}";
-      _t.ban({ reason: _r, deleteMessageSeconds: ${days * 86_400} })
-        .then(() => message.channel.send(\`🔨 **\${_t.user.tag}** banned.\\n📋 Reason: \${_r}\`));
+      const _bn_r = message.content.slice("${cmd}".length).trim().replace(/<@!?\\d+>/g, "").replace(/\\s+/g, " ").trim() || "${reason}";
+      _bn_t.ban({ reason: _bn_r, deleteMessageSeconds: ${deleteDays * 86400} })
+        .then(() => {
+          const _bn_vars = {
+            user: message.author?.username,
+            target: _bn_t.user?.tag || _bn_t.user?.username,
+            reason: _bn_r
+          };
+          const _bn_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _bn_vars[k] ?? m);
+          message.channel.send(_bn_apply(\`${output}\`)).catch(() => {});
+        })
+        .catch((e) => message.reply(\`Failed to ban: \${e.message}\`).catch(() => {}));
     }
   }
-}`;
+}
+`;
       },
     },
   },

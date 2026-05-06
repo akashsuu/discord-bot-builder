@@ -1,0 +1,25 @@
+{
+  "name": "Anti Bad Word",
+  "version": "1.0.0",
+  "description": "Detects and blocks messages containing banned words.",
+  "author": "Akashsuu",
+  "icon": "BAD",
+  "nodeConfig": {
+    "label": "Anti Bad Word",
+    "icon": "BAD",
+    "color": "#8E1B1B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "enabled": true,
+      "words": "badword1, badword2",
+      "matchWholeWords": true,
+      "deleteMessage": true,
+      "warnUser": true,
+      "ignoreAdmins": true,
+      "output": "{mention}, that word is not allowed here.\nBlocked word: `{word}`",
+      "embedEnabled": false,
+      "embedColor": "#E74C3C"
+    }
+  }
+}

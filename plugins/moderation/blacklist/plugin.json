@@ -1,0 +1,25 @@
+{
+  "name": "Blacklist",
+  "version": "1.0.0",
+  "description": "Blocks blacklisted users from sending allowed content.",
+  "author": "Akashsuu",
+  "icon": "BL",
+  "nodeConfig": {
+    "label": "Blacklist",
+    "icon": "BL",
+    "color": "#5B1D1D",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "enabled": true,
+      "userIds": "",
+      "mode": "block_commands",
+      "deleteMessage": false,
+      "warnUser": true,
+      "ignoreAdmins": true,
+      "output": "{mention}, you are blacklisted from using this server bot.",
+      "embedEnabled": false,
+      "embedColor": "#8E1B1B"
+    }
+  }
+}
