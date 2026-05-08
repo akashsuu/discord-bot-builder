@@ -12,7 +12,6 @@
     "hasOutput": true,
     "defaults": {
       "command": "slap",
-      "apiUrl": "https://nekos.best/api/v2/slap",
       "embedColor": "#7B2FBE",
       "noTargetMessage": "❌ You need to mention someone to slap! Usage: `{command} @user`",
       "errorMessage": "❌ Could not fetch a slap GIF. Try again later."
@@ -23,12 +22,6 @@
         "label": "Command",
         "type": "text",
         "placeholder": "slap"
-      },
-      {
-        "key": "apiUrl",
-        "label": "GIF API URL",
-        "type": "text",
-        "placeholder": "https://nekos.best/api/v2/slap"
       },
       {
         "key": "embedColor",

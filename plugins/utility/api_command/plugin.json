@@ -1,0 +1,113 @@
+{
+  "name": "API Command",
+  "version": "1.0.0",
+  "description": "Universal API command node. Configure any REST API (ChatGPT, Giphy, weather, etc.). Maps the JSON response to a message using dot-notation paths and template variables.",
+  "author": "Akashsuu",
+  "icon": "⚡",
+  "nodeConfig": {
+    "label": "API Command",
+    "icon": "⚡",
+    "color": "#7C3AED",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "api",
+      "method": "POST",
+      "url": "",
+      "apiKey": "",
+      "apiKeyHeader": "Authorization",
+      "apiKeyPrefix": "Bearer",
+      "contentType": "application/json",
+      "bodyTemplate": "",
+      "responsePath": "",
+      "output": "📩 {result}",
+      "errorMessage": "❌ API error: {error}",
+      "embedEnabled": false,
+      "embedColor": "#7C3AED",
+      "embedTitle": "",
+      "embedFooter": "",
+      "timeout": 15000,
+      "sendTyping": true
+    },
+    "fields": [
+      {
+        "key": "command",
+        "label": "Command Trigger",
+        "type": "text",
+        "placeholder": "e.g. ask, gif, weather"
+      },
+      {
+        "key": "method",
+        "label": "HTTP Method",
+        "type": "dropdown",
+        "options": ["GET", "POST", "PUT", "PATCH", "DELETE"]
+      },
+      {
+        "key": "url",
+        "label": "API Endpoint URL",
+        "type": "text",
+        "placeholder": "https://api.openai.com/v1/chat/completions"
+      },
+      {
+        "key": "apiKey",
+        "label": "API Key / Token",
+        "type": "text",
+        "placeholder": "sk-..."
+      },
+      {
+        "key": "apiKeyHeader",
+        "label": "Auth Header Name",
+        "type": "text",
+        "placeholder": "Authorization"
+      },
+      {
+        "key": "apiKeyPrefix",
+        "label": "Auth Prefix",
+        "type": "text",
+        "placeholder": "Bearer"
+      },
+      {
+        "key": "contentType",
+        "label": "Content-Type",
+        "type": "dropdown",
+        "options": ["application/json", "application/x-www-form-urlencoded", "text/plain", "multipart/form-data"]
+      },
+      {
+        "key": "bodyTemplate",
+        "label": "Request Body (JSON template)",
+        "type": "textarea",
+        "placeholder": "{\"model\":\"gpt-4o-mini\",\"messages\":[{\"role\":\"user\",\"content\":\"{args}\"}]}"
+      },
+      {
+        "key": "responsePath",
+        "label": "Response Field Path (dot notation)",
+        "type": "text",
+        "placeholder": "choices.0.message.content   OR   data.0.images_original.url"
+      },
+      {
+        "key": "output",
+        "label": "Reply Template",
+        "type": "textarea",
+        "placeholder": "{result}   — use {result} for the extracted response value"
+      },
+      {
+        "key": "errorMessage",
+        "label": "Error Reply",
+        "type": "text",
+        "placeholder": "❌ {error}"
+      },
+      {
+        "key": "sendTyping",
+        "label": "Show Typing Indicator",
+        "type": "dropdown",
+        "options": ["true", "false"]
+      },
+      {
+        "key": "timeout",
+        "label": "Timeout (ms)",
+        "type": "text",
+        "placeholder": "15000"
+      }
+    ]
+  }
+}
