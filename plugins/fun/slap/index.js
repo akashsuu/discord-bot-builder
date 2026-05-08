@@ -2,7 +2,7 @@
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const SLAP_API   = 'https://nekos.best/api/v2/slap';
+const DEFAULT_SLAP_API = 'https://nekos.best/api/v2/slap';
 const TIMEOUT_MS = 10_000;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -15,11 +15,11 @@ function applyTemplate(template, vars) {
   );
 }
 
-async function fetchSlapGif(timeoutMs) {
+async function fetchSlapGif(apiUrl, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(SLAP_API, { signal: controller.signal });
+    const res = await fetch(apiUrl, { signal: controller.signal });
     if (!res.ok) throw new Error(`API returned ${res.status}`);
     const json = await res.json();
     const result = json?.results?.[0];
@@ -106,9 +106,10 @@ module.exports = {
         const isSelf = targetUser.id === message.author.id;
 
         // ── 3. Fetch GIF ──────────────────────────────────────────────────────
+        const apiUrl = (node.data?.apiUrl || DEFAULT_SLAP_API).trim();
         let gifUrl;
         try {
-          const result = await fetchSlapGif(TIMEOUT_MS);
+          const result = await fetchSlapGif(apiUrl, TIMEOUT_MS);
           gifUrl = result.url;
         } catch {
           const errMsg = node.data?.errorMessage || '❌ Could not fetch a slap GIF. Try again later.';
@@ -141,6 +142,7 @@ module.exports = {
         const rawCmd = (node.data?.command || 'slap').replace(/"/g, '\\"');
         const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         const color  = parseInt((node.data?.embedColor || '#7B2FBE').replace('#', ''), 16) || 0x7B2FBE;
+        const apiUrl = (node.data?.apiUrl || DEFAULT_SLAP_API).replace(/"/g, '\\"');
 
         return `
 // ── Anime Slap: ${cmd} ${'─'.repeat(Math.max(0, 40 - cmd.length))}
@@ -152,7 +154,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
     const _slap_isSelf = _slap_target.id === message.author.id;
     const _slap_ctrl   = new AbortController();
     setTimeout(() => _slap_ctrl.abort(), 10000);
-    fetch("${SLAP_API}", { signal: _slap_ctrl.signal })
+    fetch("${apiUrl}", { signal: _slap_ctrl.signal })
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(json => {
         const _slap_gif = json?.results?.[0]?.url;
