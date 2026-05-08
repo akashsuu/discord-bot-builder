@@ -15,6 +15,9 @@
       "apiUrl": "https://nekos.best/api/v2/dance",
       "embedEnabled": true,
       "embedColor": "#7B2FBE",
+      "titleTemplate": "{author} danced with {target}!",
+      "descriptionTemplate": "**{author}** is dancing with **{target}**!",
+      "plainTextTemplate": "**{author}** is dancing with **{target}**! {gif}",
       "noTargetMessage": "❌ You need to mention someone to dance with! Usage: `{command} @user`",
       "errorMessage": "❌ Could not fetch a dance GIF. Try again later."
     },
@@ -40,6 +43,21 @@
         "key": "embedColor",
         "label": "Embed Color",
         "type": "color"
+      },
+      {
+        "key": "titleTemplate",
+        "label": "Embed Title",
+        "type": "text"
+      },
+      {
+        "key": "descriptionTemplate",
+        "label": "Embed Description",
+        "type": "text"
+      },
+      {
+        "key": "plainTextTemplate",
+        "label": "Plain Text",
+        "type": "text"
       },
       {
         "key": "noTargetMessage",

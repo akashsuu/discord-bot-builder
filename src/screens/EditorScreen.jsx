@@ -375,6 +375,7 @@ function DiscordPreview({ node }) {
 
   const d = node.data;
   let rawText = '';
+  let rawEmbedText = '';
 
   // Keys that are never output text — skip them when searching for a preview string
   const PREVIEW_SKIP = new Set([
@@ -383,6 +384,7 @@ function DiscordPreview({ node }) {
     'denyMessage', 'cooldownMessage', 'usageMessage', 'errorMessage', 'dmMessage',
     'event', 'condition', 'value', 'permission', 'mode',
     'pages', 'dropdown', 'buttons', 'totalPages',
+    'apiUrl', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
     'collapsed',
   ]);
 
@@ -402,6 +404,12 @@ function DiscordPreview({ node }) {
       embedTitleOverride = page.title   || null;
     } else if (d.output !== undefined) {
       rawText = d.output || '';
+    } else if (d.embedEnabled !== false && typeof d.descriptionTemplate === 'string' && d.descriptionTemplate.trim()) {
+      rawText = d.plainTextTemplate || d.descriptionTemplate;
+      rawEmbedText = d.descriptionTemplate;
+      embedTitleOverride = d.titleTemplate || null;
+    } else if (d.embedEnabled === false && typeof d.plainTextTemplate === 'string' && d.plainTextTemplate.trim()) {
+      rawText = d.plainTextTemplate;
     } else {
       const entry = Object.entries(d).find(([k, v]) =>
         !k.startsWith('_') &&
@@ -420,14 +428,18 @@ function DiscordPreview({ node }) {
   // Pass page-specific demo values into demoSub
   const extraTokens = isPageMenu
     ? { page: String(safePgIdx + 1), totalPages: String(totalPages) }
-    : {};
+    : { author: 'akashsuu', target: 'arzu_ly', gif: 'https://nekos.best/dance.gif', anime: 'Kyoukai no Kanata' };
 
   const text = demoSub(rawText, { ...d, ...extraTokens });
+  const embedText = demoSub(rawEmbedText || rawText, { ...d, ...extraTokens });
 
   // Build effective embed data: if page menu, inject page title as embed title
-  const effectiveData = embedTitleOverride
-    ? { ...d, embedTitle: embedTitleOverride }
-    : d;
+  const effectiveData = {
+    ...d,
+    imageUrl: d.imageUrl || extraTokens.gif,
+    embedFooter: demoSub(d.embedFooter || 'Anime: {anime}', { ...d, ...extraTokens }),
+    ...(embedTitleOverride ? { embedTitle: embedTitleOverride } : {}),
+  };
 
   const hasContent = text || d.embedEnabled;
 
@@ -487,11 +499,10 @@ function DiscordPreview({ node }) {
             {botTag && <span className="dc-bot-tag-label">#{botTag.split('#')[1]}</span>}
             <span className="dc-timestamp">Today at {time}</span>
           </div>
+          {text && <div className="dc-plain">{text}</div>}
           {effectiveData.embedEnabled ? (
-            <DiscordEmbed data={effectiveData} text={text} />
-          ) : (
-            <div className="dc-plain">{text}</div>
-          )}
+            <DiscordEmbed data={{ ...effectiveData, embedFooter: `${effectiveData.embedFooter} • Today at ${time}` }} text={embedText} />
+          ) : null}
         </div>
       </div>
     </div>

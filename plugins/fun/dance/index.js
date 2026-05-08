@@ -26,21 +26,17 @@ async function fetchDanceGif(apiUrl, timeoutMs) {
   }
 }
 
-function buildDanceEmbed(author, targetName, gifUrl, color, isSelf, animeName) {
-  const description = isSelf
-    ? `**${author}** is dancing solo!`
-    : `**${author}** is dancing with **${targetName}**!`;
-
-  const title = isSelf
-    ? `${author} started dancing!`
-    : `${author} danced with ${targetName}!`;
+function buildDanceEmbed(author, targetName, gifUrl, color, animeName, titleTemplate, descriptionTemplate) {
+  const vars = { author, target: targetName, gif: gifUrl, anime: animeName || 'Unknown' };
+  const title = applyTemplate(titleTemplate, vars);
+  const description = applyTemplate(descriptionTemplate, vars);
 
   return {
     color,
     description,
     author: { name: title },
     image: { url: gifUrl },
-    footer: { text: animeName ? `Anime: ${animeName}` : 'Anime: Unknown' },
+    footer: { text: `Anime: ${animeName || 'Unknown'}` },
     timestamp: new Date().toISOString(),
   };
 }
@@ -68,6 +64,9 @@ module.exports = {
         apiUrl: { type: 'string', default: DEFAULT_DANCE_API, required: false, description: 'GIF API URL' },
         embedEnabled: { type: 'boolean', default: true, required: false, description: 'Send as embed' },
         embedColor: { type: 'string', default: '#7B2FBE', required: false, description: 'Embed accent color (hex)' },
+        titleTemplate: { type: 'string', default: '{author} danced with {target}!', required: false, description: 'Embed author title text' },
+        descriptionTemplate: { type: 'string', default: '**{author}** is dancing with **{target}**!', required: false, description: 'Embed description text' },
+        plainTextTemplate: { type: 'string', default: '**{author}** is dancing with **{target}**! {gif}', required: false, description: 'Plain message when embed is disabled' },
         noTargetMessage: { type: 'string', default: '❌ You need to mention someone to dance with! Usage: `{command} @user`', required: false },
         errorMessage: { type: 'string', default: '❌ Could not fetch a dance GIF. Try again later.', required: false },
       },
@@ -96,7 +95,6 @@ module.exports = {
           return false;
         }
 
-        const isSelf = targetUser.id === message.author.id;
         const apiUrl = (node.data?.apiUrl || DEFAULT_DANCE_API).trim();
         let gifUrl;
         let animeName = '';
@@ -114,11 +112,14 @@ module.exports = {
         ctx.vars.danceData = { url: gifUrl, author: message.author.username, target: targetUser.username };
 
         const embedEnabled = node.data?.embedEnabled !== false;
+        const author = message.author.username;
+        const target = targetUser.username;
+        const titleTemplate = node.data?.titleTemplate || '{author} danced with {target}!';
+        const descriptionTemplate = node.data?.descriptionTemplate || '**{author}** is dancing with **{target}**!';
+        const plainTextTemplate = node.data?.plainTextTemplate || '**{author}** is dancing with **{target}**! {gif}';
         const color = parseInt((node.data?.embedColor || '#7B2FBE').replace('#', ''), 16) || 0x7B2FBE;
-        const embed = buildDanceEmbed(message.author.username, targetUser.username, gifUrl, color, isSelf, animeName);
-        const plainText = isSelf
-          ? `**${message.author.username}** is dancing solo! ${gifUrl}`
-          : `**${message.author.username}** is dancing with **${targetUser.username}**! ${gifUrl}`;
+        const embed = buildDanceEmbed(author, target, gifUrl, color, animeName, titleTemplate, descriptionTemplate);
+        const plainText = applyTemplate(plainTextTemplate, { author, target, gif: gifUrl, anime: animeName || 'Unknown' });
 
         try {
           if (embedEnabled) {
@@ -139,6 +140,15 @@ module.exports = {
         const embedEnabled = node.data?.embedEnabled !== false;
         const color = parseInt((node.data?.embedColor || '#7B2FBE').replace('#', ''), 16) || 0x7B2FBE;
         const apiUrl = (node.data?.apiUrl || DEFAULT_DANCE_API).replace(/"/g, '\\"');
+        const titleTemplate = (node.data?.titleTemplate || '{author} danced with {target}!')
+          .replace(/\\/g, '\\\\')
+          .replace(/`/g, '\\`');
+        const descriptionTemplate = (node.data?.descriptionTemplate || '**{author}** is dancing with **{target}**!')
+          .replace(/\\/g, '\\\\')
+          .replace(/`/g, '\\`');
+        const plainTextTemplate = (node.data?.plainTextTemplate || '**{author}** is dancing with **{target}**! {gif}')
+          .replace(/\\/g, '\\\\')
+          .replace(/`/g, '\\`');
 
         return `
 if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
@@ -146,30 +156,29 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
   if (!_dance_target) {
     message.reply(\`❌ Mention someone to dance with! Usage: \\\`${cmd} @user\\\`\`).catch(() => {});
   } else {
-    const _dance_isSelf = _dance_target.id === message.author.id;
-    const _dance_ctrl = new AbortController();
-    setTimeout(() => _dance_ctrl.abort(), 10000);
-    fetch("${apiUrl}", { signal: _dance_ctrl.signal })
+        const _dance_ctrl = new AbortController();
+        setTimeout(() => _dance_ctrl.abort(), 10000);
+        fetch("${apiUrl}", { signal: _dance_ctrl.signal })
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(json => {
         const _dance_gif = json?.results?.[0]?.url;
         if (!_dance_gif) throw new Error("No GIF");
         const _dance_author = message.author.username;
         const _dance_name = _dance_target.username;
-        const _dance_desc = _dance_isSelf
-          ? \`**\${_dance_author}** is dancing solo!\`
-          : \`**\${_dance_author}** is dancing with **\${_dance_name}**!\`;
-        const _dance_plain = _dance_isSelf
-          ? \`**\${_dance_author}** is dancing solo! \${_dance_gif}\`
-          : \`**\${_dance_author}** is dancing with **\${_dance_name}**! \${_dance_gif}\`;
+        const _dance_anime = json?.results?.[0]?.anime_name || "Unknown";
+        const _dance_vars = { author: _dance_author, target: _dance_name, gif: _dance_gif, anime: _dance_anime };
+        const _dance_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_dance_vars[k] ?? m));
+        const _dance_title = _dance_apply(\`${titleTemplate}\`);
+        const _dance_desc = _dance_apply(\`${descriptionTemplate}\`);
+        const _dance_plain = _dance_apply(\`${plainTextTemplate}\`);
         ${embedEnabled ? `
         message.channel.send({
           embeds: [{
             color: ${color},
             description: _dance_desc,
-            author: { name: _dance_isSelf ? \`\${_dance_author} started dancing!\` : \`\${_dance_author} danced with \${_dance_name}!\` },
+            author: { name: _dance_title },
             image: { url: _dance_gif },
-            footer: { text: (json?.results?.[0]?.anime_name ? \`Anime: \${json.results[0].anime_name}\` : "Anime: Unknown") },
+            footer: { text: \`Anime: \${_dance_anime}\` },
             timestamp: new Date().toISOString(),
           }]
         }).catch(() => message.channel.send(_dance_plain).catch(() => {}));
