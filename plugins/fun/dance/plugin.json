@@ -1,0 +1,23 @@
+{
+  "name": "Dance Command",
+  "version": "1.1.0",
+  "description": "Prefix command that sends a dance message with optional GIF.",
+  "author": "Akashsuu",
+  "icon": "DNC",
+  "nodeConfig": {
+    "label": "Dance",
+    "icon": "DNC",
+    "color": "#7C3AED",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "dance",
+      "output": "{mention} is dancing now!\n{dance}\n{gif}",
+      "danceText": "(/_^)o~",
+      "gifApiUrl": "https://nekos.best/api/v2/dance",
+      "includeGif": true,
+      "embedEnabled": false,
+      "embedColor": "#8B5CF6"
+    }
+  }
+}
