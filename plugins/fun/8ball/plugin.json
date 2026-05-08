@@ -1,0 +1,34 @@
+{
+  "name": "8Ball",
+  "version": "1.0.0",
+  "description": "Answers user questions like a magic 8-ball.",
+  "author": "Akashsuu",
+  "icon": "8B",
+  "nodeConfig": {
+    "label": "8Ball",
+    "icon": "8B",
+    "color": "#6366F1",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "8ball",
+      "embedEnabled": true,
+      "embedColor": "#6366F1",
+      "titleTemplate": "🎱 8Ball Answer",
+      "descriptionTemplate": "Question: {question}\nAnswer: **{answer}**",
+      "plainTextTemplate": "🎱 {answer}",
+      "usageMessage": "❌ Usage: `{command} <question>`",
+      "responses": "Yes.\nNo.\nMaybe.\nDefinitely.\nAbsolutely not.\nAsk again later.\nWithout a doubt.\nVery doubtful.\nIt is certain.\nMy sources say no."
+    },
+    "fields": [
+      { "key": "command", "label": "Command", "type": "text", "placeholder": "8ball" },
+      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+      { "key": "embedColor", "label": "Embed Color", "type": "color" },
+      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+      { "key": "usageMessage", "label": "Usage Message", "type": "text" },
+      { "key": "responses", "label": "Responses (one per line)", "type": "textarea" }
+    ]
+  }
+}

@@ -1,38 +1,38 @@
 {
-  "name": "Anime Cry",
+  "name": "Random Joke",
   "version": "1.0.0",
-  "description": "Fetches an anime cry GIF from nekos.best and sends a rich embed showing who is crying with whom.",
+  "description": "Fetches a random joke from official-joke-api and sends it as message or embed.",
   "author": "Akashsuu",
-  "icon": "CRY",
+  "icon": "JK",
   "nodeConfig": {
-    "label": "Anime Cry",
-    "icon": "CRY",
-    "color": "#3B82F6",
+    "label": "Random Joke",
+    "icon": "JK",
+    "color": "#F59E0B",
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
-      "command": "cry",
-      "apiUrl": "https://nekos.best/api/v2/cry",
+      "command": "joke",
+      "apiUrl": "https://official-joke-api.appspot.com/random_joke",
       "embedEnabled": true,
-      "embedColor": "#3B82F6",
-      "titleTemplate": "{author} cried with {target}!",
-      "descriptionTemplate": "**{author}** is crying with **{target}**!",
-      "plainTextTemplate": "**{author}** is crying with **{target}**! {gif}",
-      "noTargetMessage": "❌ You need to mention someone to cry with! Usage: `{command} @user`",
-      "errorMessage": "❌ Could not fetch a cry GIF. Try again later."
+      "embedColor": "#F59E0B",
+      "titleTemplate": "{author} asked for a joke!",
+      "descriptionTemplate": "{setup}\n\n{punchline}",
+      "plainTextTemplate": "{setup}\n{punchline}",
+      "footerTemplate": "Type: {type}",
+      "errorMessage": "❌ Could not fetch a joke. Try again later."
     },
     "fields": [
       {
         "key": "command",
         "label": "Command",
         "type": "text",
-        "placeholder": "cry"
+        "placeholder": "joke"
       },
       {
         "key": "apiUrl",
-        "label": "GIF API URL",
+        "label": "Joke API URL",
         "type": "text",
-        "placeholder": "https://nekos.best/api/v2/cry"
+        "placeholder": "https://official-joke-api.appspot.com/random_joke"
       },
       {
         "key": "embedEnabled",
@@ -60,8 +60,8 @@
         "type": "text"
       },
       {
-        "key": "noTargetMessage",
-        "label": "No Target Message",
+        "key": "footerTemplate",
+        "label": "Embed Footer",
         "type": "text"
       },
       {

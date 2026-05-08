@@ -1,0 +1,36 @@
+{
+  "name": "Random Facts",
+  "version": "1.0.0",
+  "description": "Fetches a random fact from uselessfacts API and sends it as message or embed.",
+  "author": "Akashsuu",
+  "icon": "FCT",
+  "nodeConfig": {
+    "label": "Random Facts",
+    "icon": "FCT",
+    "color": "#06B6D4",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "facts",
+      "apiUrl": "https://uselessfacts.jsph.pl/api/v2/facts/random",
+      "embedEnabled": true,
+      "embedColor": "#06B6D4",
+      "titleTemplate": "{author} asked for a fact!",
+      "descriptionTemplate": "{fact}",
+      "plainTextTemplate": "{fact}",
+      "footerTemplate": "Source: {source}",
+      "errorMessage": "❌ Could not fetch a fact. Try again later."
+    },
+    "fields": [
+      { "key": "command", "label": "Command", "type": "text", "placeholder": "facts" },
+      { "key": "apiUrl", "label": "Facts API URL", "type": "text", "placeholder": "https://uselessfacts.jsph.pl/api/v2/facts/random" },
+      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+      { "key": "embedColor", "label": "Embed Color", "type": "color" },
+      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+      { "key": "footerTemplate", "label": "Embed Footer", "type": "text" },
+      { "key": "errorMessage", "label": "Error Message", "type": "text" }
+    ]
+  }
+}
