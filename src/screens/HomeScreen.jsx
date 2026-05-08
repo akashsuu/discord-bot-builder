@@ -23,7 +23,7 @@ export default function HomeScreen() {
     <div className="home-screen">
       <div className="home-content">
         <div className="home-logo">
-          <div className="logo-icon">⚡</div>
+          <img className="logo-icon-img" src="./akashsuu.ico" alt="" aria-hidden="true" />
           <h1 className="home-title">Bot Builder</h1>
           <p className="home-subtitle">Visual Discord Bot Creator — No Code Required</p>
         </div>

@@ -53,7 +53,7 @@ export default function Toolbar({ nodes, edges }) {
     <>
       <div className="h-14 flex items-center px-4 gap-3 bg-black/40 backdrop-blur-md border-b border-purple-900/40 z-50 select-none shadow-sm" style={{ WebkitAppRegion: 'drag' }}>
         <div className="flex items-center gap-2 mr-2">
-          <div className="w-6 h-6 rounded bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm shadow-[0_0_10px_rgba(139,92,246,0.2)]">⚡</div>
+          <img className="w-6 h-6 rounded shadow-[0_0_10px_rgba(139,92,246,0.2)]" src="./akashsuu.ico" alt="" aria-hidden="true" />
           <span className="text-sm font-semibold text-zinc-100 tracking-tight">{projectData?.name || 'Bot Builder'}</span>
         </div>
 

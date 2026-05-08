@@ -27,6 +27,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html',
+      favicon: './akashsuu.ico',
     }),
   ],
   target: 'electron-renderer',

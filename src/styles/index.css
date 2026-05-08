@@ -97,7 +97,15 @@ input, textarea, select, button { font-family: inherit; font-size: 12px; color: 
 }
 
 .home-logo { text-align: center; }
-.logo-icon { font-size: 48px; margin-bottom: 10px; display: block; }
+.logo-icon-img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 12px;
+  border-radius: 12px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .35));
+}
 .home-title {
   font-size: 28px;
   font-weight: 700;
