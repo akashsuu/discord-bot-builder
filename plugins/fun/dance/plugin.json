@@ -1,23 +1,56 @@
 {
-  "name": "Dance Command",
-  "version": "1.1.0",
-  "description": "Prefix command that sends a dance message with optional GIF.",
+  "name": "Anime Dance",
+  "version": "1.0.0",
+  "description": "Fetches an anime dance GIF from nekos.best and sends a rich purple embed showing who danced with whom.",
   "author": "Akashsuu",
   "icon": "DNC",
   "nodeConfig": {
-    "label": "Dance",
+    "label": "Anime Dance",
     "icon": "DNC",
-    "color": "#7C3AED",
+    "color": "#7B2FBE",
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
       "command": "dance",
-      "output": "{mention} is dancing now!\n{dance}\n{gif}",
-      "danceText": "(/_^)o~",
-      "gifApiUrl": "https://nekos.best/api/v2/dance",
-      "includeGif": true,
-      "embedEnabled": false,
-      "embedColor": "#8B5CF6"
-    }
+      "apiUrl": "https://nekos.best/api/v2/dance",
+      "embedEnabled": true,
+      "embedColor": "#7B2FBE",
+      "noTargetMessage": "❌ You need to mention someone to dance with! Usage: `{command} @user`",
+      "errorMessage": "❌ Could not fetch a dance GIF. Try again later."
+    },
+    "fields": [
+      {
+        "key": "command",
+        "label": "Command",
+        "type": "text",
+        "placeholder": "dance"
+      },
+      {
+        "key": "apiUrl",
+        "label": "GIF API URL",
+        "type": "text",
+        "placeholder": "https://nekos.best/api/v2/dance"
+      },
+      {
+        "key": "embedEnabled",
+        "label": "Enable Embed",
+        "type": "checkbox"
+      },
+      {
+        "key": "embedColor",
+        "label": "Embed Color",
+        "type": "color"
+      },
+      {
+        "key": "noTargetMessage",
+        "label": "No Target Message",
+        "type": "text"
+      },
+      {
+        "key": "errorMessage",
+        "label": "Error Message",
+        "type": "text"
+      }
+    ]
   }
 }

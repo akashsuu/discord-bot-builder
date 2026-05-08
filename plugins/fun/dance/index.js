@@ -26,7 +26,7 @@ async function fetchDanceGif(apiUrl, timeoutMs) {
   }
 }
 
-function buildDanceEmbed(author, targetName, gifUrl, color, isSelf) {
+function buildDanceEmbed(author, targetName, gifUrl, color, isSelf, animeName) {
   const description = isSelf
     ? `**${author}** is dancing solo!`
     : `**${author}** is dancing with **${targetName}**!`;
@@ -40,7 +40,7 @@ function buildDanceEmbed(author, targetName, gifUrl, color, isSelf) {
     description,
     author: { name: title },
     image: { url: gifUrl },
-    footer: { text: 'Powered by nekos.best' },
+    footer: { text: animeName ? `Anime: ${animeName}` : 'Anime: Unknown' },
     timestamp: new Date().toISOString(),
   };
 }
@@ -66,6 +66,7 @@ module.exports = {
       configSchema: {
         command: { type: 'string', default: 'dance', required: true, description: 'Command word (without prefix)' },
         apiUrl: { type: 'string', default: DEFAULT_DANCE_API, required: false, description: 'GIF API URL' },
+        embedEnabled: { type: 'boolean', default: true, required: false, description: 'Send as embed' },
         embedColor: { type: 'string', default: '#7B2FBE', required: false, description: 'Embed accent color (hex)' },
         noTargetMessage: { type: 'string', default: '❌ You need to mention someone to dance with! Usage: `{command} @user`', required: false },
         errorMessage: { type: 'string', default: '❌ Could not fetch a dance GIF. Try again later.', required: false },
@@ -98,9 +99,11 @@ module.exports = {
         const isSelf = targetUser.id === message.author.id;
         const apiUrl = (node.data?.apiUrl || DEFAULT_DANCE_API).trim();
         let gifUrl;
+        let animeName = '';
         try {
           const result = await fetchDanceGif(apiUrl, TIMEOUT_MS);
           gifUrl = result.url;
+          animeName = result.anime_name || result.animeName || '';
         } catch {
           const errMsg = node.data?.errorMessage || '❌ Could not fetch a dance GIF. Try again later.';
           try { await message.channel.send(errMsg); } catch {}
@@ -110,16 +113,21 @@ module.exports = {
         if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
         ctx.vars.danceData = { url: gifUrl, author: message.author.username, target: targetUser.username };
 
+        const embedEnabled = node.data?.embedEnabled !== false;
         const color = parseInt((node.data?.embedColor || '#7B2FBE').replace('#', ''), 16) || 0x7B2FBE;
-        const embed = buildDanceEmbed(message.author.username, targetUser.username, gifUrl, color, isSelf);
+        const embed = buildDanceEmbed(message.author.username, targetUser.username, gifUrl, color, isSelf, animeName);
+        const plainText = isSelf
+          ? `**${message.author.username}** is dancing solo! ${gifUrl}`
+          : `**${message.author.username}** is dancing with **${targetUser.username}**! ${gifUrl}`;
 
         try {
-          await message.channel.send({ embeds: [embed] });
+          if (embedEnabled) {
+            await message.channel.send({ embeds: [embed] });
+          } else {
+            await message.channel.send(plainText);
+          }
         } catch {
-          const fallback = isSelf
-            ? `**${message.author.username}** is dancing solo! ${gifUrl}`
-            : `**${message.author.username}** is dancing with **${targetUser.username}**! ${gifUrl}`;
-          try { await message.channel.send(fallback); } catch {}
+          try { await message.channel.send(plainText); } catch {}
         }
 
         return true;
@@ -128,6 +136,7 @@ module.exports = {
       generateCode(node, prefix = '') {
         const rawCmd = (node.data?.command || 'dance').replace(/"/g, '\\"');
         const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
+        const embedEnabled = node.data?.embedEnabled !== false;
         const color = parseInt((node.data?.embedColor || '#7B2FBE').replace('#', ''), 16) || 0x7B2FBE;
         const apiUrl = (node.data?.apiUrl || DEFAULT_DANCE_API).replace(/"/g, '\\"');
 
@@ -150,16 +159,23 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
         const _dance_desc = _dance_isSelf
           ? \`**\${_dance_author}** is dancing solo!\`
           : \`**\${_dance_author}** is dancing with **\${_dance_name}**!\`;
+        const _dance_plain = _dance_isSelf
+          ? \`**\${_dance_author}** is dancing solo! \${_dance_gif}\`
+          : \`**\${_dance_author}** is dancing with **\${_dance_name}**! \${_dance_gif}\`;
+        ${embedEnabled ? `
         message.channel.send({
           embeds: [{
             color: ${color},
             description: _dance_desc,
             author: { name: _dance_isSelf ? \`\${_dance_author} started dancing!\` : \`\${_dance_author} danced with \${_dance_name}!\` },
             image: { url: _dance_gif },
-            footer: { text: "Powered by nekos.best" },
+            footer: { text: (json?.results?.[0]?.anime_name ? \`Anime: \${json.results[0].anime_name}\` : "Anime: Unknown") },
             timestamp: new Date().toISOString(),
           }]
-        }).catch(() => {});
+        }).catch(() => message.channel.send(_dance_plain).catch(() => {}));
+        ` : `
+        message.channel.send(_dance_plain).catch(() => {});
+        `}
       })
       .catch(() => message.channel.send("❌ Could not fetch a dance GIF.").catch(() => {}));
   }
