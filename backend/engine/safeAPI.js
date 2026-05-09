@@ -13,6 +13,7 @@
 const CLIENT_READABLE = new Set([
   'user', 'guilds', 'channels', 'users', 'emojis', 'stickers',
   'application', 'readyAt', 'uptime', 'ws', 'shard', 'options',
+  'on', 'once', 'off', 'removeListener',
   'isReady', 'fetchGuild', 'fetchUser', 'fetchWebhook',
   'fetchGuildPreview', 'fetchInvite', 'fetchSticker', 'generateInvite',
 ]);

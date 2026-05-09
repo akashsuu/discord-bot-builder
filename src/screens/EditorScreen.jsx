@@ -91,9 +91,10 @@ const CATEGORY_LIST = [
   { key: 'music',        label: 'Music',        color: '#8E44AD', eventType: 'event_client'  },
   { key: 'economy',      label: 'Economy',      color: '#27AE60', eventType: 'event_member'  },
   { key: 'games',        label: 'Games',        color: '#D35400', eventType: 'event_message' },
+  { key: 'giveaway',     label: 'Giveaway',     color: '#E84393', eventType: null            },
   { key: 'admin',        label: 'Admin',        color: '#7F8C8D', eventType: 'event_role'    },
   { key: 'info',         label: 'Info',         color: '#16A085', eventType: null            },
-  { key: 'ticketsystem', label: 'Ticket System',color: '#1ABC9C', eventType: null            },
+  { key: 'tickets',      label: 'Tickets',      color: '#1ABC9C', eventType: 'event_message' },
   { key: 'ai',           label: 'AI',           color: '#3498DB', eventType: null            },
 ];
 
@@ -571,6 +572,145 @@ function EmbedFields({ d, update }) {
 }
 
 // ── Properties N-panel ────────────────────────────────────────────────────────
+function ticketSplitCsv(value) {
+  return String(value || '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function ticketTitleCase(value) {
+  const clean = String(value || '').replace(/[-_]+/g, ' ').trim();
+  return clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Support';
+}
+
+function getTicketPanelOptions(data) {
+  const categories = ticketSplitCsv(data.categories || 'support');
+  const labels = ticketSplitCsv(data.categoryLabels || '');
+  return categories.length
+    ? categories.map((category, index) => ({
+      category,
+      label: labels[index] || ticketTitleCase(category),
+    }))
+    : [{ category: 'support', label: 'Support' }];
+}
+
+const DISCORD_BUTTON_STYLES = {
+  Primary: { background: '#5865F2', border: '#5865F2', color: '#FFFFFF' },
+  Secondary: { background: '#4E5058', border: '#4E5058', color: '#FFFFFF' },
+  Success: { background: '#248046', border: '#248046', color: '#FFFFFF' },
+  Danger: { background: '#DA373C', border: '#DA373C', color: '#FFFFFF' },
+};
+
+function DiscordPreviewTicketPanel({ data }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const color = data.embedColor || '#5865F2';
+  const options = getTicketPanelOptions(data).slice(0, 25);
+  const mode = String(data.panelMode || 'buttons').toLowerCase();
+  const buttonStyle = DISCORD_BUTTON_STYLES[data.buttonStyle] || DISCORD_BUTTON_STYLES.Primary;
+  const title = demoSub(data.embedTitle || 'Support Tickets', data);
+  const description = demoSub(data.embedDescription || 'Need help? Click below to open a ticket.', data);
+  const footer = data.embedFooter ? demoSub(data.embedFooter, data) : '';
+  const botName = botInfo?.username || 'YourBot';
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex' }}>T</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: color }}>
+            <div className="dc-embed-main">
+              <div className="dc-embed-content">
+                <div className="dc-embed-title">{title}</div>
+                <div className="dc-embed-desc">{description}</div>
+              </div>
+              {data.embedThumbnail && (
+                <img src={data.embedThumbnail} className="dc-embed-thumb" alt="thumb" onError={(e) => { e.target.style.display = 'none'; }} />
+              )}
+            </div>
+            {data.embedImage && (
+              <img src={data.embedImage} className="dc-embed-img" alt="ticket panel" onError={(e) => { e.target.style.display = 'none'; }} />
+            )}
+            {footer && <div className="dc-embed-footer">{footer}</div>}
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+            {mode === 'dropdown' ? (
+              <div style={{
+                width: '100%',
+                minHeight: 38,
+                background: '#1E1F22',
+                border: '1px solid #3F4147',
+                borderRadius: 3,
+                color: '#B5BAC1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 12px',
+                fontSize: 13,
+              }}>
+                <span>{data.dropdownPlaceholder || 'Select a ticket category'}</span>
+                <span style={{ color: '#80848E' }}>v</span>
+              </div>
+            ) : (
+              options.map((option, index) => (
+                <button
+                  key={`${option.category}_${index}`}
+                  type="button"
+                  style={{
+                    background: buttonStyle.background,
+                    border: `1px solid ${buttonStyle.border}`,
+                    color: buttonStyle.color,
+                    borderRadius: 3,
+                    padding: '7px 14px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    lineHeight: 1,
+                  }}
+                >
+                  {option.label || ticketTitleCase(option.category)}
+                </button>
+              ))
+            )}
+          </div>
+          {mode === 'dropdown' && (
+            <div style={{ display: 'grid', gap: 2, marginTop: 4, color: '#949BA4', fontSize: 11 }}>
+              {options.slice(0, 5).map((option, index) => (
+                <span key={`${option.category}_preview_${index}`}>{option.label || ticketTitleCase(option.category)}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TicketPanelEditor({ d, update }) {
+  return (
+    <>
+      <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
+        <span className="bl-prop-label" style={{ textAlign: 'left' }}>Description</span>
+        <textarea className="bl-field-input" style={{ resize: 'vertical', minHeight: 72 }} value={d.embedDescription || ''} onChange={(e) => update('embedDescription', e.target.value)} spellCheck={false} />
+      </div>
+    </>
+  );
+}
+
 function NPanel({ selectedNode, setNodes }) {
   const [openSections, setOpenSections] = useState({ node: true, props: true, embed: true, preview: true });
 
@@ -596,6 +736,7 @@ function NPanel({ selectedNode, setNodes }) {
 
   const palette = NODE_PALETTE.find((p) => p.type === selectedNode.type);
   const d = selectedNode.data;
+  const isTicketPanel = selectedNode.type === 'ticket_panel';
 
   return (
     <motion.div 
@@ -603,7 +744,7 @@ function NPanel({ selectedNode, setNodes }) {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 300, opacity: 0 }}
       transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
-      className="w-80 min-w-[320px] bg-zinc-900/60 backdrop-blur-2xl border border-zinc-800 rounded-2xl flex flex-col overflow-hidden text-xs absolute right-4 top-4 bottom-4 z-50 shadow-2xl shadow-black/50"
+      className={`${isTicketPanel ? 'w-[420px] min-w-[420px]' : 'w-80 min-w-[320px]'} bg-zinc-900/60 backdrop-blur-2xl border border-zinc-800 rounded-2xl flex flex-col overflow-hidden text-xs absolute right-4 top-4 bottom-4 z-50 shadow-2xl shadow-black/50`}
     >
       {/* Node section */}
       <div className="bl-npanel-section">
@@ -692,6 +833,10 @@ function NPanel({ selectedNode, setNodes }) {
               </div>
             )}
 
+            {isTicketPanel && (
+              <TicketPanelEditor d={d} update={update} />
+            )}
+
             {selectedNode.type === 'custom_command' && (
               <>
                 <div className="bl-prop-row">
@@ -751,7 +896,11 @@ function NPanel({ selectedNode, setNodes }) {
           </div>
           {openSections.preview && (
             <div className="p-3 bg-zinc-950/50">
-              <DiscordPreview node={selectedNode} />
+              {isTicketPanel ? (
+                <DiscordPreviewTicketPanel data={d} />
+              ) : (
+                <DiscordPreview node={selectedNode} />
+              )}
             </div>
           )}
         </div>

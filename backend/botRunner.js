@@ -1,6 +1,6 @@
 'use strict';
 
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const { substitute }         = require('./variables');
 const engine                 = require('./engine');
 const pluginLoader           = require('./pluginLoader');
@@ -141,19 +141,37 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMessages,
       GatewayIntentBits.MessageContent,
+      GatewayIntentBits.DirectMessages,
       GatewayIntentBits.GuildMembers,
       GatewayIntentBits.GuildEmojisAndStickers,
     ],
+    partials: [Partials.Channel],
   });
 
   // Give the plugin loader a reference to the live client so safeAPI can be
   // created properly for any plugins loaded after login.
-  pluginLoader.setClient(client);
+  await pluginLoader.setClient(client);
 
   // Attach the global interaction handler (buttons / dropdowns from pagemenu etc.)
   attachToClient(client);
 
   const staticHelpers = makeStaticHelpers(prefix);
+
+  for (const node of nodes) {
+    const entry = engine.getNode(node.type);
+    if (entry?.definition && typeof entry.definition.initProject === 'function') {
+      try {
+        await entry.definition.initProject({
+          node,
+          client,
+          prefix,
+          ...staticHelpers,
+        });
+      } catch (err) {
+        log.error(`Plugin node "${node.type}" init failed: ${err.message}`);
+      }
+    }
+  }
 
   // ── messageCreate ───────────────────────────────────────────────────────────
   client.on('messageCreate', async (message) => {

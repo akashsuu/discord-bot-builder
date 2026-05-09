@@ -1,0 +1,18 @@
+{
+  "name": "Ticket Lock",
+  "version": "1.0.0",
+  "description": "Locks a ticket so the owner cannot send messages.",
+  "author": "Akashsuu",
+  "icon": "🔐",
+  "nodeConfig": {
+    "label": "Ticket Lock",
+    "icon": "🔐",
+    "color": "#7D6608",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "supportRoles": "",
+      "logChannel": ""
+    }
+  }
+}

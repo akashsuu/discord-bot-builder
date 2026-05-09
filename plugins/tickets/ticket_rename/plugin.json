@@ -1,0 +1,18 @@
+{
+  "name": "Ticket Rename",
+  "version": "1.0.0",
+  "description": "Renames the ticket channel.",
+  "author": "Akashsuu",
+  "icon": "✏️",
+  "nodeConfig": {
+    "label": "Ticket Rename",
+    "icon": "✏️",
+    "color": "#6C3483",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "supportRoles": "",
+      "logChannel": ""
+    }
+  }
+}

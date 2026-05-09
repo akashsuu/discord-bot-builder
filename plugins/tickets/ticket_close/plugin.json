@@ -1,0 +1,22 @@
+{
+  "name": "Ticket Close",
+  "version": "1.0.0",
+  "description": "Closes a ticket with confirmation, transcript generation, and timed channel deletion.",
+  "author": "Akashsuu",
+  "icon": "🔒",
+  "nodeConfig": {
+    "label": "Ticket Close",
+    "icon": "🔒",
+    "color": "#7B241C",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "closeTimer": 5,
+      "transcriptEnabled": true,
+      "logChannel": "",
+      "supportRoles": "",
+      "closeMessage": "🔒 Ticket closed by **{user}**. Channel will be deleted in **{timer}** seconds.",
+      "embedColor": "#ED4245"
+    }
+  }
+}

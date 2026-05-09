@@ -1,0 +1,19 @@
+{
+  "name": "modmail-bot",
+  "version": "1.0.0",
+  "description": "A private Discord ModMail Bot designed ONLY for one server.",
+  "main": "foil.js",
+  "scripts": {
+    "start": "node foil.js"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.97",
+    "canvas": "^3.2.1",
+    "canvas-constructor": "^7.0.2",
+    "chalk": "^4.1.2",
+    "discord.js": "^14.14.1",
+    "mongodb": "^7.1.0",
+    "mongoose": "^8.2.1",
+    "strip-comments": "^2.0.1"
+  }
+}

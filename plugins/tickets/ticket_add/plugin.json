@@ -1,0 +1,19 @@
+{
+  "name": "Ticket Add User",
+  "version": "1.0.0",
+  "description": "Adds a user to an existing ticket channel.",
+  "author": "Akashsuu",
+  "icon": "➕",
+  "nodeConfig": {
+    "label": "Ticket Add User",
+    "icon": "➕",
+    "color": "#1E8449",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "supportRoles": "",
+      "logChannel": "",
+      "embedColor": "#57F287"
+    }
+  }
+}

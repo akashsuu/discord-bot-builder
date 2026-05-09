@@ -1,0 +1,19 @@
+{
+  "name": "Ticket Claim",
+  "version": "1.0.0",
+  "description": "Allows staff to claim a ticket. Prevents double-claiming.",
+  "author": "Akashsuu",
+  "icon": "✋",
+  "nodeConfig": {
+    "label": "Ticket Claim",
+    "icon": "✋",
+    "color": "#1F618D",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "supportRoles": "",
+      "logChannel": "",
+      "embedColor": "#5865F2"
+    }
+  }
+}

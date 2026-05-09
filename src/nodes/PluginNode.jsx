@@ -41,6 +41,7 @@ function pluginPreview(template, data, extra) {
 const EMBED_KEYS = new Set([
   'embedEnabled', 'embedColor', 'embedTitle', 'embedFooter', 'embedTimestamp',
   'logoUrl', 'logoName', 'imageUrl', 'imagePosition',
+  'embedDescription', 'embedThumbnail', 'embedImage',
   'dmEnabled', 'dmMessage',
   'pages', 'dropdown', 'buttons',
   // serverinfo template sections
@@ -48,7 +49,34 @@ const EMBED_KEYS = new Set([
   'channelsTemplate', 'rolesTemplate', 'boostTemplate', 'verificationTemplate',
 ]);
 
+const TICKET_PANEL_KEYS = new Set([
+  'panelMode', 'categories', 'categoryLabels', 'buttonStyle', 'dropdownPlaceholder',
+]);
+
 const PLUGIN_HEADER_PURPLE = '#7c3aed';
+
+function splitCsv(value) {
+  return String(value || '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function titleCase(value) {
+  const clean = String(value || '').replace(/[-_]+/g, ' ').trim();
+  return clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Support';
+}
+
+function getTicketPanelOptions(data) {
+  const categories = splitCsv(data.categories || 'support');
+  const labels = splitCsv(data.categoryLabels || '');
+  return categories.length
+    ? categories.map((category, index) => ({
+      category,
+      label: labels[index] || titleCase(category),
+    }))
+    : [{ category: 'support', label: 'Support' }];
+}
 
 // ── Small section heading ──────────────────────────────────────────────────────
 function SectionHead({ color = '#888', children }) {
@@ -196,6 +224,12 @@ export default function PluginNode({ id, type, data, selected }) {
     ));
   }, [id, setNodes]);
 
+  const updateMany = useCallback((patch) => {
+    setNodes((ns) => ns.map((n) =>
+      n.id === id ? { ...n, data: { ...n.data, ...patch } } : n
+    ));
+  }, [id, setNodes]);
+
   const toggle = useCallback(() => {
     setNodes((ns) => ns.map((n) =>
       n.id === id ? { ...n, data: { ...n.data, collapsed: !n.data.collapsed } } : n
@@ -227,8 +261,10 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
+  const commandFields = inputFields.filter(([key]) => key === 'command');
+  const configFields = inputFields.filter(([key]) => key !== 'command');
   const hasOutput   = 'output' in data;
   const previewText = hasOutput ? pluginPreview(data.output, data, {}) : null;
 
@@ -251,6 +287,38 @@ export default function PluginNode({ id, type, data, selected }) {
   const dd  = data.dropdown || {};
   const bt  = data.buttons  || {};
   const pgs = Array.isArray(data.pages) ? data.pages : [];
+  const ticketOptions = getTicketPanelOptions(data);
+
+  const saveTicketOptions = useCallback((options) => {
+    const safe = options.length ? options : [{ category: 'support', label: 'Support' }];
+    updateMany({
+      categories: safe.map((option) => option.category || 'support').join(','),
+      categoryLabels: safe.map((option) => option.label || titleCase(option.category)).join(','),
+    });
+  }, [updateMany]);
+
+  const updateTicketOption = useCallback((index, patch) => {
+    const next = ticketOptions.map((option, optionIndex) => (
+      optionIndex === index ? { ...option, ...patch } : option
+    ));
+    saveTicketOptions(next);
+  }, [ticketOptions, saveTicketOptions]);
+
+  const addTicketOption = useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const nextIndex = ticketOptions.length + 1;
+    saveTicketOptions([
+      ...ticketOptions,
+      { category: `support_${nextIndex}`, label: `Support ${nextIndex}` },
+    ]);
+  }, [ticketOptions, saveTicketOptions]);
+
+  const removeTicketOption = useCallback((index, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    saveTicketOptions(ticketOptions.filter((_, optionIndex) => optionIndex !== index));
+  }, [ticketOptions, saveTicketOptions]);
 
   // Keep previewPg in bounds when pages shrink
   const safePg = Math.min(previewPg, Math.max(0, pgs.length - 1));
@@ -286,19 +354,139 @@ export default function PluginNode({ id, type, data, selected }) {
           )}
 
           {/* ── Standard text inputs (e.g. command, reason) ──────────────── */}
-          {inputFields.length > 0 && <div className="bl-node-divider" />}
-          {inputFields.map(([key, val]) => (
+          {commandFields.length > 0 && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F59E0B">Prefix Command</SectionHead>
+              {commandFields.map(([key, val]) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">Command</span>
+                  <input
+                    className="bl-node-input"
+                    value={val || ''}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder="ticket-panel"
+                    spellCheck={false}
+                  />
+                  <span className="bl-field-hint">Use the command word only. The project prefix is added when the bot runs.</span>
+                </div>
+              ))}
+            </>
+          )}
+
+          {type === 'ticket_panel' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F59E0B">Ticket Buttons</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Panel Mode</span>
+                <select
+                  className="bl-node-input"
+                  value={data.panelMode || 'buttons'}
+                  onChange={(e) => update('panelMode', e.target.value)}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                >
+                  <option value="buttons">Buttons</option>
+                  <option value="dropdown">Dropdown</option>
+                </select>
+              </div>
+              <div style={{ display: 'grid', gap: 6 }}>
+                {ticketOptions.map((option, index) => (
+                  <div
+                    key={`${option.category}_${index}`}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr 28px',
+                      gap: 6,
+                      alignItems: 'center',
+                      background: '#171720',
+                      border: '1px solid #2A2A3A',
+                      borderRadius: 5,
+                      padding: 6,
+                    }}
+                  >
+                    <input
+                      className="bl-node-input"
+                      value={option.label}
+                      onChange={(e) => updateTicketOption(index, { label: e.target.value })}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                      placeholder={data.panelMode === 'dropdown' ? 'Option label' : 'Button label'}
+                      spellCheck={false}
+                      style={{ minWidth: 0 }}
+                    />
+                    <input
+                      className="bl-node-input"
+                      value={option.category}
+                      onChange={(e) => updateTicketOption(index, { category: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                      placeholder="category_id"
+                      spellCheck={false}
+                      style={{ minWidth: 0 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => removeTicketOption(index, e)}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      title="Delete button"
+                      style={{ width: 28, height: 28, borderRadius: 4, border: '1px solid #5A2020', background: '#331015', color: '#FF7070', cursor: 'pointer', fontWeight: 800 }}
+                    >
+                      x
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={addTicketOption}
+                onPointerDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                style={{ width: '100%', background: '#132116', border: '1px solid #245332', color: '#7BE395', borderRadius: 5, cursor: 'pointer', padding: '7px 0', fontSize: 11, marginTop: 7, fontWeight: 700 }}
+              >
+                Add {data.panelMode === 'dropdown' ? 'Option' : 'Button'}
+              </button>
+              <span className="bl-field-hint">Edit description and preview in the right properties panel.</span>
+            </>
+          )}
+
+          {configFields.length > 0 && <div className="bl-node-divider" />}
+          {configFields.map(([key, val]) => (
             <div key={key} className="bl-field">
               <span className="bl-field-lbl">{key}</span>
-              <input
-                className="bl-node-input"
-                value={val || ''}
-                onChange={(e) => update(key, e.target.value)}
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => e.stopPropagation()}
-                spellCheck={false}
-              />
+              {typeof val === 'boolean' ? (
+                <label className="bl-embed-toggle" style={{ fontSize: 11 }}>
+                  <input
+                    type="checkbox"
+                    checked={!!val}
+                    onChange={(e) => update(key, e.target.checked)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  />
+                  Enabled
+                </label>
+              ) : (
+                <input
+                  className="bl-node-input"
+                  value={val ?? ''}
+                  onChange={(e) => update(key, typeof val === 'number' ? Number(e.target.value) : e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  type={typeof val === 'number' ? 'number' : 'text'}
+                  spellCheck={false}
+                />
+              )}
             </div>
           ))}
 

@@ -20,6 +20,7 @@ const _loadedPaths = new Map();
 
 // ── Single plugin loader ──────────────────────────────────────────────────────
 async function loadPlugin(pluginDir, client) {
+  pluginDir = path.resolve(pluginDir);
   const pluginId  = path.basename(pluginDir);
   const indexPath = path.join(pluginDir, 'index.js');
 
@@ -194,6 +195,7 @@ async function reloadPlugin(pluginId, client) {
 
 // ── Batch directory loader ────────────────────────────────────────────────────
 async function loadPluginsFromDir(pluginsDir, client) {
+  pluginsDir = path.resolve(pluginsDir);
   if (!fs.existsSync(pluginsDir)) {
     logger.warn(`Plugins directory not found: ${pluginsDir}`);
     return;
