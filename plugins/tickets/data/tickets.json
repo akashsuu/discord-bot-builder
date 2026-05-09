@@ -1,18 +1,1 @@
-{
-  "1502817613024067735": {
-    "ticketId": "ticket-0001",
-    "channelId": "1502817613024067735",
-    "guildId": "1321692492378148874",
-    "ownerId": "806113872620421140",
-    "category": "support",
-    "createdAt": "2026-05-09T23:40:40.540Z",
-    "claimedBy": "806113872620421140",
-    "priority": "normal",
-    "locked": false,
-    "closed": false,
-    "closedAt": null,
-    "transcriptPath": null,
-    "messages": [],
-    "replyMode": "normal"
-  }
-}
+{}
