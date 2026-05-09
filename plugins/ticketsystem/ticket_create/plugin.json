@@ -1,0 +1,22 @@
+{
+  "name": "Create Ticket",
+  "version": "1.0.0",
+  "description": "Create a new support ticket channel.",
+  "author": "Akashsuu",
+  "icon": "PLUS",
+  "nodeConfig": {
+    "label": "Create Ticket",
+    "icon": "PLUS",
+    "color": "#43B581",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "categoryChannel": "",
+      "logChannel": "",
+      "maxTicketsPerUser": 1,
+      "ticketNaming": "ticket-{username}",
+      "allowDuplicates": false,
+      "welcomeMessage": "Welcome to your support ticket! A team member will assist you soon."
+    }
+  }
+}

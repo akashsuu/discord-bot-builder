@@ -1,0 +1,17 @@
+{
+  "name": "Remove User from Ticket",
+  "version": "1.0.0",
+  "description": "Remove a user from the ticket channel.",
+  "author": "Akashsuu",
+  "icon": "MINUS",
+  "nodeConfig": {
+    "label": "Remove User from Ticket",
+    "icon": "MINUS",
+    "color": "#E74C3C",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "remove"
+    }
+  }
+}

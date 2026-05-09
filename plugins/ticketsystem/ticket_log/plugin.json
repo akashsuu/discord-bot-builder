@@ -1,0 +1,20 @@
+{
+  "name": "Ticket Logger",
+  "version": "1.0.0",
+  "description": "Log ticket events to a designated channel.",
+  "author": "Akashsuu",
+  "icon": "LOG",
+  "nodeConfig": {
+    "label": "Ticket Logger",
+    "icon": "LOG",
+    "color": "#95A5A6",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "logChannel": "",
+      "logCreation": true,
+      "logClosing": true,
+      "logActions": true
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Add User to Ticket",
+  "version": "1.0.0",
+  "description": "Add a user to the ticket channel.",
+  "author": "Akashsuu",
+  "icon": "PLUS",
+  "nodeConfig": {
+    "label": "Add User to Ticket",
+    "icon": "PLUS",
+    "color": "#9B59B6",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "add"
+    }
+  }
+}
