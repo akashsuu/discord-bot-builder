@@ -30,20 +30,22 @@ const BUTTON_STYLES = {
 
 // ── Parse category list from comma-separated string ──────────────────────────
 function parseCategories(raw) {
-  return String(raw || 'support')
+  const categories = String(raw ?? 'support')
     .split(',')
     .map(s => s.trim().toLowerCase())
     .filter(Boolean);
+  return categories.length ? categories : ['support'];
 }
 
 // ── Parse label list (may include emojis) ────────────────────────────────────
 function parseLabels(raw, categories) {
   const labels = String(raw || '').split(',').map(s => s.trim());
-  return categories.map((cat, i) => labels[i] || capitalize(cat));
+  return categories.map((cat, i) => labels[i] || capitalize(cat || 'ticket'));
 }
 
 function capitalize(s) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
+  const value = String(s || 'ticket');
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 // ── Build the panel embed ─────────────────────────────────────────────────────
@@ -60,6 +62,34 @@ function buildPanelEmbed(data) {
   if (data.embedImage)     embed.setImage(data.embedImage);
 
   return embed;
+}
+
+function buildSafePanelEmbed(data) {
+  const color = parseInt(String(data.embedColor || '#5865F2').replace('#', ''), 16);
+  const embed = new EmbedBuilder()
+    .setColor(isNaN(color) ? 0x5865F2 : color)
+    .setTitle(String(data.embedTitle || 'Support Tickets').slice(0, 256))
+    .setDescription(String(data.embedDescription || 'Click below to open a ticket.').slice(0, 4096))
+    .setTimestamp();
+
+  if (data.embedFooter) embed.setFooter({ text: String(data.embedFooter).slice(0, 2048) });
+  if (data.embedThumbnail) embed.setThumbnail(String(data.embedThumbnail));
+  if (data.embedImage) embed.setImage(String(data.embedImage));
+  return embed;
+}
+
+function buildPanelPayload(data, components) {
+  const wantsEmbed = data.embedEnabled !== false && data.embedEnabled !== 'false';
+  if (!wantsEmbed) {
+    return {
+      content: String(data.embedDescription || 'Click below to open a ticket.').slice(0, 2000),
+      components,
+    };
+  }
+  return {
+    embeds: [buildSafePanelEmbed(data)],
+    components,
+  };
 }
 
 // ── Build button-mode components ──────────────────────────────────────────────
@@ -117,6 +147,7 @@ module.exports = {
 
       configSchema: {
         command:             { type: 'string',  default: 'ticket-panel' },
+        embedEnabled:        { type: 'boolean', default: true },
         embedTitle:          { type: 'string',  default: '🎫 Support Tickets' },
         embedDescription:    { type: 'string',  default: 'Need help? Click below to open a ticket.' },
         embedColor:          { type: 'string',  default: '#5865F2' },
@@ -156,7 +187,6 @@ module.exports = {
         }
 
         try {
-          const embed      = buildPanelEmbed(data);
           const categories = parseCategories(data.categories);
           const labels     = parseLabels(data.categoryLabels, categories);
           const mode       = (data.panelMode || 'buttons').toLowerCase();
@@ -168,7 +198,7 @@ module.exports = {
             components = buildButtonComponents(categories, labels, data.buttonStyle);
           }
 
-          await message.channel.send({ embeds: [embed], components });
+          await message.channel.send(buildPanelPayload(data, components));
           // Delete the command message to keep the channel clean
           await message.delete().catch(() => {});
         } catch (err) {

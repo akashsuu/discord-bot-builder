@@ -62,20 +62,30 @@ function splitCsv(value) {
     .filter(Boolean);
 }
 
+function splitCsvLoose(value) {
+  return String(value || '')
+    .split(',')
+    .map((part) => part.trim());
+}
+
 function titleCase(value) {
   const clean = String(value || '').replace(/[-_]+/g, ' ').trim();
   return clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Support';
 }
 
 function getTicketPanelOptions(data) {
-  const categories = splitCsv(data.categories || 'support');
-  const labels = splitCsv(data.categoryLabels || '');
-  return categories.length
-    ? categories.map((category, index) => ({
+  const categories = data.categories == null ? ['support'] : splitCsvLoose(data.categories);
+  const labels = splitCsvLoose(data.categoryLabels || '');
+  const length = Math.max(categories.length, labels.length, 1);
+  return Array.from({ length }, (_, index) => {
+    const category = categories[index] ?? (index === 0 && labels.length === 0 ? 'support' : '');
+    return {
       category,
-      label: labels[index] || titleCase(category),
-    }))
-    : [{ category: 'support', label: 'Support' }];
+      label: labels[index] ?? titleCase(category),
+    };
+  }).filter((option, index, list) =>
+    list.length === 1 || option.category !== '' || option.label !== ''
+  );
 }
 
 // ── Small section heading ──────────────────────────────────────────────────────
@@ -292,8 +302,8 @@ export default function PluginNode({ id, type, data, selected }) {
   const saveTicketOptions = useCallback((options) => {
     const safe = options.length ? options : [{ category: 'support', label: 'Support' }];
     updateMany({
-      categories: safe.map((option) => option.category || 'support').join(','),
-      categoryLabels: safe.map((option) => option.label || titleCase(option.category)).join(','),
+      categories: safe.map((option) => option.category ?? 'support').join(','),
+      categoryLabels: safe.map((option) => option.label ?? titleCase(option.category)).join(','),
     });
   }, [updateMany]);
 

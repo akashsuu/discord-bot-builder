@@ -11,6 +11,7 @@
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
+      "embedEnabled": true,
       "embedTitle": "🎫 Support Tickets",
       "embedDescription": "Need help? Click a button below to open a ticket.\n\nOur support team will assist you shortly.",
       "embedColor": "#5865F2",

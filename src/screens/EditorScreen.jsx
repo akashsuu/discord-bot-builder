@@ -579,20 +579,30 @@ function ticketSplitCsv(value) {
     .filter(Boolean);
 }
 
+function ticketSplitCsvLoose(value) {
+  return String(value || '')
+    .split(',')
+    .map((part) => part.trim());
+}
+
 function ticketTitleCase(value) {
   const clean = String(value || '').replace(/[-_]+/g, ' ').trim();
   return clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Support';
 }
 
 function getTicketPanelOptions(data) {
-  const categories = ticketSplitCsv(data.categories || 'support');
-  const labels = ticketSplitCsv(data.categoryLabels || '');
-  return categories.length
-    ? categories.map((category, index) => ({
+  const categories = data.categories == null ? ['support'] : ticketSplitCsvLoose(data.categories);
+  const labels = ticketSplitCsvLoose(data.categoryLabels || '');
+  const length = Math.max(categories.length, labels.length, 1);
+  return Array.from({ length }, (_, index) => {
+    const category = categories[index] ?? (index === 0 && labels.length === 0 ? 'support' : '');
+    return {
       category,
-      label: labels[index] || ticketTitleCase(category),
-    }))
-    : [{ category: 'support', label: 'Support' }];
+      label: labels[index] ?? ticketTitleCase(category),
+    };
+  }).filter((option, index, list) =>
+    list.length === 1 || option.category !== '' || option.label !== ''
+  );
 }
 
 const DISCORD_BUTTON_STYLES = {
