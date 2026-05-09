@@ -86,7 +86,7 @@ module.exports = {
         const display = PRIORITY_DISPLAY[level] || level;
         await message.channel.send(`⚡ **Priority updated:** ${display}`).catch(() => {});
 
-        if (data.logChannel) {
+        if (message.client) {
           await logHelper.sendLog(message.client, data.logChannel, 'priority', {
             '⚡ New Priority': display,
             '👤 Set By':      `<@${message.author.id}>`,

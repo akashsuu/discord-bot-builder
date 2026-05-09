@@ -91,7 +91,7 @@ module.exports = {
 
         await genMsg?.delete().catch(() => {});
 
-        if (data.logChannel) {
+        if (message.client) {
           await logHelper.sendLog(message.client, data.logChannel, 'transcript', {
             '📄 File':    filename,
             '📏 Size':    `${sizeKB} KB`,

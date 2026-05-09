@@ -72,7 +72,7 @@ module.exports = {
 
         await message.channel.send(`✅ <@${target.id}> has been added to the ticket.`).catch(() => {});
 
-        if (data.logChannel) {
+        if (message.client) {
           await logHelper.sendLog(message.client, data.logChannel, 'added', {
             '➕ Added User': `<@${target.id}>`,
             '👤 By':         `<@${message.author.id}>`,

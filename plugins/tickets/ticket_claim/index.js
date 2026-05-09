@@ -148,7 +148,7 @@ module.exports = {
         const embed = buildClaimedEmbed(updated, message.author, isNaN(color) ? 0x5865F2 : color);
         await message.channel.send({ embeds: [embed] }).catch(() => {});
 
-        if (data.logChannel) {
+        if (message.client) {
           await logHelper.sendLog(message.client, data.logChannel, 'claimed', {
             '✋ Claimed By': `<@${message.author.id}>`,
           }, updated);

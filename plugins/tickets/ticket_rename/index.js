@@ -79,7 +79,7 @@ module.exports = {
 
         await message.channel.send(`✏️ Ticket renamed: \`${oldName}\` → \`${newName}\``).catch(() => {});
 
-        if (data.logChannel) {
+        if (message.client) {
           await logHelper.sendLog(message.client, data.logChannel, 'renamed', {
             '✏️ Renamed By': `<@${message.author.id}>`,
             '📌 Old Name':   oldName,

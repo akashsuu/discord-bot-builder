@@ -72,7 +72,7 @@ module.exports = {
         ticketHelper.updateTicket(message.channel.id, { locked: true });
         await message.channel.send('🔐 **Ticket Locked** — The ticket owner can no longer send messages.').catch(() => {});
 
-        if (data.logChannel) {
+        if (message.client) {
           await logHelper.sendLog(message.client, data.logChannel, 'locked', {
             '🔐 Locked By': `<@${message.author.id}>`,
           }, ticket);

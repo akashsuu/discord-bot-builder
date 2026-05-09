@@ -78,7 +78,7 @@ module.exports = {
 
         await message.channel.send(`✅ <@${target.id}> has been removed from the ticket.`).catch(() => {});
 
-        if (data.logChannel) {
+        if (message.client) {
           await logHelper.sendLog(message.client, data.logChannel, 'removed', {
             '➖ Removed User': `<@${target.id}>`,
             '👤 By':            `<@${message.author.id}>`,
