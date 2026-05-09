@@ -11,7 +11,12 @@
  */
 
 const path = require('path');
-const { EmbedBuilder } = require('discord.js');
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder,
+} = require('discord.js');
 
 const ticketHelper = require(path.join(__dirname, '..', 'helpers', 'tickets.js'));
 const permHelper   = require(path.join(__dirname, '..', 'helpers', 'permissions.js'));
@@ -30,6 +35,25 @@ function buildClaimedEmbed(ticket, claimer, color) {
     )
     .setThumbnail(claimer.displayAvatarURL?.({ size: 64 }) || claimer.user?.displayAvatarURL({ size: 64 }))
     .setTimestamp();
+}
+
+function buildClaimedComponents(message, ticketId) {
+  return (message.components || []).map((row) => {
+    const nextRow = new ActionRowBuilder();
+    nextRow.addComponents(
+      row.components.map((component) => {
+        const button = ButtonBuilder.from(component);
+        if (component.customId === `ticket:claim:${ticketId}`) {
+          return button
+            .setLabel('Claimed')
+            .setStyle(ButtonStyle.Danger)
+            .setDisabled(true);
+        }
+        return button;
+      })
+    );
+    return nextRow;
+  });
 }
 
 module.exports = {
@@ -81,6 +105,10 @@ module.exports = {
 
       const color = parseInt((data.embedColor || '#5865F2').replace('#', ''), 16);
       const embed = buildClaimedEmbed(updatedTicket, interaction.user, isNaN(color) ? 0x5865F2 : color);
+
+      await interaction.message.edit({
+        components: buildClaimedComponents(interaction.message, ticket.ticketId),
+      }).catch(() => {});
 
       await interaction.reply({ embeds: [embed] }).catch(() => {});
 

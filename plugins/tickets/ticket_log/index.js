@@ -68,6 +68,11 @@ module.exports = {
           return false;
         }
 
+        // Do not log ordinary conversation in ticket channels. This node may be
+        // placed after a Message Event, so only command-like messages should
+        // produce a manual ticket log entry.
+        if (!content.startsWith(prefix)) return false;
+
         const ticket = ticketHelper.getTicket(message.channel);
         if (!ticket) return false;
 
