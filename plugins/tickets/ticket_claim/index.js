@@ -85,7 +85,7 @@ module.exports = {
       await interaction.reply({ embeds: [embed] }).catch(() => {});
 
       // Log
-      if (data.logChannel) {
+      if (interaction.client) {
         await logHelper.sendLog(
           interaction.client,
           data.logChannel,

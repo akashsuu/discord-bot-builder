@@ -95,7 +95,7 @@ async function executeClose(interaction, channel, ticket, data) {
   } catch { /* channel may already be gone */ }
 
   // ── Log ────────────────────────────────────────────────────────────────────
-  if (data?.logChannel && interaction.client) {
+  if (interaction.client) {
     await logHelper.sendLog(
       interaction.client,
       data.logChannel,

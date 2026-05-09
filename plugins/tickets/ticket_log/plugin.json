@@ -11,6 +11,8 @@
     "hasInput": true,
     "hasOutput": false,
     "defaults": {
+      "command": "ticket-log",
+      "eventType": "created",
       "logChannel": ""
     }
   }

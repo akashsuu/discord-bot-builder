@@ -227,7 +227,7 @@ module.exports = {
     } catch { /* non-fatal */ }
 
     // ── Log creation ────────────────────────────────────────────────────────
-    if (data.logChannel && interaction.client) {
+    if (interaction.client) {
       await logHelper.sendLog(
         interaction.client,
         data.logChannel,

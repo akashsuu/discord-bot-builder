@@ -34,6 +34,7 @@ module.exports = {
       outputs: [],
 
       configSchema: {
+        command:    { type: 'string', default: 'ticket-log' },
         logChannel: { type: 'string', default: '' },
         eventType:  { type: 'string', default: 'created' },
       },
@@ -41,11 +42,34 @@ module.exports = {
       async execute(node, message, ctx) {
         if (!message?.guild) return false;
 
-        const data   = node.data || {};
+        const data = node.data || {};
+        const prefix = ctx?.prefix || '!';
+        const rawCommand = String(data.command || 'ticket-log').trim();
+        const command = rawCommand.startsWith(prefix) ? rawCommand : `${prefix}${rawCommand}`;
+        const content = String(message.content || '').trim();
+
+        if (content.toLowerCase().startsWith(command.toLowerCase())) {
+          if (!message.member?.permissions?.has?.('ManageGuild')) {
+            await message.reply('You need **Manage Server** permission to set the ticket log channel.').catch(() => {});
+            return false;
+          }
+
+          const arg = content.slice(command.length).trim();
+          const channelId = logHelper.cleanChannelId(arg) || message.channel.id;
+          const channel = await logHelper.resolveLogChannel(message.client, channelId, message.guild.id);
+
+          if (!channel) {
+            await message.reply('I could not find that log channel. Use a channel mention, channel ID, channel name, or run the command inside the log channel.').catch(() => {});
+            return false;
+          }
+
+          logHelper.setLogChannel(message.guild.id, channel.id);
+          await message.reply(`Ticket logs channel set to <#${channel.id}>.`).catch(() => {});
+          return false;
+        }
+
         const ticket = ticketHelper.getTicket(message.channel);
         if (!ticket) return false;
-
-        if (!data.logChannel) return false;
 
         await logHelper.sendLog(
           message.client,
