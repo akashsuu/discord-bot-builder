@@ -7,6 +7,8 @@ let botRunner = null;
 let pluginLoader = null;
 
 function createWindow() {
+  const rendererPath = path.join(__dirname, 'dist', 'index.html');
+
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -25,7 +27,22 @@ function createWindow() {
     titleBarStyle: 'hidden',
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  if (!fs.existsSync(rendererPath)) {
+    const message = 'Renderer build not found. Run "npm run build" before launching the app.';
+    console.error('[Main]', message);
+    mainWindow.loadURL(
+      `data:text/html;charset=utf-8,${encodeURIComponent(
+        `<body style="margin:0;background:#09090b;color:#f4f4f5;font-family:Segoe UI,sans-serif;display:grid;place-items:center;height:100vh">
+          <main style="max-width:640px;padding:32px;text-align:center">
+            <h1 style="font-size:22px;margin:0 0 12px">Discord Bot Builder could not start</h1>
+            <p style="color:#a1a1aa;line-height:1.5">${message}</p>
+          </main>
+        </body>`
+      )}`
+    );
+  } else {
+    mainWindow.loadFile(rendererPath);
+  }
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
@@ -33,6 +50,10 @@ function createWindow() {
 
   mainWindow.webContents.on('did-fail-load', (_e, code, desc) => {
     console.error('[Main] Failed to load renderer:', code, desc);
+  });
+
+  mainWindow.webContents.on('render-process-gone', (_event, details) => {
+    console.error('[Main] Renderer process gone:', details);
   });
 }
 
@@ -52,7 +73,7 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
-  botRunner.stop().catch(() => {});
+  if (botRunner) botRunner.stop().catch(() => {});
   if (process.platform !== 'darwin') app.quit();
 });
 

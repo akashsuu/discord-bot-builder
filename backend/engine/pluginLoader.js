@@ -64,6 +64,25 @@ async function loadPlugin(pluginDir, client) {
     engineVersion: '*',
   };
 
+  // Legacy plugins often keep their display metadata in plugin.json instead
+  // of index.js. Normalize those fields before validation so older plugins
+  // still register cleanly with the stricter engine.
+  if (plugin.nodes && typeof plugin.nodes === 'object') {
+    const uiCfg = uiMeta?.nodeConfig || {};
+    for (const [nodeType, nodeDef] of Object.entries(plugin.nodes)) {
+      if (!nodeDef || typeof nodeDef !== 'object') continue;
+      if (typeof nodeDef.label !== 'string' || !nodeDef.label.trim()) {
+        nodeDef.label = uiCfg.label || uiMeta?.name || nodeType;
+      }
+      if (typeof nodeDef.icon !== 'string' || !nodeDef.icon.trim()) {
+        nodeDef.icon = uiCfg.icon || uiMeta?.icon || 'plugin';
+      }
+      if (typeof nodeDef.color !== 'string' || !nodeDef.color.trim()) {
+        nodeDef.color = uiCfg.color || '#2A2A3A';
+      }
+    }
+  }
+
   // ── Validation ───────────────────────────────────────────────────────────
   try {
     validatePlugin(plugin, pluginId);
