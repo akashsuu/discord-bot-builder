@@ -95,7 +95,7 @@ function buildVars(message, ctx) {
     command:    flow.command   || '',
     args:       argsArr.join(' '),
     argsCount:  String(argsArr.length),
-    prefix:     c.prefix      || '',
+    prefix:     c.prefix      || '!',
     reason:     flow.reason   || 'No reason provided',
 
     // ── SERVER ──────────────────────────────────────────────────────────────

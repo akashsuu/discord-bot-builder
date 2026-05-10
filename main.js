@@ -91,7 +91,7 @@ ipcMain.handle('dialog:createProject', async (_event, projectName) => {
   try {
     fs.mkdirSync(folderPath, { recursive: true });
 
-    const projectData = { name: projectName, token: '', nodes: [], edges: [] };
+    const projectData = { name: projectName, token: '', prefix: '!', nodes: [], edges: [] };
     const projectPath = path.join(folderPath, 'project.json');
     fs.writeFileSync(projectPath, JSON.stringify(projectData, null, 2));
 

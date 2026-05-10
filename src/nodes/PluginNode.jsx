@@ -53,6 +53,91 @@ const TICKET_PANEL_KEYS = new Set([
   'panelMode', 'categories', 'categoryLabels', 'buttonStyle', 'dropdownPlaceholder',
 ]);
 
+const TICKET_STATUS_KEYS = new Set([
+  'lockMessage', 'unlockMessage', 'supportRoles', 'logChannel',
+]);
+
+const AFK_KEYS = new Set([
+  'defaultReason', 'setMessage', 'mentionMessage', 'returnMessage',
+]);
+
+const AVATAR_KEYS = new Set([
+  'aliases', 'titleTemplate', 'serverTitleTemplate', 'descriptionTemplate',
+  'noAvatarMessage', 'downloadButtonLabel', 'openButtonLabel', 'serverButtonLabel',
+  'showDownloadButton', 'showOpenButton', 'showServerButton',
+]);
+
+const SETBOOST_KEYS = new Set([
+  'boostChannelId', 'enabledByDefault', 'panelTitle', 'panelDescription',
+  'boostMessage', 'testMessage', 'enableButtonLabel', 'disableButtonLabel',
+  'testButtonLabel', 'resetButtonLabel',
+]);
+
+const BOOSTCOUNT_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+]);
+
+const CHANNELINFO_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate', 'notFoundMessage',
+]);
+
+const EMBEDBUILDER_KEYS = new Set([
+  'aliases', 'panelButtonLabel',
+  'defaultAuthorText', 'defaultAuthorIcon', 'defaultTitle', 'defaultDescription',
+  'defaultThumbnail', 'defaultImage', 'defaultFooterText', 'defaultFooterIcon', 'defaultColor',
+  'sentMessage', 'abortedMessage',
+  'authorTextButtonLabel', 'authorIconButtonLabel', 'titleButtonLabel',
+  'descriptionButtonLabel', 'thumbnailButtonLabel', 'imageButtonLabel',
+  'footerTextButtonLabel', 'footerIconButtonLabel', 'colorButtonLabel',
+  'resetButtonLabel', 'sendButtonLabel', 'abortButtonLabel',
+]);
+
+const INVITE_KEYS = new Set([
+  'aliases', 'customInviteUrl', 'clientId', 'permissions', 'scopes',
+  'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+  'inviteButtonLabel', 'supportButtonLabel', 'supportUrl', 'showSupportButton',
+]);
+
+const MEMBERCOUNT_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+]);
+
+const SERVERICON_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate', 'noIconMessage',
+  'downloadButtonLabel', 'openButtonLabel', 'showDownloadButton', 'showOpenButton',
+]);
+
+const STATS_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+]);
+
+const STEAL_KEYS = new Set([
+  'aliases', 'defaultName', 'successMessage', 'notFoundMessage', 'permissionMessage',
+  'errorMessage', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+]);
+
+const USERINFO_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate', 'notFoundMessage',
+]);
+
+const PREFIX_KEYS = new Set([
+  'aliases', 'requireManageGuild', 'titleTemplate', 'descriptionTemplate',
+  'plainTextTemplate', 'currentMessage', 'permissionMessage', 'invalidMessage',
+]);
+
+const CALCULATOR_KEYS = new Set([
+  'aliases', 'titleTemplate', 'expressionLabel', 'resultLabel', 'statusLabel',
+  'readyText', 'errorText', 'footerTemplate', 'onlyUserMessage', 'timeoutMessage',
+]);
+
+const PLAYING_KEYS = new Set([
+  'aliases', 'activityName', 'activityType', 'producerName', 'status', 'imageUrl',
+  'animatedAvatarUrl', 'animatedBannerUrl', 'useAnimatedAvatar', 'useAnimatedBanner',
+  'requireManageGuild',
+  'titleTemplate', 'descriptionTemplate', 'plainTextTemplate', 'currentMessage',
+  'permissionMessage', 'clearedMessage',
+]);
+
 const PLUGIN_HEADER_PURPLE = '#7c3aed';
 
 function splitCsv(value) {
@@ -271,7 +356,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -298,6 +383,11 @@ export default function PluginNode({ id, type, data, selected }) {
   const bt  = data.buttons  || {};
   const pgs = Array.isArray(data.pages) ? data.pages : [];
   const ticketOptions = getTicketPanelOptions(data);
+  const isTicketStatusNode = type === 'ticket_lock' || type === 'ticket_unlock';
+  const ticketStatusMessageKey = type === 'ticket_lock' ? 'lockMessage' : 'unlockMessage';
+  const ticketStatusDefaultMessage = type === 'ticket_lock'
+    ? '🔐 **Ticket Locked** — The ticket owner can no longer send messages.'
+    : '🔓 **Ticket Unlocked** — The ticket owner can send messages again.';
 
   const saveTicketOptions = useCallback((options) => {
     const safe = options.length ? options : [{ category: 'support', label: 'Support' }];
@@ -387,6 +477,1056 @@ export default function PluginNode({ id, type, data, selected }) {
             </>
           )}
 
+          {type === 'util_afk' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#7EB8F7">AFK Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Default Reason</span>
+                <input
+                  className="bl-node-input"
+                  value={data.defaultReason || ''}
+                  onChange={(e) => update('defaultReason', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="AFK"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'setMessage', label: 'Set Reply', fallback: '{mention} is now AFK: {reason}' },
+                { key: 'mentionMessage', label: 'Mention Reply', fallback: '{afkMention} is AFK: {reason} (since {since})' },
+                { key: 'returnMessage', label: 'Return Reply', fallback: 'Welcome back {mention}, I removed your AFK status. You were AFK for {since}.' },
+              ].map(({ key, label, fallback }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={3}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#7EB8F7' }}>{'{user} {mention} {reason}'}</span>
+                {' · '}
+                <span style={{ color: '#A8D08D' }}>{'{afkUser} {afkMention} {since}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{server} {channel}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_avatar' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#7EB8F7">Avatar Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="av"
+                  spellCheck={false}
+                />
+                <span className="bl-field-hint">Comma separated. Example: av,pfp</span>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'User Title', fallback: "{targetName}'s Avatar", rows: 2 },
+                { key: 'serverTitleTemplate', label: 'Server Title', fallback: "{server}'s Server Icon", rows: 2 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: 'Requested by {mention}', rows: 3 },
+                { key: 'noAvatarMessage', label: 'No Avatar Text', fallback: 'No avatar/icon found.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-node-divider" />
+              <SectionHead color="#A8D08D">Buttons</SectionHead>
+              {[
+                ['showDownloadButton', 'downloadButtonLabel', 'Download Button', 'Download'],
+                ['showOpenButton', 'openButtonLabel', 'Open Button', 'Open Avatar'],
+                ['showServerButton', 'serverButtonLabel', 'Server Button', 'Server Icon'],
+              ].map(([enabledKey, labelKey, label, fallback]) => (
+                <div key={labelKey} className="bl-field">
+                  <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                    <input
+                      type="checkbox"
+                      checked={data[enabledKey] !== false}
+                      onChange={(e) => update(enabledKey, e.target.checked)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                    />
+                    {label}
+                  </label>
+                  <input
+                    className="bl-node-input"
+                    value={data[labelKey] || ''}
+                    onChange={(e) => update(labelKey, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder={fallback}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#7EB8F7' }}>{'{targetName} {targetMention} {avatarUrl}'}</span>
+                {' · '}
+                <span style={{ color: '#A8D08D' }}>{'{user} {mention}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{server} {channel}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_setboost' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F472B6">Boost Settings</SectionHead>
+              <div className="bl-field">
+                <label className="bl-embed-toggle" style={{ fontSize: 11 }}>
+                  <input
+                    type="checkbox"
+                    checked={data.enabledByDefault !== false}
+                    onChange={(e) => update('enabledByDefault', e.target.checked)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  />
+                  Enabled by default
+                </label>
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Boost Channel ID</span>
+                <input
+                  className="bl-node-input"
+                  value={data.boostChannelId || ''}
+                  onChange={(e) => update('boostChannelId', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="Channel ID or #channel"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'panelTitle', label: 'Panel Title', fallback: 'Boost Message Settings', rows: 2 },
+                { key: 'panelDescription', label: 'Panel Description', fallback: 'Configure boost announcements for {server}.', rows: 3 },
+                { key: 'boostMessage', label: 'Boost Message', fallback: 'Thank you {memberMention} for boosting {server}! We now have {boostCount} boosts.', rows: 4 },
+                { key: 'testMessage', label: 'Test Confirmation', fallback: 'Test boost message sent to {channel}.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-node-divider" />
+              <SectionHead color="#A8D08D">Button Labels</SectionHead>
+              {[
+                { key: 'enableButtonLabel', label: 'Enabled Button', fallback: 'Boost Messages: ON' },
+                { key: 'disableButtonLabel', label: 'Disabled Button', fallback: 'Boost Messages: OFF' },
+                { key: 'testButtonLabel', label: 'Test Button', fallback: 'Send Test' },
+                { key: 'resetButtonLabel', label: 'Reset Button', fallback: 'Reset' },
+              ].map(({ key, label, fallback }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <input
+                    className="bl-node-input"
+                    value={data[key] || ''}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder={fallback}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#F472B6' }}>{'{member} {memberMention} {boostCount}'}</span>
+                {' · '}
+                <span style={{ color: '#7EB8F7' }}>{'{server} {channel} {status}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{user} {mention}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_boostcount' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F472B6">Boost Count Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="bc,boosts"
+                  spellCheck={false}
+                />
+                <span className="bl-field-hint">Comma separated. Example: bc,boosts</span>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: '{server} Boost Count', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '{server} currently has **{boostCount}** boosts.\nBoost tier: **{boostTierLabel}**', rows: 4 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: '{server} has {boostCount} boosts ({boostTierLabel}).', rows: 3 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#F472B6' }}>{'{boostCount} {boosts} {boostTier} {boostTierLabel}'}</span>
+                {' · '}
+                <span style={{ color: '#7EB8F7' }}>{'{server} {serverId}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{user} {mention} {channel}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_channelinfo' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#22C55E">Channel Info Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="ci"
+                  spellCheck={false}
+                />
+                <span className="bl-field-hint">Comma separated. Example: ci,cinfo</span>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Channel Info: #{channelName}', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '**Mention:** {channelMention}\n**ID:** `{channelId}`\n**Type:** {channelType}\n**Category:** {category}\n**Topic:** {topic}\n**NSFW:** {nsfw}\n**Slowmode:** {slowmode}\n**Position:** {position}\n**Created:** {createdAt}\n\n**Permissions**\n{permissionsSummary}', rows: 7 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: '#{channelName} ({channelType}) - ID: {channelId} - {permissionsSummary}', rows: 3 },
+                { key: 'notFoundMessage', label: 'Not Found Text', fallback: 'I could not find that channel.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#22C55E' }}>{'{channelName} {channelMention} {channelId} {channelType}'}</span>
+                {' · '}
+                <span style={{ color: '#7EB8F7' }}>{'{category} {topic} {slowmode} {nsfw}'}</span>
+                {' · '}
+                <span style={{ color: '#F472B6' }}>{'{permissionsSummary} {canView} {canSend}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_embedbuilder' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#5865F2">Embed Builder Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="embedbuilder"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'panelButtonLabel', label: 'Panel Text', fallback: 'Improve the Embed', rows: 2 },
+                { key: 'defaultAuthorText', label: 'Default Author Text', fallback: '', rows: 2 },
+                { key: 'defaultAuthorIcon', label: 'Default Author Icon URL', fallback: '', rows: 2 },
+                { key: 'defaultTitle', label: 'Default Title', fallback: 'Embed Title', rows: 2 },
+                { key: 'defaultDescription', label: 'Default Description', fallback: 'Embed description goes here.', rows: 4 },
+                { key: 'defaultThumbnail', label: 'Default Thumbnail URL', fallback: '', rows: 2 },
+                { key: 'defaultImage', label: 'Default Image URL', fallback: '', rows: 2 },
+                { key: 'defaultFooterText', label: 'Default Footer Text', fallback: '', rows: 2 },
+                { key: 'defaultFooterIcon', label: 'Default Footer Icon URL', fallback: '', rows: 2 },
+                { key: 'sentMessage', label: 'Sent Confirmation', fallback: 'Embed sent to this channel.', rows: 2 },
+                { key: 'abortedMessage', label: 'Abort Text', fallback: 'Embed builder aborted.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Default Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.defaultColor || '#5865F2'} onChange={(e) => update('defaultColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.defaultColor || '#5865F2'} onChange={(e) => update('defaultColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <div className="bl-node-divider" />
+              <SectionHead color="#A8D08D">Builder Button Labels</SectionHead>
+              {[
+                ['authorTextButtonLabel', 'Author Text'],
+                ['authorIconButtonLabel', 'Author Icon'],
+                ['titleButtonLabel', 'Title'],
+                ['descriptionButtonLabel', 'Description'],
+                ['thumbnailButtonLabel', 'Thumbnail'],
+                ['imageButtonLabel', 'Image'],
+                ['footerTextButtonLabel', 'Footer Text'],
+                ['footerIconButtonLabel', 'Footer Icon'],
+                ['colorButtonLabel', 'Color'],
+                ['resetButtonLabel', 'Reset Embed'],
+                ['sendButtonLabel', 'Send to Channel'],
+                ['abortButtonLabel', 'Abort'],
+              ].map(([key, fallback]) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{fallback}</span>
+                  <input
+                    className="bl-node-input"
+                    value={data[key] || ''}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder={fallback}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                Buttons open Discord modals. Send posts the current embed to the channel.
+              </span>
+            </>
+          )}
+
+          {type === 'util_invite' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#5865F2">Invite Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="i,in,inv"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'customInviteUrl', label: 'Custom Invite URL', fallback: 'https://discord.com/oauth2/authorize?...', rows: 2 },
+                { key: 'clientId', label: 'Bot Client ID', fallback: 'Leave blank to use running bot ID', rows: 2 },
+                { key: 'permissions', label: 'Permissions', fallback: '8', rows: 1 },
+                { key: 'scopes', label: 'Scopes', fallback: 'bot applications.commands', rows: 1 },
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Invite {botName}', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: 'Use the button below to invite **{botName}** to your server.', rows: 3 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: 'Invite {botName}: {inviteUrl}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? ''}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder={fallback}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-node-divider" />
+              <SectionHead color="#A8D08D">Buttons</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Invite Button</span>
+                <input
+                  className="bl-node-input"
+                  value={data.inviteButtonLabel || ''}
+                  onChange={(e) => update('inviteButtonLabel', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="Invite Bot"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="bl-field">
+                <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                  <input
+                    type="checkbox"
+                    checked={!!data.showSupportButton}
+                    onChange={(e) => update('showSupportButton', e.target.checked)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  />
+                  Support Button
+                </label>
+                <input
+                  className="bl-node-input"
+                  value={data.supportButtonLabel || ''}
+                  onChange={(e) => update('supportButtonLabel', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="Support Server"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Support URL</span>
+                <input
+                  className="bl-node-input"
+                  value={data.supportUrl || ''}
+                  onChange={(e) => update('supportUrl', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="https://discord.gg/..."
+                  spellCheck={false}
+                />
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#7EB8F7' }}>{'{botName} {botId} {inviteUrl}'}</span>
+                {' · '}
+                <span style={{ color: '#A8D08D' }}>{'{user} {mention}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{server} {channel}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_membercount' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#22C55E">Member Count Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="mc,members"
+                  spellCheck={false}
+                />
+                <span className="bl-field-hint">Comma separated. Example: mc,members</span>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: '{server} Members', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '**Total Members:** {memberCount}\n**Humans:** {humanCount}\n**Bots:** {botCount}', rows: 4 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: '{server} has {memberCount} members.', rows: 3 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#22C55E' }}>{'{memberCount} {members} {humanCount} {botCount}'}</span>
+                {' · '}
+                <span style={{ color: '#7EB8F7' }}>{'{server} {serverId}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{user} {mention} {channel}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_servericon' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#3B82F6">Server Icon Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="serverav,serveravatar,sicon"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: "{server}'s Server Icon", rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: 'Requested by {mention}\nServer ID: `{serverId}`', rows: 3 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: "{server}'s server icon: {iconUrl}", rows: 2 },
+                { key: 'noIconMessage', label: 'No Icon Text', fallback: 'This server does not have an icon.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-node-divider" />
+              <SectionHead color="#A8D08D">Buttons</SectionHead>
+              {[
+                ['showDownloadButton', 'downloadButtonLabel', 'Download Button', 'Download'],
+                ['showOpenButton', 'openButtonLabel', 'Open Button', 'Open Icon'],
+              ].map(([enabledKey, labelKey, label, fallback]) => (
+                <div key={labelKey} className="bl-field">
+                  <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                    <input
+                      type="checkbox"
+                      checked={data[enabledKey] !== false}
+                      onChange={(e) => update(enabledKey, e.target.checked)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                    />
+                    {label}
+                  </label>
+                  <input
+                    className="bl-node-input"
+                    value={data[labelKey] || ''}
+                    onChange={(e) => update(labelKey, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder={fallback}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#7EB8F7' }}>{'{server} {serverId} {iconUrl}'}</span>
+                {' · '}
+                <span style={{ color: '#A8D08D' }}>{'{user} {mention}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{channel}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_stats' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#8B5CF6">Stats Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="botinfo,bi,statistics"
+                  spellCheck={false}
+                />
+                <span className="bl-field-hint">Comma separated. Example: botinfo,bi,statistics</span>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: '{botName} Statistics', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '**Servers:** {serverCount}\n**Users:** {userCount}\n**Channels:** {channelCount}\n**Ping:** {ping}ms\n**Uptime:** {uptime}\n**Memory:** {memoryUsed} / {memoryTotal}\n**Node.js:** {nodeVersion}\n**Discord.js:** {discordVersion}', rows: 7 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: '{botName}: {serverCount} servers, {userCount} users, {ping}ms ping, uptime {uptime}.', rows: 3 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#8B5CF6' }}>{'{botName} {serverCount} {userCount} {channelCount}'}</span>
+                {' · '}
+                <span style={{ color: '#7EB8F7' }}>{'{ping} {uptime} {memoryUsed} {memoryTotal}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{nodeVersion} {discordVersion} {platform}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_steal' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F59E0B">Steal Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="emoji,addemoji"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Default Name</span>
+                <input
+                  className="bl-node-input"
+                  value={data.defaultName || ''}
+                  onChange={(e) => update('defaultName', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="stolen"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'successMessage', label: 'Success Text', fallback: 'Added {type} **{name}** to {server}.', rows: 3 },
+                { key: 'notFoundMessage', label: 'Not Found Text', fallback: 'Reply to a message with an emoji/sticker or include a custom emoji in the command.', rows: 3 },
+                { key: 'permissionMessage', label: 'Permission Text', fallback: 'I need Manage Emojis and Stickers permission to do that.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Text', fallback: 'I could not steal that {type}. {error}', rows: 2 },
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Stolen {type}', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '{result}', rows: 3 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: '{result}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#F59E0B' }}>{'{type} {name} {emoji} {url} {result}'}</span>
+                {' · '}
+                <span style={{ color: '#7EB8F7' }}>{'{server} {channel}'}</span>
+                {' · '}
+                <span style={{ color: '#888' }}>{'{user} {mention} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_userinfo' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#3B82F6">User Info Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="ui,user"
+                  spellCheck={false}
+                />
+                <span className="bl-field-hint">Comma separated. Example: ui,user</span>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'User Info: {targetName}', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '**User:** {targetMention}\n**Tag:** {targetTag}\n**ID:** `{targetId}`\n**Bot:** {targetBot}\n**Created:** {createdAt}\n**Joined:** {joinedAt}\n**Roles:** {roleCount}\n**Top Role:** {topRole}\n**Status:** {status}', rows: 8 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: '{targetTag} ({targetId}) joined {server} on {joinedAt}.', rows: 3 },
+                { key: 'notFoundMessage', label: 'Not Found Text', fallback: 'I could not find that user.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#3B82F6' }}>{'{targetName} {targetTag} {targetId} {targetMention}'}</span>
+                {' Â· '}
+                <span style={{ color: '#7EB8F7' }}>{'{createdAt} {joinedAt} {roleCount} {topRole} {status}'}</span>
+                {' Â· '}
+                <span style={{ color: '#888' }}>{'{server} {user} {mention}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_prefix' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#14B8A6">Prefix Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="setprefix"
+                  spellCheck={false}
+                />
+              </div>
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input
+                  type="checkbox"
+                  checked={data.requireManageGuild !== false}
+                  onChange={(e) => update('requireManageGuild', e.target.checked)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+                Require Manage Server
+              </label>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Prefix Updated', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: 'Prefix changed from `{oldPrefix}` to `{newPrefix}`.', rows: 3 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: 'Prefix changed from {oldPrefix} to {newPrefix}.', rows: 2 },
+                { key: 'currentMessage', label: 'Current Prefix Text', fallback: 'Current prefix is `{oldPrefix}`. Use `{oldPrefix}{command} <new prefix>` to change it.', rows: 3 },
+                { key: 'permissionMessage', label: 'Permission Text', fallback: 'You need Manage Server permission to change the prefix.', rows: 2 },
+                { key: 'invalidMessage', label: 'Invalid Text', fallback: 'Please provide a prefix from 1 to 5 characters without spaces.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#14B8A6' }}>{'{oldPrefix} {newPrefix} {prefix} {command}'}</span>
+                {' Â· '}
+                <span style={{ color: '#7EB8F7' }}>{'{server} {channel}'}</span>
+                {' Â· '}
+                <span style={{ color: '#888' }}>{'{user} {mention}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'util_calculator' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#5865F2">Calculator Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="calc,math,solve"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Calculator Screen', rows: 2 },
+                { key: 'expressionLabel', label: 'Expression Label', fallback: 'Expression', rows: 1 },
+                { key: 'resultLabel', label: 'Result Label', fallback: 'Result', rows: 1 },
+                { key: 'statusLabel', label: 'Status Label', fallback: 'Status', rows: 1 },
+                { key: 'readyText', label: 'Ready Text', fallback: 'Ready', rows: 1 },
+                { key: 'errorText', label: 'Error Text', fallback: 'Error', rows: 1 },
+                { key: 'footerTemplate', label: 'Footer', fallback: 'Aliases: {aliases} • Today at {time}', rows: 2 },
+                { key: 'onlyUserMessage', label: 'Only User Text', fallback: 'Only {user} can use this calculator.', rows: 2 },
+                { key: 'timeoutMessage', label: 'Timeout Text', fallback: 'Calculator session expired.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#5865F2' }}>{'{expression} {result} {status}'}</span>
+                {' Â· '}
+                <span style={{ color: '#7EB8F7' }}>{'{command} {aliases} {time}'}</span>
+                {' Â· '}
+                <span style={{ color: '#888' }}>{'{user} {server} {channel}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'info_playing' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#22C55E">Playing Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="setplaying,activity,status"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Activity Name</span>
+                <input
+                  className="bl-node-input"
+                  value={data.activityName || ''}
+                  onChange={(e) => update('activityName', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="ROBLOX"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Activity Type</span>
+                <select
+                  className="bl-node-input"
+                  value={data.activityType || 'Playing'}
+                  onChange={(e) => update('activityType', e.target.value)}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                >
+                  <option value="Playing">Playing</option>
+                  <option value="Watching">Watching</option>
+                  <option value="Listening">Listening</option>
+                  <option value="Competing">Competing</option>
+                  <option value="Streaming">Streaming</option>
+                </select>
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Producer Name</span>
+                <input
+                  className="bl-node-input"
+                  value={data.producerName || ''}
+                  onChange={(e) => update('producerName', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="Producer"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Status</span>
+                <select
+                  className="bl-node-input"
+                  value={data.status || 'online'}
+                  onChange={(e) => update('status', e.target.value)}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                >
+                  <option value="online">online</option>
+                  <option value="idle">idle</option>
+                  <option value="dnd">dnd</option>
+                  <option value="invisible">invisible</option>
+                </select>
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Activity Image URL</span>
+                <input
+                  className="bl-node-input"
+                  value={data.imageUrl || ''}
+                  onChange={(e) => update('imageUrl', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="https://...image.png"
+                  spellCheck={false}
+                />
+              </div>
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input
+                  type="checkbox"
+                  checked={data.useAnimatedAvatar === true}
+                  onChange={(e) => update('useAnimatedAvatar', e.target.checked)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+                Use Animated Avatar
+              </label>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Animated Avatar URL</span>
+                <input
+                  className="bl-node-input"
+                  value={data.animatedAvatarUrl || ''}
+                  onChange={(e) => update('animatedAvatarUrl', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="https://...avatar.gif"
+                  spellCheck={false}
+                />
+              </div>
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input
+                  type="checkbox"
+                  checked={data.useAnimatedBanner === true}
+                  onChange={(e) => update('useAnimatedBanner', e.target.checked)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+                Use Animated Banner
+              </label>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Animated Banner URL</span>
+                <input
+                  className="bl-node-input"
+                  value={data.animatedBannerUrl || ''}
+                  onChange={(e) => update('animatedBannerUrl', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="https://...banner.gif"
+                  spellCheck={false}
+                />
+              </div>
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input
+                  type="checkbox"
+                  checked={data.requireManageGuild !== false}
+                  onChange={(e) => update('requireManageGuild', e.target.checked)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+                Require Manage Server
+              </label>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Bot Activity Updated', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '**Type:** {activityType}\n**Name:** {activityName}\n**Producer:** {producerName}\n**Status:** {status}', rows: 5 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: 'Bot activity set to {activityType} {activityName} by {producerName}.', rows: 2 },
+                { key: 'permissionMessage', label: 'Permission Text', fallback: 'You need Manage Server permission to change my activity.', rows: 2 },
+                { key: 'clearedMessage', label: 'Cleared Text', fallback: 'Bot activity cleared.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#22C55E' }}>{'{activityName} {activityType} {producerName} {status}'}</span>
+                {' Â· '}
+                <span style={{ color: '#7EB8F7' }}>{'{imageUrl} {animatedAvatarUrl} {animatedBannerUrl}'}</span>
+                {' Â· '}
+                <span style={{ color: '#888' }}>{'{user} {server}'}</span>
+              </span>
+            </>
+          )}
+
           {type === 'ticket_panel' && (
             <>
               <div className="bl-node-divider" />
@@ -468,6 +1608,55 @@ export default function PluginNode({ id, type, data, selected }) {
                 Add {data.panelMode === 'dropdown' ? 'Option' : 'Button'}
               </button>
               <span className="bl-field-hint">Edit description and preview in the right properties panel.</span>
+            </>
+          )}
+
+          {isTicketStatusNode && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color={type === 'ticket_lock' ? '#F59E0B' : '#34D399'}>
+                {type === 'ticket_lock' ? 'Lock Message' : 'Unlock Message'}
+              </SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Text</span>
+                <textarea
+                  className="bl-node-textarea"
+                  value={data[ticketStatusMessageKey] ?? ticketStatusDefaultMessage}
+                  onChange={(e) => update(ticketStatusMessageKey, e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  rows={3}
+                  spellCheck={false}
+                />
+                <span className="bl-field-hint">{'{user}'} {'{mention}'} {'{ticketId}'} {'{channel}'}</span>
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Channel Log ID</span>
+                <input
+                  className="bl-node-input"
+                  value={data.logChannel || ''}
+                  onChange={(e) => update('logChannel', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="Channel ID, #mention, or saved log channel"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Support Roles</span>
+                <input
+                  className="bl-node-input"
+                  value={data.supportRoles || ''}
+                  onChange={(e) => update('supportRoles', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="Role IDs, comma separated"
+                  spellCheck={false}
+                />
+              </div>
             </>
           )}
 
@@ -947,7 +2136,7 @@ export default function PluginNode({ id, type, data, selected }) {
             <label className="bl-embed-toggle">
               <input
                 type="checkbox"
-                checked={!!data.embedEnabled}
+                checked={data.embedEnabled !== false}
                 onChange={(e) => update('embedEnabled', e.target.checked)}
                 onMouseDown={(e) => e.stopPropagation()}
               />
@@ -955,7 +2144,7 @@ export default function PluginNode({ id, type, data, selected }) {
             </label>
           </div>
 
-          {data.embedEnabled && (
+          {data.embedEnabled !== false && (
             <>
               <div className="bl-field">
                 <span className="bl-field-lbl">Color</span>

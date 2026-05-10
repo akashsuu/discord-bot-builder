@@ -14,6 +14,7 @@ const ticketHelper = require(path.join(__dirname, '..', 'helpers', 'tickets.js')
 const permHelper = require(path.join(__dirname, '..', 'helpers', 'permissions.js'));
 const logHelper = require(path.join(__dirname, '..', 'helpers', 'logger.js'));
 const { generateTranscript } = require(path.join(__dirname, '..', 'helpers', 'transcripts.js'));
+const { applyCommonEmbedOptions } = require(path.join(__dirname, '..', 'helpers', 'embeds.js'));
 
 const state = {
   attached: false,
@@ -144,7 +145,7 @@ async function createModmailTicket(message, data, client, guild) {
   await channel.send({
     content: supportRoleIds.map((roleId) => `<@&${roleId}>`).join(' ') || undefined,
     embeds: [
-      new EmbedBuilder()
+      applyCommonEmbedOptions(new EmbedBuilder()
         .setColor(isNaN(color) ? 0x5865F2 : color)
         .setTitle('New ModMail Ticket')
         .setDescription(message.content || '(no text content)')
@@ -153,7 +154,7 @@ async function createModmailTicket(message, data, client, guild) {
           { name: 'Ticket ID', value: ticketId, inline: true }
         )
         .setThumbnail(message.author.displayAvatarURL({ size: 128 }))
-        .setTimestamp(),
+        .setTimestamp(), data),
     ],
     components: [row],
   });
@@ -325,6 +326,10 @@ module.exports = {
         closeCommand: { type: 'string', default: 'close' },
         anonymousMode: { type: 'boolean', default: false },
         embedColor: { type: 'string', default: '#5865F2' },
+        embedFooter: { type: 'string', default: '' },
+        logoUrl: { type: 'string', default: '' },
+        logoName: { type: 'string', default: '' },
+        imageUrl: { type: 'string', default: '' },
       },
 
       async initProject(ctx) {

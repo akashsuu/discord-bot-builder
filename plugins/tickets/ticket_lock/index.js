@@ -13,6 +13,12 @@ const ticketHelper = require(path.join(__dirname, '..', 'helpers', 'tickets.js')
 const permHelper   = require(path.join(__dirname, '..', 'helpers', 'permissions.js'));
 const logHelper    = require(path.join(__dirname, '..', 'helpers', 'logger.js'));
 
+function applyTemplate(str, vars) {
+  return String(str || '').replace(/\{(\w+)\}/g, (m, k) =>
+    Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m
+  );
+}
+
 module.exports = {
   meta: {
     name:          'Ticket Lock',
@@ -33,6 +39,7 @@ module.exports = {
 
       configSchema: {
         command:      { type: 'string', default: 'lock' },
+        lockMessage:  { type: 'string', default: '🔐 **Ticket Locked** — The ticket owner can no longer send messages.' },
         supportRoles: { type: 'string', default: '' },
         logChannel:   { type: 'string', default: '' },
       },
@@ -70,7 +77,17 @@ module.exports = {
         }
 
         ticketHelper.updateTicket(message.channel.id, { locked: true });
+        if (data.lockMessage) {
+          await message.channel.send(applyTemplate(data.lockMessage, {
+            user: message.author.username,
+            mention: `<@${message.author.id}>`,
+            ticketId: ticket.ticketId,
+            channel: message.channel.name,
+          })).catch(() => {});
+        } else {
         await message.channel.send('🔐 **Ticket Locked** — The ticket owner can no longer send messages.').catch(() => {});
+
+        }
 
         if (message.client) {
           await logHelper.sendLog(message.client, data.logChannel, 'locked', {

@@ -20,7 +20,7 @@ function buildNode(node, nodes, edges, plugins, depth, prefix) {
   // Plugin-provided code generation
   const plugin = plugins[node.type];
   if (plugin && typeof plugin.generateCode === 'function') {
-    const raw = plugin.generateCode(node, prefix || '');
+    const raw = plugin.generateCode(node, prefix);
     raw.split('\n').forEach((l) => lines.push(pad + l));
     return lines.join('\n');
   }
@@ -73,14 +73,14 @@ function buildNode(node, nodes, edges, plugins, depth, prefix) {
 
       lines.push(`${pad}if (${condExpr}) {`);
       for (const t of getOutputNodes(node.id, nodes, edges, 'true')) {
-        lines.push(buildNode(t, nodes, edges, plugins, depth + 1));
+        lines.push(buildNode(t, nodes, edges, plugins, depth + 1, prefix));
       }
 
       const falseNodes = getOutputNodes(node.id, nodes, edges, 'false');
       if (falseNodes.length > 0) {
         lines.push(`${pad}} else {`);
         for (const f of falseNodes) {
-          lines.push(buildNode(f, nodes, edges, plugins, depth + 1));
+          lines.push(buildNode(f, nodes, edges, plugins, depth + 1, prefix));
         }
       }
       lines.push(`${pad}}`);
@@ -123,8 +123,8 @@ function buildEmbedSend(data, rawText, pad) {
 
 // ─── Public ────────────────────────────────────────────────────────────────
 function generateCode(projectData, plugins = {}) {
-  const { nodes = [], edges = [], token = 'YOUR_BOT_TOKEN', name = 'Bot', prefix: rawPrefix = '' } = projectData;
-  const prefix = rawPrefix.trim();
+  const { nodes = [], edges = [], token = 'YOUR_BOT_TOKEN', name = 'Bot', prefix: rawPrefix = '!' } = projectData;
+  const prefix = String(rawPrefix ?? '!').trim() || '!';
 
   const eventNodes = nodes.filter((n) => n.type === 'event_message');
 

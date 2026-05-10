@@ -67,9 +67,20 @@ function buildEmbed(data, text) {
 const _cooldowns = new Map();
 
 // ── Static helpers (shared across ALL events — no mutable state here) ─────────
-function makeStaticHelpers(prefix) {
+function makeStaticHelpers(defaultPrefix) {
+  const guildPrefixes = new Map();
+  const getPrefix = (guildId = 'global') =>
+    guildPrefixes.get(guildId || 'global') || guildPrefixes.get('global') || defaultPrefix;
+  const setPrefix = (nextPrefix, guildId = 'global') => {
+    const clean = String(nextPrefix || '').trim() || defaultPrefix;
+    guildPrefixes.set(guildId || 'global', clean);
+    return clean;
+  };
   return {
-    prefix,
+    prefix: defaultPrefix,
+    defaultPrefix,
+    getPrefix,
+    setPrefix,
     substitute,
     buildEmbed,
     sendEmbed: async (message, data, text) => {
@@ -121,8 +132,8 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
     return;
   }
 
-  const { nodes = [], edges = [], token, prefix: rawPrefix = '' } = projectData;
-  const prefix = rawPrefix.trim();
+  const { nodes = [], edges = [], token, prefix: rawPrefix = '!' } = projectData;
+  const prefix = String(rawPrefix ?? '!').trim() || '!';
 
   if (!token?.trim()) {
     throw new Error('Bot token is missing. Add it via the Token button.');
@@ -180,8 +191,9 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
     for (const evNode of eventNodes) {
       // Fresh flow state per message so one command's allowedUsers/args
       // don't bleed into a concurrent command execution.
-      const helpers = makeEventHelpers(staticHelpers);
-      await engine.executeGraph(evNode, nodes, edges, message, 'messageCreate', prefix, helpers);
+      const effectivePrefix = staticHelpers.getPrefix(message.guild?.id);
+      const helpers = makeEventHelpers({ ...staticHelpers, prefix: effectivePrefix });
+      await engine.executeGraph(evNode, nodes, edges, message, 'messageCreate', effectivePrefix, helpers);
     }
   });
 
@@ -194,8 +206,9 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
         (n) => n.type === nodeType && (n.data?.event || defaultEv) === discordEvent
       );
       for (const evNode of matching) {
-        const helpers = makeEventHelpers(staticHelpers);
-        await engine.executeGraph(evNode, nodes, edges, eventData, discordEvent, prefix, helpers);
+        const effectivePrefix = staticHelpers.getPrefix(eventData?.guild?.id);
+        const helpers = makeEventHelpers({ ...staticHelpers, prefix: effectivePrefix });
+        await engine.executeGraph(evNode, nodes, edges, eventData, discordEvent, effectivePrefix, helpers);
       }
     });
   }

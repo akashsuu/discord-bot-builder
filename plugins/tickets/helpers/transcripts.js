@@ -75,13 +75,20 @@ function renderAttachment(att) {
 
 // ── Render a single message ───────────────────────────────────────────────────
 function renderMessage(msg) {
-  const avatar    = msg.author.displayAvatarURL({ size: 32, format: 'png' });
-  const name      = escapeHtml(msg.author.tag || msg.author.username);
-  const time      = formatDate(msg.createdAt);
+  const author = msg.author || {
+    tag: msg.senderName || 'Unknown User',
+    username: msg.senderName || 'Unknown User',
+    bot: !!msg.isStaff,
+    displayAvatarURL: () => 'https://cdn.discordapp.com/embed/avatars/0.png',
+  };
+  const avatar    = author.displayAvatarURL?.({ size: 32, format: 'png' }) || 'https://cdn.discordapp.com/embed/avatars/0.png';
+  const name      = escapeHtml(author.tag || author.username || msg.senderName || 'Unknown User');
+  const time      = formatDate(msg.createdAt || msg.timestamp || Date.now());
   const content   = msg.content ? `<div class="msg-content">${escapeHtml(msg.content)}</div>` : '';
   const embeds    = (msg.embeds || []).map(renderEmbed).join('');
-  const attachments = [...(msg.attachments?.values() || [])].map(renderAttachment).join('');
-  const isBot     = msg.author.bot ? ' bot-tag' : '';
+  const rawAttachments = msg.attachments?.values ? [...msg.attachments.values()] : (msg.attachments || []);
+  const attachments = rawAttachments.map(renderAttachment).join('');
+  const isBot     = author.bot ? ' bot-tag' : '';
 
   let replyHtml = '';
   if (msg.reference?.messageId) {
@@ -95,7 +102,7 @@ function renderMessage(msg) {
         ${replyHtml}
         <div class="msg-header">
           <span class="author-name${isBot}">${name}</span>
-          ${isBot ? '<span class="bot-badge">BOT</span>' : ''}
+          ${author.bot ? '<span class="bot-badge">BOT</span>' : ''}
           <span class="msg-time">${time}</span>
         </div>
         ${content}
@@ -202,8 +209,14 @@ async function generateTranscript(channel, ticket, guildName) {
     messages = [];
   }
 
+  if (messages.length === 0 && Array.isArray(ticket.messages) && ticket.messages.length > 0) {
+    messages = [...ticket.messages].sort((a, b) =>
+      new Date(a.timestamp || 0).getTime() - new Date(b.timestamp || 0).getTime()
+    );
+  }
+
   const html     = buildHTML(ticket, messages, guildName);
-  const filename = `${ticket.ticketId}.html`;
+  const filename = `${String(ticket.ticketId || 'ticket').replace(/[^a-z0-9_-]/gi, '_')}.html`;
   const filePath = path.join(TRANSCRIPT_DIR, filename);
 
   fs.writeFileSync(filePath, html, 'utf-8');

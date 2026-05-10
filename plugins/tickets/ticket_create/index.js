@@ -31,6 +31,7 @@ const {
 const ticketHelper = require(path.join(__dirname, '..', 'helpers', 'tickets.js'));
 const permHelper   = require(path.join(__dirname, '..', 'helpers', 'permissions.js'));
 const logHelper    = require(path.join(__dirname, '..', 'helpers', 'logger.js'));
+const { applyCommonEmbedOptions } = require(path.join(__dirname, '..', 'helpers', 'embeds.js'));
 
 // ── Template processor ────────────────────────────────────────────────────────
 function applyTemplate(str, vars) {
@@ -61,7 +62,7 @@ function buildWelcomeEmbed(data, ticket, member) {
   };
   const color = parseInt((data.embedColor || '#5865F2').replace('#', ''), 16);
 
-  return new EmbedBuilder()
+  const embed = new EmbedBuilder()
     .setColor(isNaN(color) ? 0x5865F2 : color)
     .setTitle(applyTemplate(data.welcomeTitle || '🎫 Ticket Opened', vars))
     .setDescription(applyTemplate(
@@ -77,6 +78,7 @@ function buildWelcomeEmbed(data, ticket, member) {
     )
     .setFooter({ text: applyTemplate(data.embedFooter || 'Ticket • {ticketId}', vars) })
     .setTimestamp();
+  return applyCommonEmbedOptions(embed, { ...data, embedFooter: data.embedFooter || 'Ticket • {ticketId}' }, vars);
 }
 
 // ── Action buttons for the welcome message ────────────────────────────────────
@@ -259,6 +261,9 @@ module.exports = {
         welcomeDescription:  { type: 'string',  default: 'Hello {user}! A staff member will assist you shortly.' },
         embedColor:          { type: 'string',  default: '#5865F2' },
         embedFooter:         { type: 'string',  default: 'Ticket • {ticketId}' },
+        logoUrl:             { type: 'string',  default: '' },
+        logoName:            { type: 'string',  default: '' },
+        imageUrl:            { type: 'string',  default: '' },
         ticketNamingFormat:  { type: 'string',  default: 'ticket-{username}' },
         ticketCategory:      { type: 'string',  default: '' },
         supportRoles:        { type: 'string',  default: '' },

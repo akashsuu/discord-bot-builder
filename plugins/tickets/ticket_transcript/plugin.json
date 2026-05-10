@@ -11,6 +11,7 @@
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
+      "command": "transcript",
       "supportRoles": "",
       "logChannel": ""
     }

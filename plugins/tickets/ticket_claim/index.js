@@ -21,10 +21,11 @@ const {
 const ticketHelper = require(path.join(__dirname, '..', 'helpers', 'tickets.js'));
 const permHelper   = require(path.join(__dirname, '..', 'helpers', 'permissions.js'));
 const logHelper    = require(path.join(__dirname, '..', 'helpers', 'logger.js'));
+const { applyCommonEmbedOptions } = require(path.join(__dirname, '..', 'helpers', 'embeds.js'));
 
 // ── Build claimed status embed ────────────────────────────────────────────────
-function buildClaimedEmbed(ticket, claimer, color) {
-  return new EmbedBuilder()
+function buildClaimedEmbed(ticket, claimer, color, data = {}) {
+  const embed = new EmbedBuilder()
     .setColor(color || 0x5865F2)
     .setTitle('✋ Ticket Claimed')
     .setDescription(`This ticket has been claimed by <@${claimer.id}>.`)
@@ -33,8 +34,13 @@ function buildClaimedEmbed(ticket, claimer, color) {
       { name: '🎫 Ticket',  value: ticket.ticketId,         inline: true },
       { name: '📂 Category',value: ticket.category,         inline: true },
     )
-    .setThumbnail(claimer.displayAvatarURL?.({ size: 64 }) || claimer.user?.displayAvatarURL({ size: 64 }))
+    .setThumbnail(data.embedThumbnail || data.logoUrl || claimer.displayAvatarURL?.({ size: 64 }) || claimer.user?.displayAvatarURL({ size: 64 }))
     .setTimestamp();
+  return applyCommonEmbedOptions(embed, data, {
+    user: claimer.username || claimer.user?.username || 'Staff',
+    mention: `<@${claimer.id}>`,
+    ticketId: ticket.ticketId,
+  });
 }
 
 function buildClaimedComponents(message, ticketId) {
@@ -104,7 +110,7 @@ module.exports = {
       const updatedTicket = ticketHelper.getTicket(interaction.channel);
 
       const color = parseInt((data.embedColor || '#5865F2').replace('#', ''), 16);
-      const embed = buildClaimedEmbed(updatedTicket, interaction.user, isNaN(color) ? 0x5865F2 : color);
+      const embed = buildClaimedEmbed(updatedTicket, interaction.user, isNaN(color) ? 0x5865F2 : color, data);
 
       await interaction.message.edit({
         components: buildClaimedComponents(interaction.message, ticket.ticketId),
@@ -139,6 +145,10 @@ module.exports = {
         supportRoles: { type: 'string',  default: '' },
         logChannel:   { type: 'string',  default: '' },
         embedColor:   { type: 'string',  default: '#5865F2' },
+        embedFooter:  { type: 'string',  default: '' },
+        logoUrl:      { type: 'string',  default: '' },
+        logoName:     { type: 'string',  default: '' },
+        imageUrl:     { type: 'string',  default: '' },
       },
 
       async execute(node, message, ctx) {
@@ -173,7 +183,7 @@ module.exports = {
         const updated = ticketHelper.getTicket(message.channel);
 
         const color = parseInt((data.embedColor || '#5865F2').replace('#', ''), 16);
-        const embed = buildClaimedEmbed(updated, message.author, isNaN(color) ? 0x5865F2 : color);
+        const embed = buildClaimedEmbed(updated, message.author, isNaN(color) ? 0x5865F2 : color, data);
         await message.channel.send({ embeds: [embed] }).catch(() => {});
 
         if (message.client) {

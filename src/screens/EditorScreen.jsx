@@ -442,7 +442,7 @@ function DiscordPreview({ node }) {
     ...(embedTitleOverride ? { embedTitle: embedTitleOverride } : {}),
   };
 
-  const hasContent = text || d.embedEnabled;
+  const hasContent = text || d.embedEnabled !== false;
 
   if (!hasContent) {
     return (
@@ -501,7 +501,7 @@ function DiscordPreview({ node }) {
             <span className="dc-timestamp">Today at {time}</span>
           </div>
           {text && <div className="dc-plain">{text}</div>}
-          {effectiveData.embedEnabled ? (
+          {effectiveData.embedEnabled !== false ? (
             <DiscordEmbed data={{ ...effectiveData, embedFooter: `${effectiveData.embedFooter} • Today at ${time}` }} text={embedText} />
           ) : null}
         </div>
@@ -518,12 +518,12 @@ function EmbedFields({ d, update }) {
 
       <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
         <label className="bl-embed-toggle" style={{ paddingLeft: 0 }}>
-          <input type="checkbox" checked={!!d.embedEnabled} onChange={(e) => update('embedEnabled', e.target.checked)} />
+          <input type="checkbox" checked={d.embedEnabled !== false} onChange={(e) => update('embedEnabled', e.target.checked)} />
           Embed
         </label>
       </div>
 
-      {d.embedEnabled && (
+      {d.embedEnabled !== false && (
         <>
           <div className="bl-prop-row">
             <span className="bl-prop-label">Color</span>
@@ -624,6 +624,9 @@ function DiscordPreviewTicketPanel({ data }) {
   const description = demoSub(data.embedDescription || 'Need help? Click below to open a ticket.', data);
   const footer = data.embedFooter ? demoSub(data.embedFooter, data) : '';
   const botName = botInfo?.username || 'YourBot';
+  const hasLogo = data.logoUrl || data.logoName;
+  const imageUrl = data.imageUrl || data.embedImage;
+  const thumbUrl = data.embedThumbnail;
 
   return (
     <div className="dc-wrap">
@@ -644,17 +647,27 @@ function DiscordPreviewTicketPanel({ data }) {
             <span className="dc-timestamp">Today at {time}</span>
           </div>
           <div className="dc-embed" style={{ borderLeftColor: color }}>
+            {hasLogo && (
+              <div className="dc-embed-author">
+                {data.logoUrl ? (
+                  <img src={data.logoUrl} className="dc-author-icon" alt="logo" onError={(e) => { e.target.style.display = 'none'; }} />
+                ) : (
+                  <div className="dc-author-icon-ph" />
+                )}
+                {data.logoName && <span className="dc-author-name">{demoSub(data.logoName, data)}</span>}
+              </div>
+            )}
             <div className="dc-embed-main">
               <div className="dc-embed-content">
                 <div className="dc-embed-title">{title}</div>
                 <div className="dc-embed-desc">{description}</div>
               </div>
-              {data.embedThumbnail && (
-                <img src={data.embedThumbnail} className="dc-embed-thumb" alt="thumb" onError={(e) => { e.target.style.display = 'none'; }} />
+              {thumbUrl && (
+                <img src={thumbUrl} className="dc-embed-thumb" alt="thumb" onError={(e) => { e.target.style.display = 'none'; }} />
               )}
             </div>
-            {data.embedImage && (
-              <img src={data.embedImage} className="dc-embed-img" alt="ticket panel" onError={(e) => { e.target.style.display = 'none'; }} />
+            {imageUrl && (
+              <img src={imageUrl} className="dc-embed-img" alt="ticket panel" onError={(e) => { e.target.style.display = 'none'; }} />
             )}
             {footer && <div className="dc-embed-footer">{footer}</div>}
           </div>
@@ -710,12 +723,1501 @@ function DiscordPreviewTicketPanel({ data }) {
   );
 }
 
+function ticketStatusPreviewText(node) {
+  const data = node?.data || {};
+  const fallback = node?.type === 'ticket_lock'
+    ? '🔐 **Ticket Locked** — The ticket owner can no longer send messages.'
+    : '🔓 **Ticket Unlocked** — The ticket owner can send messages again.';
+  const raw = node?.type === 'ticket_lock'
+    ? (data.lockMessage ?? fallback)
+    : (data.unlockMessage ?? fallback);
+  return demoSub(raw, {
+    ...data,
+    user: 'Akashsuu',
+    mention: '@Akashsuu',
+    ticketId: 'ticket-0001',
+    channel: 'ticket-akashsuu',
+  });
+}
+
+function DiscordPreviewTicketStatus({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const botName = botInfo?.username || 'YourBot';
+  const isLock = node?.type === 'ticket_lock';
+  const color = isLock ? '#F59E0B' : '#34D399';
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: color }}>
+          {isLock ? 'L' : 'U'}
+        </div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          <div className="dc-plain">{ticketStatusPreviewText(node)}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function getTicketEmbedPreview(node) {
+  const d = node?.data || {};
+  if (node?.type === 'ticket_create') {
+    return {
+      data: {
+        ...d,
+        embedTitle: d.welcomeTitle || 'Ticket Opened',
+        embedFooter: d.embedFooter || 'Ticket • ticket-0001',
+      },
+      text: d.welcomeDescription || 'Hello Akashsuu! A staff member will assist you shortly.',
+    };
+  }
+  if (node?.type === 'ticket_claim') {
+    return {
+      data: { ...d, embedTitle: 'Ticket Claimed' },
+      text: 'This ticket has been claimed by @Akashsuu.',
+    };
+  }
+  if (node?.type === 'ticket_close') {
+    return {
+      data: { ...d, embedTitle: 'Close Ticket?' },
+      text: 'Are you sure you want to close this ticket?\n\nA transcript will be saved and the channel will be deleted.',
+    };
+  }
+  return null;
+}
+
+function DiscordPreviewTicketEmbed({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const preview = getTicketEmbedPreview(node);
+  if (!preview) return <DiscordPreview node={node} />;
+
+  const botName = botInfo?.username || 'YourBot';
+  const text = demoSub(preview.text, {
+    ...(node?.data || {}),
+    user: 'Akashsuu',
+    mention: '@Akashsuu',
+    ticketId: 'ticket-0001',
+    channel: 'ticket-akashsuu',
+  });
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex' }}>T</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          <DiscordEmbed data={preview.data} text={text} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function afkPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    afkUser: 'Support',
+    afkTag: 'Support#0000',
+    afkId: '987654321098765432',
+    afkMention: '@Support',
+    reason: data.defaultReason || 'AFK',
+    since: '12m',
+    server: 'My Server',
+    channel: 'general',
+    date: '2026-05-10',
+    time: '12:00',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewAfk({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const previews = [
+    {
+      label: 'Set AFK',
+      avatar: 'A',
+      text: afkPreviewText(d.setMessage || '{mention} is now AFK: {reason}', d),
+    },
+    {
+      label: 'Mention Reply',
+      avatar: 'M',
+      text: afkPreviewText(d.mentionMessage || '{afkMention} is AFK: {reason} (since {since})', d),
+    },
+    {
+      label: 'Return',
+      avatar: 'R',
+      text: afkPreviewText(d.returnMessage || 'Welcome back {mention}, I removed your AFK status. You were AFK for {since}.', d),
+    },
+  ];
+
+  return (
+    <div className="dc-wrap" style={{ display: 'grid', gap: 10 }}>
+      {previews.map((preview) => (
+        <div key={preview.label}>
+          <div style={{ color: '#7D8590', fontSize: 10, margin: '0 0 4px 42px', textTransform: 'uppercase', fontWeight: 700 }}>
+            {preview.label}
+          </div>
+          <div className="dc-msg">
+            {botInfo?.avatarURL ? (
+              <img
+                src={botInfo.avatarURL}
+                className="dc-avatar-img"
+                alt={botName}
+                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+              />
+            ) : null}
+            <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#5865F2' }}>
+              {preview.avatar}
+            </div>
+            <div className="dc-msg-body">
+              <div className="dc-msg-hdr">
+                <span className="dc-bot-name">{botName}</span>
+                <span className="dc-bot-badge">BOT</span>
+                <span className="dc-timestamp">Today at {time}</span>
+              </div>
+              {d.embedEnabled === false ? (
+                <div className="dc-plain">{preview.text}</div>
+              ) : (
+                <DiscordEmbed data={{ ...d, embedTitle: d.embedTitle || 'AFK' }} text={preview.text} />
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function avatarPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    targetName: 'Support',
+    targetTag: 'Support#0000',
+    targetId: '987654321098765432',
+    targetMention: '@Support',
+    avatarUrl: 'https://cdn.discordapp.com/avatars/123/avatar.png?size=4096',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channel: 'general',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewAvatar({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const previewImage = d.imageUrl || 'https://cdn.discordapp.com/embed/avatars/0.png';
+  const title = avatarPreviewText(d.titleTemplate || "{targetName}'s Avatar", d);
+  const text = avatarPreviewText(d.descriptionTemplate || 'Requested by {mention}', d);
+  const buttons = [
+    d.showDownloadButton !== false ? (d.downloadButtonLabel || 'Download') : null,
+    d.showOpenButton !== false ? (d.openButtonLabel || 'Open Avatar') : null,
+    d.showServerButton !== false ? (d.serverButtonLabel || 'Server Icon') : null,
+  ].filter(Boolean);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#3B82F6' }}>AV</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{`${title}\n${text}\n${previewImage}`}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: avatarPreviewText(d.embedFooter || 'Avatar command', d),
+                imageUrl: previewImage,
+                imagePosition: 'bottom',
+              }}
+              text={text}
+            />
+          )}
+          {buttons.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              {buttons.map((label, index) => (
+                <button
+                  key={`${label}_${index}`}
+                  type="button"
+                  style={{
+                    background: '#5865F2',
+                    border: '1px solid #4752C4',
+                    color: '#FFF',
+                    borderRadius: 3,
+                    padding: '7px 12px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    lineHeight: 1,
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+          <div style={{ color: '#72767D', fontSize: 10, marginTop: 6 }}>
+            Preview uses the Image URL field as the sample avatar.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function setBoostPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    member: 'Akashsuu',
+    memberMention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channel: data.boostChannelId ? '#boosts' : '#general',
+    channelId: data.boostChannelId || '123456789012345678',
+    boostCount: '14',
+    boostTier: '2',
+    status: data.enabledByDefault === false ? 'OFF' : 'ON',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewSetBoost({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const panelText = [
+    setBoostPreviewText(d.panelDescription || 'Configure boost announcements for {server}.', d),
+    '',
+    `Status: **${d.enabledByDefault === false ? 'OFF' : 'ON'}**`,
+    `Channel: ${d.boostChannelId ? '#boosts' : '#general'}`,
+  ].join('\n');
+  const boostText = setBoostPreviewText(
+    d.boostMessage || 'Thank you {memberMention} for boosting {server}! We now have {boostCount} boosts.',
+    d
+  );
+  const buttons = [
+    d.enabledByDefault === false ? (d.disableButtonLabel || 'Boost Messages: OFF') : (d.enableButtonLabel || 'Boost Messages: ON'),
+    d.testButtonLabel || 'Send Test',
+    d.resetButtonLabel || 'Reset',
+  ];
+
+  const renderMessage = (label, avatar, content, titleOverride) => (
+    <div key={label}>
+      <div style={{ color: '#7D8590', fontSize: 10, margin: '0 0 4px 42px', textTransform: 'uppercase', fontWeight: 700 }}>
+        {label}
+      </div>
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#F472B6' }}>{avatar}</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{content}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: setBoostPreviewText(titleOverride || d.embedTitle || 'Boost Settings', d),
+                embedFooter: setBoostPreviewText(d.embedFooter || 'Boost setup panel', d),
+              }}
+              text={content}
+            />
+          )}
+          {label === 'Setup Panel' && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              {buttons.map((button, index) => (
+                <button
+                  key={`${button}_${index}`}
+                  type="button"
+                  style={{
+                    background: index === 0 && d.enabledByDefault !== false ? '#248046' : index === 2 ? '#DA373C' : '#5865F2',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    color: '#FFF',
+                    borderRadius: 3,
+                    padding: '7px 12px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    lineHeight: 1,
+                  }}
+                >
+                  {button}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="dc-wrap" style={{ display: 'grid', gap: 10 }}>
+      {renderMessage('Setup Panel', 'B', panelText, d.panelTitle || 'Boost Message Settings')}
+      {renderMessage('Test Boost Message', 'B', boostText, d.embedTitle || 'Boost Settings')}
+    </div>
+  );
+}
+
+function boostCountPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    boostCount: '14',
+    boosts: '14',
+    boostTier: '2',
+    boostTierLabel: 'Level 2',
+    channel: 'general',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewBoostCount({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const title = boostCountPreviewText(d.titleTemplate || '{server} Boost Count', d);
+  const text = boostCountPreviewText(
+    d.descriptionTemplate || '{server} currently has **{boostCount}** boosts.\nBoost tier: **{boostTierLabel}**',
+    d
+  );
+  const plain = boostCountPreviewText(d.plainTextTemplate || '{server} has {boostCount} boosts ({boostTierLabel}).', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#F472B6' }}>BC</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: boostCountPreviewText(d.embedFooter || 'Boost count requested by {user}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function channelInfoPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channelName: 'general',
+    channelMention: '#general',
+    channelId: '987654321098765432',
+    channelType: 'Text',
+    category: 'Community',
+    topic: 'Chat, support, and updates',
+    nsfw: 'No',
+    slowmode: '5s',
+    position: '3',
+    createdAt: 'January 1, 2024 (2 years ago)',
+    permissionsSummary: 'View Channel: Yes\nSend Messages: Yes\nManage Channel: No',
+    canView: 'Yes',
+    canSend: 'Yes',
+    canManage: 'No',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewChannelInfo({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const title = channelInfoPreviewText(d.titleTemplate || 'Channel Info: #{channelName}', d);
+  const text = channelInfoPreviewText(
+    d.descriptionTemplate || '**Mention:** {channelMention}\n**ID:** `{channelId}`\n**Type:** {channelType}\n**Category:** {category}\n**Topic:** {topic}\n**NSFW:** {nsfw}\n**Slowmode:** {slowmode}\n**Position:** {position}\n**Created:** {createdAt}\n\n**Permissions**\n{permissionsSummary}',
+    d
+  );
+  const plain = channelInfoPreviewText(d.plainTextTemplate || '#{channelName} ({channelType}) - ID: {channelId} - {permissionsSummary}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#22C55E' }}>CI</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: channelInfoPreviewText(d.embedFooter || 'Channel info requested by {user}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscordPreviewEmbedBuilder({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const buttonRows = [
+    [
+      d.authorTextButtonLabel || 'Author Text',
+      d.authorIconButtonLabel || 'Author Icon',
+      d.titleButtonLabel || 'Title',
+      d.descriptionButtonLabel || 'Description',
+      d.thumbnailButtonLabel || 'Thumbnail',
+    ],
+    [
+      d.imageButtonLabel || 'Image',
+      d.footerTextButtonLabel || 'Footer Text',
+      d.footerIconButtonLabel || 'Footer Icon',
+      d.colorButtonLabel || 'Color',
+      d.resetButtonLabel || 'Reset Embed',
+    ],
+    [
+      d.sendButtonLabel || 'Send to Channel',
+      d.abortButtonLabel || 'Abort',
+    ],
+  ];
+
+  const previewEmbed = {
+    ...d,
+    embedTitle: d.defaultTitle || 'Embed Title',
+    embedFooter: d.defaultFooterText || d.embedFooter || '',
+    logoName: d.defaultAuthorText || d.logoName || '',
+    logoUrl: d.defaultAuthorIcon || d.logoUrl || '',
+    imageUrl: d.defaultImage || d.imageUrl || '',
+    imagePosition: 'bottom',
+    embedColor: d.defaultColor || d.embedColor || '#5865F2',
+  };
+  const description = d.defaultDescription || 'Embed description goes here.';
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.defaultColor || d.embedColor || '#5865F2' }}>E</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          <button
+            type="button"
+            style={{
+              background: '#2F3136',
+              border: '1px solid #4B4D55',
+              color: '#DCDDDE',
+              borderRadius: 3,
+              padding: '10px 16px',
+              fontSize: 14,
+              marginBottom: 8,
+            }}
+          >
+            {d.panelButtonLabel || 'Improve the Embed'}
+          </button>
+          <DiscordEmbed data={previewEmbed} text={description} />
+          <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+            {buttonRows.map((row, rowIndex) => (
+              <div key={rowIndex} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {row.map((label) => {
+                  const isReset = label === (d.resetButtonLabel || 'Reset Embed');
+                  const isSend = label === (d.sendButtonLabel || 'Send to Channel');
+                  const isAbort = label === (d.abortButtonLabel || 'Abort');
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      style={{
+                        background: isSend ? '#248046' : (isReset || isAbort) ? '#DA373C' : '#5865F2',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        color: '#FFF',
+                        borderRadius: 8,
+                        padding: '10px 14px',
+                        fontSize: 13,
+                        fontWeight: 700,
+                        lineHeight: 1,
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function invitePreviewText(template, data, extra = {}) {
+  const clientId = data.clientId || '123456789012345678';
+  const fallbackUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=${encodeURIComponent(data.permissions || '8')}&scope=${encodeURIComponent(data.scopes || 'bot applications.commands')}`;
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    botName: 'YourBot',
+    botId: clientId,
+    inviteUrl: data.customInviteUrl || fallbackUrl,
+    server: 'My Server',
+    channel: 'general',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewInvite({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const title = invitePreviewText(d.titleTemplate || 'Invite {botName}', d, { botName });
+  const text = invitePreviewText(d.descriptionTemplate || 'Use the button below to invite **{botName}** to your server.', d, { botName });
+  const plain = invitePreviewText(d.plainTextTemplate || 'Invite {botName}: {inviteUrl}', d, { botName });
+  const buttons = [
+    d.inviteButtonLabel || 'Invite Bot',
+    d.showSupportButton ? (d.supportButtonLabel || 'Support Server') : null,
+  ].filter(Boolean);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#5865F2' }}>I</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: invitePreviewText(d.embedFooter || 'Requested by {user}', d, { botName }),
+              }}
+              text={text}
+            />
+          )}
+          {buttons.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              {buttons.map((label) => (
+                <button
+                  key={label}
+                  type="button"
+                  style={{
+                    background: '#5865F2',
+                    border: '1px solid #4752C4',
+                    color: '#FFF',
+                    borderRadius: 3,
+                    padding: '8px 12px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    lineHeight: 1,
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function memberCountPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    memberCount: '1,234',
+    members: '1,234',
+    humanCount: '1,200',
+    botCount: '34',
+    cachedCount: '1,234',
+    channel: 'general',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewMemberCount({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const title = memberCountPreviewText(d.titleTemplate || '{server} Members', d);
+  const text = memberCountPreviewText(
+    d.descriptionTemplate || '**Total Members:** {memberCount}\n**Humans:** {humanCount}\n**Bots:** {botCount}',
+    d
+  );
+  const plain = memberCountPreviewText(d.plainTextTemplate || '{server} has {memberCount} members.', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#22C55E' }}>MC</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: memberCountPreviewText(d.embedFooter || 'Member count requested by {user}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function serverIconPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    iconUrl: data.imageUrl || 'https://cdn.discordapp.com/icons/123/servericon.png?size=4096',
+    channel: 'general',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewServerIcon({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const iconUrl = d.imageUrl || 'https://cdn.discordapp.com/embed/avatars/1.png';
+  const title = serverIconPreviewText(d.titleTemplate || "{server}'s Server Icon", d);
+  const text = serverIconPreviewText(d.descriptionTemplate || 'Requested by {mention}\nServer ID: `{serverId}`', d);
+  const plain = serverIconPreviewText(d.plainTextTemplate || "{server}'s server icon: {iconUrl}", d);
+  const buttons = [
+    d.showDownloadButton !== false ? (d.downloadButtonLabel || 'Download') : null,
+    d.showOpenButton !== false ? (d.openButtonLabel || 'Open Icon') : null,
+  ].filter(Boolean);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#3B82F6' }}>SI</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: serverIconPreviewText(d.embedFooter || 'Server icon requested by {user}', d),
+                imageUrl: iconUrl,
+                imagePosition: 'bottom',
+              }}
+              text={text}
+            />
+          )}
+          {buttons.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              {buttons.map((label) => (
+                <button
+                  key={label}
+                  type="button"
+                  style={{
+                    background: '#5865F2',
+                    border: '1px solid #4752C4',
+                    color: '#FFF',
+                    borderRadius: 3,
+                    padding: '8px 12px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    lineHeight: 1,
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function statsPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    botName: 'YourBot',
+    botTag: 'YourBot#0000',
+    botId: '123456789012345678',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    serverCount: '42',
+    userCount: '18,420',
+    channelCount: '1,337',
+    ping: '42',
+    uptime: '3d 4h 12m',
+    memoryUsed: '96 MB',
+    memoryTotal: '160 MB',
+    nodeVersion: 'v20.11.0',
+    discordVersion: '14.14.1',
+    platform: 'win32',
+    channel: 'general',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewStats({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const title = statsPreviewText(d.titleTemplate || '{botName} Statistics', d, { botName });
+  const text = statsPreviewText(
+    d.descriptionTemplate || '**Servers:** {serverCount}\n**Users:** {userCount}\n**Channels:** {channelCount}\n**Ping:** {ping}ms\n**Uptime:** {uptime}\n**Memory:** {memoryUsed} / {memoryTotal}\n**Node.js:** {nodeVersion}\n**Discord.js:** {discordVersion}',
+    d,
+    { botName }
+  );
+  const plain = statsPreviewText(d.plainTextTemplate || '{botName}: {serverCount} servers, {userCount} users, {ping}ms ping, uptime {uptime}.', d, { botName });
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#8B5CF6' }}>ST</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: statsPreviewText(d.embedFooter || 'Stats requested by {user}', d, { botName }),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function stealPreviewText(template, data, extra = {}) {
+  const result = data.successMessage || 'Added {type} **{name}** to {server}.';
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channel: 'general',
+    type: 'emoji',
+    name: data.defaultName || 'stolen',
+    emoji: ':stolen:',
+    url: data.imageUrl || 'https://cdn.discordapp.com/emojis/123456789012345678.png?quality=lossless',
+    error: 'Missing permissions',
+    ...extra,
+  };
+  vars.result = String(result).replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewSteal({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const title = stealPreviewText(d.titleTemplate || 'Stolen {type}', d);
+  const text = stealPreviewText(d.descriptionTemplate || '{result}', d);
+  const plain = stealPreviewText(d.plainTextTemplate || '{result}', d);
+  const imageUrl = d.imageUrl || 'https://cdn.discordapp.com/embed/avatars/4.png';
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#F59E0B' }}>ST</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: stealPreviewText(d.embedFooter || 'Requested by {user}', d),
+                imageUrl,
+                imagePosition: 'bottom',
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function userInfoPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channel: 'general',
+    target: 'OwO#8456',
+    targetName: 'OwO',
+    targetUsername: 'OwO',
+    targetGlobalName: 'OwO',
+    targetTag: 'OwO#8456',
+    targetId: '987654321098765432',
+    targetMention: '@OwO',
+    targetBot: 'No',
+    createdAt: 'June 12, 2020 (6 years ago)',
+    joinedAt: 'March 4, 2024 (2 years ago)',
+    roleCount: '5',
+    roles: '@Admin @Support @Member',
+    topRole: '@Admin',
+    status: 'Online',
+    avatarUrl: data.imageUrl || 'https://cdn.discordapp.com/embed/avatars/1.png',
+    bannerUrl: '',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewUserInfo({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const avatarUrl = d.imageUrl || 'https://cdn.discordapp.com/embed/avatars/1.png';
+  const title = userInfoPreviewText(d.titleTemplate || 'User Info: {targetName}', d);
+  const text = userInfoPreviewText(
+    d.descriptionTemplate || '**User:** {targetMention}\n**Tag:** {targetTag}\n**ID:** `{targetId}`\n**Bot:** {targetBot}\n**Created:** {createdAt}\n**Joined:** {joinedAt}\n**Roles:** {roleCount}\n**Top Role:** {topRole}\n**Status:** {status}',
+    d,
+    { avatarUrl }
+  );
+  const plain = userInfoPreviewText(d.plainTextTemplate || '{targetTag} ({targetId}) joined {server} on {joinedAt}.', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#3B82F6' }}>UI</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: userInfoPreviewText(d.embedFooter || 'User info requested by {user}', d),
+                imageUrl: avatarUrl,
+                imagePosition: 'thumbnail',
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function prefixPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channel: 'general',
+    command: data.command || 'prefix',
+    oldPrefix: '!',
+    newPrefix: '?',
+    prefix: '?',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewPrefix({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const title = prefixPreviewText(d.titleTemplate || 'Prefix Updated', d);
+  const text = prefixPreviewText(d.descriptionTemplate || 'Prefix changed from `{oldPrefix}` to `{newPrefix}`.', d);
+  const plain = prefixPreviewText(d.plainTextTemplate || 'Prefix changed from {oldPrefix} to {newPrefix}.', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#14B8A6' }}>PX</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: title,
+                embedFooter: prefixPreviewText(d.embedFooter || 'Prefix changed by {user}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function calculatorPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channel: 'general',
+    command: data.command || 'calculator',
+    aliases: '+calculator, +math, +solve',
+    expression: '0',
+    result: data.readyText || 'Ready',
+    status: data.readyText || 'Ready',
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function CalculatorButtonGrid() {
+  const rows = [
+    [
+      ['C', '#DA373C'],
+      ['⌫', '#2B2D31'],
+      ['(', '#2B2D31'],
+      [')', '#2B2D31'],
+      ['÷', '#5865F2'],
+    ],
+    [
+      ['7', '#2B2D31'],
+      ['8', '#2B2D31'],
+      ['9', '#2B2D31'],
+      ['×', '#5865F2'],
+      ['^', '#5865F2'],
+    ],
+    [
+      ['4', '#2B2D31'],
+      ['5', '#2B2D31'],
+      ['6', '#2B2D31'],
+      ['-', '#5865F2'],
+      ['%', '#5865F2'],
+    ],
+    [
+      ['1', '#2B2D31'],
+      ['2', '#2B2D31'],
+      ['3', '#2B2D31'],
+      ['+', '#5865F2'],
+      ['=', '#0A8F54'],
+    ],
+    [
+      ['0', '#2B2D31'],
+      ['.', '#2B2D31'],
+      ['π', '#2B2D31'],
+      ['e', '#2B2D31'],
+      ['SOLVE', '#0A8F54'],
+    ],
+  ];
+  return (
+    <div className="dc-calculator-grid">
+      {rows.map((row, index) => (
+        <div key={index} className="dc-calculator-row">
+          {row.map(([label, color]) => (
+            <button
+              key={label}
+              type="button"
+              className="dc-calculator-button"
+              style={{ background: color }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DiscordPreviewCalculator({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const expression = '0';
+  const result = d.readyText || 'Ready';
+  const status = d.readyText || 'Ready';
+  const title = calculatorPreviewText(d.titleTemplate || 'Calculator Screen', d, { expression, result, status });
+  const text = [
+    `**${d.expressionLabel || 'Expression'}**`,
+    `\`${expression}\``,
+    '',
+    `**${d.resultLabel || 'Result'}**`,
+    `\`${result}\``,
+    '',
+    `**${d.statusLabel || 'Status'}**`,
+    status,
+  ].join('\n');
+
+  return (
+    <div className="dc-wrap dc-calculator-preview">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#5865F2' }}>CA</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          <DiscordEmbed
+            data={{
+              ...d,
+              embedTitle: title,
+              embedFooter: calculatorPreviewText(d.footerTemplate || 'Aliases: {aliases} • Today at {time}', d, { expression, result, status }),
+            }}
+            text={text}
+          />
+          <CalculatorButtonGrid />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function playingPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channel: 'general',
+    command: data.command || 'playing',
+    activityName: data.activityName || 'ROBLOX',
+    activityType: data.activityType || 'Playing',
+    producerName: data.producerName || 'Producer',
+    status: data.status || 'online',
+    imageUrl: data.imageUrl || '',
+    animatedAvatarUrl: data.animatedAvatarUrl || '',
+    animatedBannerUrl: data.animatedBannerUrl || '',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewPlaying({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const activityName = d.activityName || 'ROBLOX';
+  const activityType = d.activityType || 'Playing';
+  const producerName = d.producerName || 'Producer';
+  const status = d.status || 'online';
+  const imageUrl = d.imageUrl || botInfo?.avatarURL || '';
+  const avatarUrl = d.useAnimatedAvatar && d.animatedAvatarUrl ? d.animatedAvatarUrl : botInfo?.avatarURL;
+  const bannerUrl = d.useAnimatedBanner && d.animatedBannerUrl ? d.animatedBannerUrl : '';
+  const statusColor = status === 'idle' ? '#F0B232' : status === 'dnd' ? '#F23F43' : '#23A55A';
+  const isListening = activityType === 'Listening';
+
+  return (
+    <div className="dc-profile-preview">
+      <div
+        className="dc-profile-banner"
+        style={bannerUrl ? { backgroundImage: `url(${bannerUrl})` } : { background: d.embedColor || '#1D1B7A' }}
+      />
+      <div className="dc-profile-body">
+        <div className="dc-profile-avatar-wrap">
+          {avatarUrl ? (
+            <img src={avatarUrl} className="dc-profile-avatar-img" alt={botName} />
+          ) : (
+            <div className="dc-profile-avatar-fallback">B</div>
+          )}
+          <span className="dc-profile-status" style={{ background: statusColor }} />
+        </div>
+        <div className="dc-profile-name">{botName}</div>
+        <div className="dc-profile-tag">bot_profile</div>
+        <div className="dc-profile-bio">Custom bot presence preview</div>
+        <div className="dc-activity-card">
+          <div className="dc-activity-head">{isListening ? 'Listening to' : activityType}</div>
+          <div className="dc-activity-row">
+            {imageUrl ? (
+              <img src={imageUrl} className="dc-activity-image" alt={activityName} />
+            ) : (
+              <div className="dc-activity-image dc-activity-image-fallback">APP</div>
+            )}
+            <div className="dc-activity-meta">
+              <div className="dc-activity-title">{activityName}</div>
+              {isListening && <div className="dc-activity-producer">{producerName}</div>}
+              <div className="dc-activity-time">{isListening ? 'Music session' : '28 : 44'}</div>
+            </div>
+          </div>
+        </div>
+        <div className="dc-profile-command">
+          {playingPreviewText(d.titleTemplate || 'Bot Activity Updated', d)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TicketPanelEditor({ d, update }) {
   return (
     <>
+      <div className="bl-prop-row">
+        <span className="bl-prop-label">Embed</span>
+        <label className="bl-embed-toggle" style={{ paddingLeft: 0 }}>
+          <input type="checkbox" checked={d.embedEnabled !== false} onChange={(e) => update('embedEnabled', e.target.checked)} />
+          Enabled
+        </label>
+      </div>
       <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
         <span className="bl-prop-label" style={{ textAlign: 'left' }}>Description</span>
         <textarea className="bl-field-input" style={{ resize: 'vertical', minHeight: 72 }} value={d.embedDescription || ''} onChange={(e) => update('embedDescription', e.target.value)} spellCheck={false} />
+      </div>
+      <div className="bl-prop-row">
+        <span className="bl-prop-label">Title</span>
+        <input className="bl-field-input" value={d.embedTitle || ''} onChange={(e) => update('embedTitle', e.target.value)} placeholder="Support Tickets" spellCheck={false} />
+      </div>
+      <div className="bl-prop-row">
+        <span className="bl-prop-label">Color</span>
+        <div className="bl-color-field">
+          <input type="color" className="bl-color-pick" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} />
+          <input type="text" className="bl-field-input" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
+        </div>
+      </div>
+      <div className="bl-prop-row">
+        <span className="bl-prop-label">Logo URL</span>
+        <input className="bl-field-input" value={d.logoUrl || ''} onChange={(e) => update('logoUrl', e.target.value)} placeholder="https://...icon.png" spellCheck={false} />
+      </div>
+      <div className="bl-prop-row">
+        <span className="bl-prop-label">Logo Name</span>
+        <input className="bl-field-input" value={d.logoName || ''} onChange={(e) => update('logoName', e.target.value)} placeholder="Support Team" spellCheck={false} />
+      </div>
+      <div className="bl-prop-row">
+        <span className="bl-prop-label">Image URL</span>
+        <input className="bl-field-input" value={d.imageUrl || ''} onChange={(e) => update('imageUrl', e.target.value)} placeholder="https://...banner.png" spellCheck={false} />
+      </div>
+      <div className="bl-prop-row">
+        <span className="bl-prop-label">Footer</span>
+        <input className="bl-field-input" value={d.embedFooter || ''} onChange={(e) => update('embedFooter', e.target.value)} placeholder="Optional" spellCheck={false} />
       </div>
     </>
   );
@@ -747,6 +2249,23 @@ function NPanel({ selectedNode, setNodes }) {
   const palette = NODE_PALETTE.find((p) => p.type === selectedNode.type);
   const d = selectedNode.data;
   const isTicketPanel = selectedNode.type === 'ticket_panel';
+  const isTicketStatus = selectedNode.type === 'ticket_lock' || selectedNode.type === 'ticket_unlock';
+  const isTicketEmbedPreview = ['ticket_create', 'ticket_claim', 'ticket_close'].includes(selectedNode.type);
+  const isAfkPreview = selectedNode.type === 'util_afk';
+  const isAvatarPreview = selectedNode.type === 'util_avatar';
+  const isSetBoostPreview = selectedNode.type === 'util_setboost';
+  const isBoostCountPreview = selectedNode.type === 'util_boostcount';
+  const isChannelInfoPreview = selectedNode.type === 'util_channelinfo';
+  const isEmbedBuilderPreview = selectedNode.type === 'util_embedbuilder';
+  const isInvitePreview = selectedNode.type === 'util_invite';
+  const isMemberCountPreview = selectedNode.type === 'util_membercount';
+  const isServerIconPreview = selectedNode.type === 'util_servericon';
+  const isStatsPreview = selectedNode.type === 'util_stats';
+  const isStealPreview = selectedNode.type === 'util_steal';
+  const isUserInfoPreview = selectedNode.type === 'util_userinfo';
+  const isPrefixPreview = selectedNode.type === 'util_prefix';
+  const isCalculatorPreview = selectedNode.type === 'util_calculator';
+  const isPlayingPreview = selectedNode.type === 'info_playing';
 
   return (
     <motion.div 
@@ -908,6 +2427,40 @@ function NPanel({ selectedNode, setNodes }) {
             <div className="p-3 bg-zinc-950/50">
               {isTicketPanel ? (
                 <DiscordPreviewTicketPanel data={d} />
+              ) : isTicketStatus ? (
+                <DiscordPreviewTicketStatus node={selectedNode} />
+              ) : isTicketEmbedPreview ? (
+                <DiscordPreviewTicketEmbed node={selectedNode} />
+              ) : isAfkPreview ? (
+                <DiscordPreviewAfk node={selectedNode} />
+              ) : isAvatarPreview ? (
+                <DiscordPreviewAvatar node={selectedNode} />
+              ) : isSetBoostPreview ? (
+                <DiscordPreviewSetBoost node={selectedNode} />
+              ) : isBoostCountPreview ? (
+                <DiscordPreviewBoostCount node={selectedNode} />
+              ) : isChannelInfoPreview ? (
+                <DiscordPreviewChannelInfo node={selectedNode} />
+              ) : isEmbedBuilderPreview ? (
+                <DiscordPreviewEmbedBuilder node={selectedNode} />
+              ) : isInvitePreview ? (
+                <DiscordPreviewInvite node={selectedNode} />
+              ) : isMemberCountPreview ? (
+                <DiscordPreviewMemberCount node={selectedNode} />
+              ) : isServerIconPreview ? (
+                <DiscordPreviewServerIcon node={selectedNode} />
+              ) : isStatsPreview ? (
+                <DiscordPreviewStats node={selectedNode} />
+              ) : isStealPreview ? (
+                <DiscordPreviewSteal node={selectedNode} />
+              ) : isUserInfoPreview ? (
+                <DiscordPreviewUserInfo node={selectedNode} />
+              ) : isPrefixPreview ? (
+                <DiscordPreviewPrefix node={selectedNode} />
+              ) : isCalculatorPreview ? (
+                <DiscordPreviewCalculator node={selectedNode} />
+              ) : isPlayingPreview ? (
+                <DiscordPreviewPlaying node={selectedNode} />
               ) : (
                 <DiscordPreview node={selectedNode} />
               )}

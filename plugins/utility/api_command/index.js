@@ -125,7 +125,7 @@ module.exports = {
 
         // ── 1. Command guard ──────────────────────────────────────────────────
         const command = (d.command || 'api').trim().toLowerCase();
-        const prefix  = ctx.prefix || '';
+        const prefix  = ctx.prefix || '!';
         const content = (message?.content || '').trim();
         const fullCmd = `${prefix}${command}`.toLowerCase();
 

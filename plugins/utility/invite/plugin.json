@@ -1,0 +1,37 @@
+{
+  "name": "Invite",
+  "version": "1.0.0",
+  "description": "Get invite links for the bot.",
+  "author": "Akashsuu",
+  "icon": "INV",
+  "nodeConfig": {
+    "label": "Invite",
+    "icon": "INV",
+    "color": "#5865F2",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "invite",
+      "aliases": "i,in,inv",
+      "customInviteUrl": "",
+      "clientId": "",
+      "permissions": "8",
+      "scopes": "bot applications.commands",
+      "titleTemplate": "Invite {botName}",
+      "descriptionTemplate": "Use the button below to invite **{botName}** to your server.",
+      "plainTextTemplate": "Invite {botName}: {inviteUrl}",
+      "inviteButtonLabel": "Invite Bot",
+      "supportButtonLabel": "Support Server",
+      "supportUrl": "",
+      "showSupportButton": false,
+      "embedEnabled": true,
+      "embedColor": "#5865F2",
+      "embedTitle": "Bot Invite",
+      "embedFooter": "Requested by {user}",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}

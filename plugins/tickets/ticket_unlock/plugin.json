@@ -11,6 +11,8 @@
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
+      "command": "unlock",
+      "unlockMessage": "🔓 **Ticket Unlocked** — The ticket owner can send messages again.",
       "supportRoles": "",
       "logChannel": ""
     }

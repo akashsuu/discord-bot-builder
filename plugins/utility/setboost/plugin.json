@@ -1,0 +1,35 @@
+{
+  "name": "Set Boost",
+  "version": "1.0.0",
+  "description": "Configure boost message settings with interactive buttons.",
+  "author": "Akashsuu",
+  "icon": "BST",
+  "nodeConfig": {
+    "label": "Set Boost",
+    "icon": "BST",
+    "color": "#F472B6",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "setboost",
+      "boostChannelId": "",
+      "enabledByDefault": true,
+      "panelTitle": "Boost Message Settings",
+      "panelDescription": "Configure boost announcements for {server}.",
+      "boostMessage": "Thank you {memberMention} for boosting {server}! We now have {boostCount} boosts.",
+      "testMessage": "Test boost message sent to {channel}.",
+      "enableButtonLabel": "Boost Messages: ON",
+      "disableButtonLabel": "Boost Messages: OFF",
+      "testButtonLabel": "Send Test",
+      "resetButtonLabel": "Reset",
+      "embedEnabled": true,
+      "embedColor": "#F472B6",
+      "embedTitle": "Boost Settings",
+      "embedFooter": "Boost setup panel",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}

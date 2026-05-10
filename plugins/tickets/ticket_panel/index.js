@@ -19,6 +19,7 @@ const {
   EmbedBuilder,
   PermissionFlagsBits,
 } = require('discord.js');
+const { applyCommonEmbedOptions, parseColor } = require('../helpers/embeds.js');
 
 // ── Style map for button configuration ────────────────────────────────────────
 const BUTTON_STYLES = {
@@ -65,17 +66,13 @@ function buildPanelEmbed(data) {
 }
 
 function buildSafePanelEmbed(data) {
-  const color = parseInt(String(data.embedColor || '#5865F2').replace('#', ''), 16);
   const embed = new EmbedBuilder()
-    .setColor(isNaN(color) ? 0x5865F2 : color)
+    .setColor(parseColor(data.embedColor, 0x5865F2))
     .setTitle(String(data.embedTitle || 'Support Tickets').slice(0, 256))
     .setDescription(String(data.embedDescription || 'Click below to open a ticket.').slice(0, 4096))
     .setTimestamp();
 
-  if (data.embedFooter) embed.setFooter({ text: String(data.embedFooter).slice(0, 2048) });
-  if (data.embedThumbnail) embed.setThumbnail(String(data.embedThumbnail));
-  if (data.embedImage) embed.setImage(String(data.embedImage));
-  return embed;
+  return applyCommonEmbedOptions(embed, data);
 }
 
 function buildPanelPayload(data, components) {
@@ -152,6 +149,9 @@ module.exports = {
         embedDescription:    { type: 'string',  default: 'Need help? Click below to open a ticket.' },
         embedColor:          { type: 'string',  default: '#5865F2' },
         embedFooter:         { type: 'string',  default: 'Response time: < 24 hours' },
+        logoUrl:             { type: 'string',  default: '' },
+        logoName:            { type: 'string',  default: '' },
+        imageUrl:            { type: 'string',  default: '' },
         embedThumbnail:      { type: 'string',  default: '' },
         embedImage:          { type: 'string',  default: '' },
         panelMode:           { type: 'string',  default: 'buttons' },

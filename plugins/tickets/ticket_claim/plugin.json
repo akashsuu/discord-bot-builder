@@ -13,7 +13,11 @@
     "defaults": {
       "supportRoles": "",
       "logChannel": "",
-      "embedColor": "#5865F2"
+      "embedColor": "#5865F2",
+      "embedFooter": "",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": ""
     }
   }
 }

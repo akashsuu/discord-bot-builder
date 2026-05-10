@@ -17,6 +17,13 @@ const { generateTranscript } = require(path.join(__dirname, '..', 'helpers', 'tr
 
 const fs = require('fs');
 
+function isCommand(content, command) {
+  const text = String(content || '').trim();
+  const cmd = String(command || '').trim();
+  return text.toLowerCase() === cmd.toLowerCase() ||
+    text.toLowerCase().startsWith(`${cmd.toLowerCase()} `);
+}
+
 module.exports = {
   meta: {
     name:          'Ticket Transcript',
@@ -48,7 +55,7 @@ module.exports = {
         const prefix = ctx?.prefix || '!';
         const rawCommand = (data.command || 'transcript').trim();
         const trigger = (prefix && !rawCommand.startsWith(prefix)) ? `${prefix}${rawCommand}` : rawCommand;
-        if (!message.content.trim().toLowerCase().startsWith(trigger.toLowerCase())) return false;
+        if (!isCommand(message.content, trigger)) return false;
 
         const ticket = ticketHelper.getTicket(message.channel);
         if (!ticket) {
@@ -70,6 +77,11 @@ module.exports = {
           ticketHelper.updateTicket(message.channel.id, { transcriptPath });
         } catch (err) {
           await genMsg?.edit(`❌ Failed to generate transcript: ${err.message}`).catch(() => {});
+          return false;
+        }
+
+        if (!fs.existsSync(transcriptPath)) {
+          await genMsg?.edit('âŒ Failed to generate transcript: file was not created.').catch(() => {});
           return false;
         }
 

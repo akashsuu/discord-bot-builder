@@ -1,0 +1,34 @@
+{
+  "name": "Steal",
+  "version": "1.0.0",
+  "description": "Steal emojis and stickers from messages.",
+  "author": "Akashsuu",
+  "icon": "STL",
+  "nodeConfig": {
+    "label": "Steal",
+    "icon": "STL",
+    "color": "#F59E0B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "steal",
+      "aliases": "",
+      "defaultName": "stolen",
+      "successMessage": "Added {type} **{name}** to {server}.",
+      "notFoundMessage": "Reply to a message with an emoji/sticker or include a custom emoji in the command.",
+      "permissionMessage": "I need Manage Emojis and Stickers permission to do that.",
+      "errorMessage": "I could not steal that {type}. {error}",
+      "titleTemplate": "Stolen {type}",
+      "descriptionTemplate": "{result}",
+      "plainTextTemplate": "{result}",
+      "embedEnabled": true,
+      "embedColor": "#F59E0B",
+      "embedTitle": "Steal",
+      "embedFooter": "Requested by {user}",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Boost Count",
+  "version": "1.0.0",
+  "description": "Shows the server boost count.",
+  "author": "Akashsuu",
+  "icon": "BC",
+  "nodeConfig": {
+    "label": "Boost Count",
+    "icon": "BC",
+    "color": "#F472B6",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "boostcount",
+      "aliases": "bc,boosts",
+      "titleTemplate": "{server} Boost Count",
+      "descriptionTemplate": "{server} currently has **{boostCount}** boosts.\nBoost tier: **{boostTierLabel}**",
+      "plainTextTemplate": "{server} has {boostCount} boosts ({boostTierLabel}).",
+      "embedEnabled": true,
+      "embedColor": "#F472B6",
+      "embedTitle": "Server Boosts",
+      "embedFooter": "Boost count requested by {user}",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}

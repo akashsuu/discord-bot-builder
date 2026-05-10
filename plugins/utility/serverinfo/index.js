@@ -64,7 +64,7 @@ module.exports = {
         if (!message.guild) return false;
 
         // ── 1. Command match ────────────────────────────────────────────────
-        const prefix = ctx?.prefix || '';
+        const prefix = ctx?.prefix || '!';
         const rawCmd = (node.data?.command || 'serverinfo').trim();
         const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
         const content = message.content;

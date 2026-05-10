@@ -11,6 +11,8 @@
     "hasInput": true,
     "hasOutput": true,
     "defaults": {
+      "command": "lock",
+      "lockMessage": "🔐 **Ticket Locked** — The ticket owner can no longer send messages.",
       "supportRoles": "",
       "logChannel": ""
     }

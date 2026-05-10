@@ -27,6 +27,7 @@ const {
 const ticketHelper = require(path.join(__dirname, '..', 'helpers', 'tickets.js'));
 const permHelper   = require(path.join(__dirname, '..', 'helpers', 'permissions.js'));
 const logHelper    = require(path.join(__dirname, '..', 'helpers', 'logger.js'));
+const { applyCommonEmbedOptions } = require(path.join(__dirname, '..', 'helpers', 'embeds.js'));
 
 let _transcriptHelper = null;
 function getTranscriptHelper() {
@@ -37,12 +38,13 @@ function getTranscriptHelper() {
 }
 
 // ── Confirmation embed ────────────────────────────────────────────────────────
-function buildConfirmEmbed(color) {
-  return new EmbedBuilder()
+function buildConfirmEmbed(color, data = {}) {
+  const embed = new EmbedBuilder()
     .setColor(color || 0xED4245)
     .setTitle('⚠️ Close Ticket?')
     .setDescription('Are you sure you want to close this ticket?\n\nA transcript will be saved and the channel will be deleted.')
     .setTimestamp();
+  return applyCommonEmbedOptions(embed, data);
 }
 
 function buildConfirmRow(channelId) {
@@ -91,6 +93,10 @@ async function executeClose(interaction, channel, ticket, data) {
       closeEmbed.addFields({ name: '📄 Transcript', value: `Saved to \`${path.basename(transcriptPath)}\``, inline: false });
     }
 
+    applyCommonEmbedOptions(closeEmbed, data, {
+      user: closerTag,
+      ticketId: ticket.ticketId,
+    });
     await channel.send({ embeds: [closeEmbed] });
   } catch { /* channel may already be gone */ }
 
@@ -157,7 +163,7 @@ module.exports = {
 
         const color = parseInt((data.embedColor || '#ED4245').replace('#', ''), 16);
         await interaction.reply({
-          embeds: [buildConfirmEmbed(isNaN(color) ? 0xED4245 : color)],
+          embeds: [buildConfirmEmbed(isNaN(color) ? 0xED4245 : color, data)],
           components: [buildConfirmRow(channel.id)],
           ephemeral: false,
         }).catch(() => {});
@@ -208,6 +214,10 @@ module.exports = {
         logChannel:         { type: 'string',  default: '' },
         supportRoles:       { type: 'string',  default: '' },
         embedColor:         { type: 'string',  default: '#ED4245' },
+        embedFooter:        { type: 'string',  default: '' },
+        logoUrl:            { type: 'string',  default: '' },
+        logoName:           { type: 'string',  default: '' },
+        imageUrl:           { type: 'string',  default: '' },
       },
 
       async execute(node, message, ctx) {
@@ -236,7 +246,7 @@ module.exports = {
 
         const color = parseInt((data.embedColor || '#ED4245').replace('#', ''), 16);
         await message.channel.send({
-          embeds: [buildConfirmEmbed(isNaN(color) ? 0xED4245 : color)],
+          embeds: [buildConfirmEmbed(isNaN(color) ? 0xED4245 : color, data)],
           components: [buildConfirmRow(message.channel.id)],
         }).catch(() => {});
 

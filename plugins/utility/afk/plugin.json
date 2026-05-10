@@ -1,0 +1,29 @@
+{
+  "name": "AFK",
+  "version": "1.0.0",
+  "description": "Set your AFK status with an optional reason and notify users who mention you.",
+  "author": "Akashsuu",
+  "icon": "AFK",
+  "nodeConfig": {
+    "label": "AFK",
+    "icon": "AFK",
+    "color": "#5865F2",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "afk",
+      "defaultReason": "AFK",
+      "setMessage": "{mention} is now AFK: {reason}",
+      "mentionMessage": "{afkMention} is AFK: {reason} (since {since})",
+      "returnMessage": "Welcome back {mention}, I removed your AFK status. You were AFK for {since}.",
+      "embedEnabled": true,
+      "embedColor": "#5865F2",
+      "embedTitle": "AFK",
+      "embedFooter": "AFK system",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}

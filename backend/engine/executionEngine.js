@@ -49,7 +49,7 @@ function buildContext(node, eventObj, eventType, prefix, safeAPI, builtinHelpers
 
     // Convenience shorthand — plugins commonly need these
     message: eventType === 'messageCreate' ? eventObj : null,
-    prefix:  prefix || '',
+    prefix:  prefix || '!',
 
     // Safe surfaced API (proxied client, scoped logger, config, utils)
     api: safeAPI,
@@ -88,7 +88,7 @@ async function executeNode(node, nodes, edges, eventObj, eventType, prefix, buil
       const isLegacy = execFn.length >= 2; // legacy: (node, eventObj, ctx)
 
       const raw = isLegacy
-        ? execFn(node, eventObj, { prefix, ...builtinHelpers, eventType, eventData: eventObj })
+        ? execFn(node, eventObj, { ...builtinHelpers, prefix, eventType, eventData: eventObj })
         : execFn(ctx);
 
       cont = await withTimeout(

@@ -1,0 +1,29 @@
+{
+  "name": "Member Count",
+  "version": "1.0.0",
+  "description": "Shows the total member count for the server.",
+  "author": "Akashsuu",
+  "icon": "MC",
+  "nodeConfig": {
+    "label": "Member Count",
+    "icon": "MC",
+    "color": "#22C55E",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "membercount",
+      "aliases": "mc,members",
+      "titleTemplate": "{server} Members",
+      "descriptionTemplate": "**Total Members:** {memberCount}\n**Humans:** {humanCount}\n**Bots:** {botCount}",
+      "plainTextTemplate": "{server} has {memberCount} members.",
+      "embedEnabled": true,
+      "embedColor": "#22C55E",
+      "embedTitle": "Member Count",
+      "embedFooter": "Member count requested by {user}",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}

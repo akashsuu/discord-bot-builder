@@ -92,7 +92,7 @@ export default function Toolbar({ nodes, edges }) {
           <button className="h-8 px-3 flex items-center justify-center rounded-lg text-[11px] font-medium transition-all border border-purple-900/40 bg-black/60 text-zinc-300 hover:bg-purple-900/20 hover:text-zinc-100 hover:border-purple-500/40 active:scale-95 shadow-[0_0_10px_rgba(139,92,246,0.05)]" onClick={handleSave} title="Save (Ctrl+S)">{saveLabel}</button>
           <button className="h-8 px-3 flex items-center justify-center rounded-lg text-[11px] font-medium transition-all border border-purple-900/40 bg-black/60 text-zinc-300 hover:bg-purple-900/20 hover:text-zinc-100 hover:border-purple-500/40 active:scale-95 shadow-[0_0_10px_rgba(139,92,246,0.05)]" onClick={handleExport} title="Export bot.js">📦 Export</button>
           <button className="h-8 px-3 flex items-center justify-center rounded-lg text-[11px] font-medium transition-all border border-amber-900/40 bg-amber-950/20 text-amber-500 hover:bg-amber-900/40 hover:text-amber-400 active:scale-95 shadow-sm" onClick={() => setTokenModal(true)} title="Bot Token">🔑 Token</button>
-          <button className="h-8 px-3 flex items-center justify-center rounded-lg text-[11px] font-medium transition-all border border-purple-900/40 bg-black/60 text-zinc-300 hover:bg-purple-900/20 hover:text-zinc-100 hover:border-purple-500/40 active:scale-95 shadow-[0_0_10px_rgba(139,92,246,0.05)]" onClick={() => setPrefixModal(true)} title="Global command prefix">⚙ Prefix{projectData?.prefix ? ` (${projectData.prefix})` : ''}</button>
+          <button className="h-8 px-3 flex items-center justify-center rounded-lg text-[11px] font-medium transition-all border border-purple-900/40 bg-black/60 text-zinc-300 hover:bg-purple-900/20 hover:text-zinc-100 hover:border-purple-500/40 active:scale-95 shadow-[0_0_10px_rgba(139,92,246,0.05)]" onClick={() => setPrefixModal(true)} title="Global command prefix">⚙ Prefix ({projectData?.prefix || '!'})</button>
         </div>
       </div>
 
@@ -109,9 +109,10 @@ function PrefixModal({ onClose }) {
 
   const handleSave = async () => {
     setSaving(true);
-    const updated = { ...projectData, prefix: prefix.trim() };
+    const nextPrefix = prefix.trim() || '!';
+    const updated = { ...projectData, prefix: nextPrefix };
     await window.electronAPI.saveProject({ projectPath, projectData: updated });
-    updateProject({ prefix: prefix.trim() });
+    updateProject({ prefix: nextPrefix });
     setSaving(false);
     onClose();
   };

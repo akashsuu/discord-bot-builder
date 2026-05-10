@@ -1,0 +1,35 @@
+{
+  "name": "Avatar",
+  "version": "1.0.0",
+  "description": "Shows a user or server avatar with interactive download buttons.",
+  "author": "Akashsuu",
+  "icon": "AV",
+  "nodeConfig": {
+    "label": "Avatar",
+    "icon": "AV",
+    "color": "#3B82F6",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "avatar",
+      "aliases": "av",
+      "titleTemplate": "{targetName}'s Avatar",
+      "serverTitleTemplate": "{server}'s Server Icon",
+      "descriptionTemplate": "Requested by {mention}",
+      "noAvatarMessage": "No avatar/icon found.",
+      "downloadButtonLabel": "Download",
+      "openButtonLabel": "Open Avatar",
+      "serverButtonLabel": "Server Icon",
+      "showDownloadButton": true,
+      "showOpenButton": true,
+      "showServerButton": true,
+      "embedEnabled": true,
+      "embedColor": "#3B82F6",
+      "embedFooter": "Avatar command",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}

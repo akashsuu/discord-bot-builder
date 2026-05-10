@@ -106,7 +106,7 @@ module.exports = {
         if (!message.guild)                 return false;
 
         // ── 1. Command match ─────────────────────────────────────────────────
-        const prefix  = ctx?.prefix || '';
+        const prefix  = ctx?.prefix || '!';
         const rawCmd  = (node.data?.command || 'help').trim();
         // Prepend prefix if node.data.command doesn't already include it
         const cmd     = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;

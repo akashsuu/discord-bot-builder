@@ -1,0 +1,30 @@
+{
+  "name": "Channel Info",
+  "version": "1.0.0",
+  "description": "Shows detailed information about a channel including permissions, settings, and other details.",
+  "author": "Akashsuu",
+  "icon": "CI",
+  "nodeConfig": {
+    "label": "Channel Info",
+    "icon": "CI",
+    "color": "#22C55E",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "channelinfo",
+      "aliases": "ci",
+      "titleTemplate": "Channel Info: #{channelName}",
+      "descriptionTemplate": "**Mention:** {channelMention}\n**ID:** `{channelId}`\n**Type:** {channelType}\n**Category:** {category}\n**Topic:** {topic}\n**NSFW:** {nsfw}\n**Slowmode:** {slowmode}\n**Position:** {position}\n**Created:** {createdAt}\n\n**Permissions**\n{permissionsSummary}",
+      "plainTextTemplate": "#{channelName} ({channelType}) - ID: {channelId} - {permissionsSummary}",
+      "notFoundMessage": "I could not find that channel.",
+      "embedEnabled": true,
+      "embedColor": "#22C55E",
+      "embedTitle": "Channel Info",
+      "embedFooter": "Channel info requested by {user}",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}
