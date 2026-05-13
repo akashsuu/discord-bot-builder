@@ -1,6 +1,9 @@
 'use strict';
 
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const WebSocket = require('ws');
+
+const managersByClient = new WeakMap();
 
 function commandWithPrefix(rawCommand, prefix) {
   const raw = String(rawCommand || 'play').trim() || 'play';
@@ -53,6 +56,11 @@ function lavalinkBase(data) {
   return `${protocol}://${host}${port ? `:${port}` : ''}`;
 }
 
+function lavalinkWsUrl(data) {
+  const base = lavalinkBase(data);
+  return `${base.replace(/^https:/i, 'wss:').replace(/^http:/i, 'ws:')}/v4/websocket`;
+}
+
 function youtubeThumbnail(identifier) {
   const value = String(identifier || '').trim();
   const match = value.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
@@ -96,12 +104,225 @@ async function loadTrack(data, query) {
   const info = first?.info || first?.track?.info || first;
   if (!info) return null;
   return {
+    encoded: first?.encoded || first?.track || info.encoded || '',
     title: info.title || query,
     author: info.author || info.artist || 'Unknown Artist',
     duration: formatDuration(info.length || info.duration),
     posterUrl: getTrackArtwork(info),
     uri: info.uri || info.identifier || '',
   };
+}
+
+class LavalinkRuntime {
+  constructor(client, data) {
+    this.client = client;
+    this.base = lavalinkBase(data);
+    this.wsUrl = lavalinkWsUrl(data);
+    this.password = data.lavalinkPassword || 'youshallnotpass';
+    this.ws = null;
+    this.sessionId = '';
+    this.connecting = null;
+    this.voiceData = new Map();
+    this.voiceWaiters = new Map();
+    this.players = new Map();
+  }
+
+  connect() {
+    if (this.ws?.readyState === WebSocket.OPEN && this.sessionId) return Promise.resolve();
+    if (this.connecting) return this.connecting;
+
+    this.connecting = new Promise((resolve, reject) => {
+      const ws = new WebSocket(this.wsUrl, {
+        headers: {
+          Authorization: this.password,
+          'User-Id': this.client.user?.id || '',
+          'Client-Name': 'discord-bot-builder/1.0.0',
+        },
+      });
+      this.ws = ws;
+
+      const timeout = setTimeout(() => {
+        reject(new Error(`Lavalink websocket timeout at ${this.wsUrl}`));
+        ws.close();
+      }, 12000);
+
+      ws.on('message', (raw) => {
+        let payload;
+        try {
+          payload = JSON.parse(String(raw));
+        } catch {
+          return;
+        }
+
+        if (payload.op === 'ready') {
+          this.sessionId = payload.sessionId;
+          clearTimeout(timeout);
+          this.connecting = null;
+          resolve();
+        }
+      });
+
+      ws.on('close', () => {
+        this.ws = null;
+        this.sessionId = '';
+        this.connecting = null;
+      });
+
+      ws.on('error', (err) => {
+        clearTimeout(timeout);
+        this.connecting = null;
+        reject(err);
+      });
+    });
+
+    return this.connecting;
+  }
+
+  handleRaw(packet) {
+    const data = packet?.d;
+    if (!data?.guild_id) return;
+    const guildId = data.guild_id;
+    const current = this.voiceData.get(guildId) || {};
+
+    if (packet.t === 'VOICE_STATE_UPDATE' && data.user_id === this.client.user?.id) {
+      current.state = data;
+    } else if (packet.t === 'VOICE_SERVER_UPDATE') {
+      current.server = data;
+    } else {
+      return;
+    }
+
+    this.voiceData.set(guildId, current);
+    if (current.state?.session_id && current.server?.token && current.server?.endpoint) {
+      const waiters = this.voiceWaiters.get(guildId) || [];
+      this.voiceWaiters.delete(guildId);
+      waiters.forEach(({ resolve, timeout }) => {
+        clearTimeout(timeout);
+        resolve(current);
+      });
+    }
+  }
+
+  waitForVoiceData(guildId) {
+    const current = this.voiceData.get(guildId);
+    if (current?.state?.session_id && current?.server?.token && current?.server?.endpoint) {
+      return Promise.resolve(current);
+    }
+
+    return new Promise((resolve, reject) => {
+      const waiters = this.voiceWaiters.get(guildId) || [];
+      const timeout = setTimeout(() => {
+        const next = (this.voiceWaiters.get(guildId) || []).filter((waiter) => waiter.resolve !== resolve);
+        if (next.length) this.voiceWaiters.set(guildId, next);
+        else this.voiceWaiters.delete(guildId);
+        reject(new Error('Timed out waiting for Discord voice connection data.'));
+      }, 12000);
+      waiters.push({ resolve, timeout });
+      this.voiceWaiters.set(guildId, waiters);
+    });
+  }
+
+  async patchPlayer(guildId, body) {
+    await this.connect();
+    const response = await fetch(`${this.base}/v4/sessions/${this.sessionId}/players/${guildId}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: this.password,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      throw new Error(`Lavalink player HTTP ${response.status}${text ? `: ${text.slice(0, 160)}` : ''}`);
+    }
+    return response.json().catch(() => null);
+  }
+
+  async deletePlayer(guildId) {
+    if (!this.sessionId) return;
+    await fetch(`${this.base}/v4/sessions/${this.sessionId}/players/${guildId}`, {
+      method: 'DELETE',
+      headers: { Authorization: this.password },
+    }).catch(() => {});
+    this.players.delete(guildId);
+  }
+
+  async join(voiceChannel) {
+    await this.connect();
+    await sendDiscordVoiceState(this.client, voiceChannel.guild, voiceChannel.id);
+
+    const data = await this.waitForVoiceData(voiceChannel.guild.id);
+    await this.patchPlayer(voiceChannel.guild.id, {
+      voice: {
+        token: data.server.token,
+        endpoint: data.server.endpoint,
+        sessionId: data.state.session_id,
+      },
+    });
+  }
+
+  async play(voiceChannel, track) {
+    if (!track.encoded) throw new Error('Lavalink returned track info but no playable encoded track.');
+    if (voiceChannel.joinable === false) throw new Error('Bot cannot join your voice channel. Check Connect permission.');
+    if (voiceChannel.speakable === false) throw new Error('Bot cannot speak in your voice channel. Check Speak permission.');
+    await this.join(voiceChannel);
+    await this.patchPlayer(voiceChannel.guild.id, { encodedTrack: track.encoded });
+    this.players.set(voiceChannel.guild.id, { paused: false, track });
+  }
+
+  async pause(guildId) {
+    const player = this.players.get(guildId) || { paused: false };
+    player.paused = !player.paused;
+    await this.patchPlayer(guildId, { paused: player.paused });
+    this.players.set(guildId, player);
+    return player.paused;
+  }
+
+  async stop(guild) {
+    await this.deletePlayer(guild.id);
+    await sendDiscordVoiceState(this.client, guild, null).catch(() => {});
+  }
+}
+
+async function sendDiscordVoiceState(client, guild, channelId) {
+  const payload = {
+    op: 4,
+    d: {
+      guild_id: guild.id,
+      channel_id: channelId,
+      self_mute: false,
+      self_deaf: true,
+    },
+  };
+
+  if (guild.shard?.send) return guild.shard.send(payload);
+  const shard = client.ws?.shards?.get?.(guild.shardId ?? 0);
+  if (shard?.send) return shard.send(payload);
+  throw new Error('Could not send Discord voice state update.');
+}
+
+function managerKey(data) {
+  return `${lavalinkBase(data)}|${data.lavalinkPassword || 'youshallnotpass'}`;
+}
+
+function getManager(client, data) {
+  let map = managersByClient.get(client);
+  if (!map) {
+    map = new Map();
+    managersByClient.set(client, map);
+    client.on('raw', (packet) => {
+      for (const manager of map.values()) manager.handleRaw(packet);
+    });
+  }
+
+  const key = managerKey(data);
+  let manager = map.get(key);
+  if (!manager) {
+    manager = new LavalinkRuntime(client, data);
+    map.set(key, manager);
+  }
+  return manager;
 }
 
 function varsFor(message, data, track = {}, extra = {}) {
@@ -249,6 +470,14 @@ module.exports = {
           return true;
         }
 
+        const manager = getManager(message.client, data);
+        try {
+          await manager.play(voiceChannel, track);
+        } catch (err) {
+          await message.channel.send(applyTemplate(data.lavalinkErrorMessage || 'Could not reach Lavalink. Start your Lavalink server or fix host/port/password. Details: {error}', varsFor(message, data, track, { prefix, query: matched.args, error: describeLavalinkError(err, data) })));
+          return true;
+        }
+
         const nonce = message.id || Date.now();
         const vars = varsFor(message, data, track, { prefix, query: matched.args });
         const panel = await message.channel.send({
@@ -265,8 +494,20 @@ module.exports = {
           }
           const [, action] = String(interaction.customId || '').split(':');
           if (action === 'disconnect') {
+            await manager.stop(message.guild);
             await interaction.update({ embeds: [buildCompletedEmbed(data, vars)], components: playerRows(data, nonce, true), content: '' });
             collector.stop('disconnect');
+            return;
+          }
+          if (action === 'pause') {
+            const paused = await manager.pause(message.guild.id);
+            await safeReply(interaction, paused ? 'Paused.' : 'Resumed.');
+            return;
+          }
+          if (action === 'skip') {
+            await manager.deletePlayer(message.guild.id);
+            await interaction.update({ embeds: [buildCompletedEmbed(data, vars)], components: playerRows(data, nonce, true), content: '' });
+            collector.stop('skip');
             return;
           }
           await safeReply(interaction, `Music control: ${action}`);
