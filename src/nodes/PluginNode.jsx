@@ -145,10 +145,10 @@ const NUKE_KEYS = new Set([
 
 const MUSIC_PLAY_KEYS = new Set([
   'aliases', 'lavalinkUrl', 'lavalinkHost', 'lavalinkPort', 'lavalinkPassword', 'lavalinkSecure',
-  'youtubeSearchPrefix', 'nowPlayingTitle', 'artistTemplate',
+  'youtubeSearchPrefix', 'fallbackSearchPrefixes', 'volume', 'nowPlayingTitle', 'artistTemplate',
   'durationTemplate', 'queuedMessage', 'missingQueryMessage', 'missingVoiceMessage',
   'noResultsMessage', 'lavalinkErrorMessage', 'completedMessage',
-  'shuffleButtonLabel', 'previousButtonLabel', 'pauseButtonLabel', 'skipButtonLabel',
+  'shuffleButtonLabel', 'previousButtonLabel', 'pauseButtonLabel', 'resumeButtonLabel', 'skipButtonLabel',
   'queueButtonLabel', 'autoplayButtonLabel', 'restartButtonLabel', 'disconnectButtonLabel',
   'playlistsButtonLabel', 'browseButtonLabel', 'settingsButtonLabel',
 ]);
@@ -1604,6 +1604,8 @@ export default function PluginNode({ id, type, data, selected }) {
                 ['lavalinkPort', 'Port', '2333'],
                 ['lavalinkPassword', 'Password', 'youshallnotpass'],
                 ['youtubeSearchPrefix', 'YouTube Search Prefix', 'ytsearch:'],
+                ['fallbackSearchPrefixes', 'Fallback Search Prefixes', 'ytsearch:,ytmsearch:,scsearch:'],
+                ['volume', 'Volume', '100'],
               ].map(([key, label, fallback]) => (
                 <div key={key} className="bl-field">
                   <span className="bl-field-lbl">{label}</span>
@@ -1624,7 +1626,7 @@ export default function PluginNode({ id, type, data, selected }) {
                 { key: 'missingQueryMessage', label: 'Missing Query', fallback: 'Use `{command} <song name or url>` to play music.', rows: 2 },
                 { key: 'missingVoiceMessage', label: 'Missing Voice', fallback: 'Join a voice channel first.', rows: 2 },
                 { key: 'noResultsMessage', label: 'No Results', fallback: 'No tracks found for `{query}`.', rows: 2 },
-                { key: 'lavalinkErrorMessage', label: 'Lavalink Error', fallback: 'Could not reach Lavalink. Start your Lavalink server or fix host/port/password. Details: {error}', rows: 2 },
+                { key: 'lavalinkErrorMessage', label: 'Lavalink Error', fallback: 'Music playback failed. Details: {error}', rows: 2 },
                 { key: 'completedMessage', label: 'Completed Message', fallback: 'Use `{command}` to add more songs to the queue', rows: 2 },
               ].map(({ key, label, fallback, rows }) => (
                 <div key={key} className="bl-field">
@@ -1635,6 +1637,7 @@ export default function PluginNode({ id, type, data, selected }) {
               <SectionHead color="#60A5FA">Button Labels</SectionHead>
               {[
                 ['shuffleButtonLabel', 'Shuffle'], ['previousButtonLabel', 'Previous'], ['pauseButtonLabel', 'Pause'],
+                ['resumeButtonLabel', 'Resume'],
                 ['skipButtonLabel', 'Skip'], ['queueButtonLabel', 'Queue'], ['autoplayButtonLabel', 'Start Autoplay'],
                 ['restartButtonLabel', 'Restart Queue'], ['disconnectButtonLabel', 'Disconnect bot'],
                 ['playlistsButtonLabel', 'Playlists'], ['browseButtonLabel', 'Browse'], ['settingsButtonLabel', 'Settings'],

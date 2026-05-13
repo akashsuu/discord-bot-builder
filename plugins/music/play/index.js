@@ -15,6 +15,14 @@ function splitAliases(value) {
   return String(value || '').split(',').map((part) => part.trim()).filter(Boolean);
 }
 
+function splitCsv(value) {
+  return String(value || '').split(',').map((part) => part.trim()).filter(Boolean);
+}
+
+function uniqueValues(values) {
+  return values.filter((value, index, list) => value && list.indexOf(value) === index);
+}
+
 function matchCommand(content, commands) {
   const text = String(content || '').trim();
   for (const command of commands) {
@@ -81,17 +89,75 @@ function getTrackArtwork(info) {
 function describeLavalinkError(err, data) {
   const base = lavalinkBase(data);
   const message = err?.cause?.message || err?.message || 'fetch failed';
+  if (/WRONG_VERSION_NUMBER|SSL routines|tls_record/i.test(message)) {
+    return `SSL protocol mismatch for ${base}. Your Lavalink server is probably plain HTTP. Use http:// in Lavalink URL or turn Secure Lavalink off.`;
+  }
   if (/fetch failed|ECONNREFUSED|ENOTFOUND|ETIMEDOUT|EAI_AGAIN/i.test(message)) {
     return `Cannot connect to ${base}`;
   }
   return message;
 }
 
-async function loadTrack(data, query) {
-  if (typeof fetch !== 'function') throw new Error('Fetch API is unavailable in this runtime.');
-  const isUrl = /^https?:\/\//i.test(query);
-  const identifier = isUrl ? query : `${data.youtubeSearchPrefix || 'ytsearch:'}${query}`;
-  const url = `${lavalinkBase(data)}/v4/loadtracks?identifier=${encodeURIComponent(identifier)}`;
+function hasTrackShape(value) {
+  if (!value || typeof value !== 'object') return false;
+  return typeof value.encoded === 'string'
+    || typeof value.encodedTrack === 'string'
+    || typeof value.track === 'string'
+    || typeof value.track?.encoded === 'string'
+    || typeof value.track?.track === 'string'
+    || Boolean(value.info?.title || value.info?.identifier || value.info?.uri);
+}
+
+function pickTrackEntry(json, depth = 0) {
+  if (!json || depth > 5) return null;
+  if (typeof json === 'string') return json;
+  if (Array.isArray(json)) return json.map((item) => pickTrackEntry(item, depth + 1)).find(Boolean) || null;
+  if (hasTrackShape(json)) return json;
+  if (Array.isArray(json.data?.tracks)) return pickTrackEntry(json.data.tracks, depth + 1);
+  if (Array.isArray(json.tracks)) return pickTrackEntry(json.tracks, depth + 1);
+  if (Array.isArray(json.data)) return pickTrackEntry(json.data, depth + 1);
+  if (json.data?.track) return pickTrackEntry(json.data.track, depth + 1);
+  if (json.track) return pickTrackEntry(json.track, depth + 1);
+  if (json.data) return pickTrackEntry(json.data, depth + 1);
+  return null;
+}
+
+function getTrackInfo(entry) {
+  return entry?.info || entry?.track?.info || entry?.data?.info || entry?.track?.data?.info || entry || null;
+}
+
+function getEncodedTrack(entry) {
+  if (!entry) return '';
+  if (typeof entry === 'string') return entry;
+  if (typeof entry.encoded === 'string') return entry.encoded;
+  if (typeof entry.encodedTrack === 'string') return entry.encodedTrack;
+  if (typeof entry.track === 'string') return entry.track;
+  if (typeof entry.track?.encoded === 'string') return entry.track.encoded;
+  if (typeof entry.track?.track === 'string') return entry.track.track;
+  if (typeof entry.track?.encodedTrack === 'string') return entry.track.encodedTrack;
+  if (typeof entry.data?.encoded === 'string') return entry.data.encoded;
+  if (typeof entry.data?.encodedTrack === 'string') return entry.data.encodedTrack;
+  if (typeof entry.data?.track === 'string') return entry.data.track;
+  if (typeof entry.data?.track?.encoded === 'string') return entry.data.track.encoded;
+  if (typeof entry.data?.track?.track === 'string') return entry.data.track.track;
+  return '';
+}
+
+function getPlayableIdentifier(entry, info) {
+  return info?.uri
+    || entry?.identifier
+    || entry?.uri
+    || entry?.track?.identifier
+    || entry?.track?.uri
+    || entry?.track?.info?.uri
+    || entry?.track?.info?.identifier
+    || entry?.data?.identifier
+    || entry?.data?.uri
+    || '';
+}
+
+async function requestLoadTrack(data, identifier, apiPath) {
+  const url = `${lavalinkBase(data)}${apiPath}?identifier=${encodeURIComponent(identifier)}`;
   const response = await fetch(url, {
     headers: {
       Authorization: data.lavalinkPassword || 'youshallnotpass',
@@ -99,18 +165,69 @@ async function loadTrack(data, query) {
     },
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const json = await response.json();
-  const first = Array.isArray(json.data) ? json.data[0] : json.data;
-  const info = first?.info || first?.track?.info || first;
+  return response.json();
+}
+
+async function parseLoadTrackResponse(data, query, identifier, apiPath) {
+  const json = await requestLoadTrack(data, identifier, apiPath);
+  const first = pickTrackEntry(json);
+  const info = getTrackInfo(first);
   if (!info) return null;
   return {
-    encoded: first?.encoded || first?.track || info.encoded || '',
+    encoded: getEncodedTrack(first),
+    identifier: getPlayableIdentifier(first, info),
+    searchIdentifier: identifier,
     title: info.title || query,
     author: info.author || info.artist || 'Unknown Artist',
     duration: formatDuration(info.length || info.duration),
     posterUrl: getTrackArtwork(info),
     uri: info.uri || info.identifier || '',
   };
+}
+
+async function loadTrackFromIdentifier(data, query, identifier) {
+  const modern = await parseLoadTrackResponse(data, query, identifier, '/v4/loadtracks');
+  if (modern?.encoded || modern?.identifier) return modern;
+
+  try {
+    const legacy = await parseLoadTrackResponse(data, query, identifier, '/loadtracks');
+    if (legacy?.encoded || legacy?.identifier) return legacy;
+  } catch {
+    // Some Lavalink v4 servers disable the legacy endpoint.
+  }
+
+  return modern;
+}
+
+function volumeFor(data) {
+  const volume = Number.parseInt(data.volume || '100', 10);
+  if (!Number.isFinite(volume)) return 100;
+  return Math.min(1000, Math.max(0, volume));
+}
+
+async function loadTrackCandidates(data, query) {
+  if (typeof fetch !== 'function') throw new Error('Fetch API is unavailable in this runtime.');
+  const isUrl = /^https?:\/\//i.test(query);
+  if (isUrl) {
+    const direct = await loadTrackFromIdentifier(data, query, query);
+    return direct ? [direct] : [];
+  }
+
+  const prefixes = uniqueValues([
+    data.youtubeSearchPrefix || 'ytsearch:',
+    ...splitCsv(data.fallbackSearchPrefixes || 'ytsearch:,ytmsearch:,scsearch:'),
+  ]);
+
+  const candidates = [];
+  for (const prefix of prefixes) {
+    const result = await loadTrackFromIdentifier(data, query, `${prefix}${query}`);
+    if (result?.encoded || result?.identifier) candidates.push(result);
+  }
+  return candidates;
+}
+
+async function loadTrack(data, query) {
+  return (await loadTrackCandidates(data, query))[0] || null;
 }
 
 class LavalinkRuntime {
@@ -159,7 +276,9 @@ class LavalinkRuntime {
           clearTimeout(timeout);
           this.connecting = null;
           resolve();
+          return;
         }
+        this.handleLavalinkMessage(payload);
       });
 
       ws.on('close', () => {
@@ -176,6 +295,46 @@ class LavalinkRuntime {
     });
 
     return this.connecting;
+  }
+
+  handleLavalinkMessage(payload) {
+    if (payload.op !== 'event' && payload.op !== 'playerUpdate') return;
+    const guildId = payload.guildId || payload.guild_id;
+    if (!guildId) return;
+    const player = this.players.get(guildId);
+    if (!player) return;
+
+    if (payload.op === 'playerUpdate') {
+      player.state = payload.state || {};
+      this.players.set(guildId, player);
+      return;
+    }
+
+    if (payload.type === 'TrackStartEvent') {
+      player.started = true;
+      this.players.set(guildId, player);
+      return;
+    }
+
+    if (payload.type === 'TrackEndEvent') {
+      player.ended = true;
+      this.players.set(guildId, player);
+      return;
+    }
+
+    const parts = [
+      payload.exception?.message,
+      payload.exception?.cause,
+      payload.exception?.severity ? `severity: ${payload.exception.severity}` : '',
+      payload.reason,
+      payload.type,
+    ].filter(Boolean);
+    const detail = uniqueValues(parts).join(' | ') || 'Unknown Lavalink playback error';
+    player.lastError = detail;
+    this.players.set(guildId, player);
+    if (player.reportErrors !== false) {
+      player.textChannel?.send?.(`Lavalink playback error: ${detail}`).catch(() => {});
+    }
   }
 
   handleRaw(packet) {
@@ -248,33 +407,72 @@ class LavalinkRuntime {
     this.players.delete(guildId);
   }
 
-  async join(voiceChannel) {
+  async getVoicePayload(voiceChannel) {
     await this.connect();
     await sendDiscordVoiceState(this.client, voiceChannel.guild, voiceChannel.id);
 
     const data = await this.waitForVoiceData(voiceChannel.guild.id);
-    await this.patchPlayer(voiceChannel.guild.id, {
-      voice: {
-        token: data.server.token,
-        endpoint: data.server.endpoint,
-        sessionId: data.state.session_id,
-      },
-    });
+    return {
+      token: data.server.token,
+      endpoint: data.server.endpoint,
+      sessionId: data.state.session_id,
+      channelId: voiceChannel.id,
+    };
   }
 
-  async play(voiceChannel, track) {
-    if (!track.encoded) throw new Error('Lavalink returned track info but no playable encoded track.');
+  async getPlayer(guildId) {
+    if (!this.sessionId) return null;
+    const response = await fetch(`${this.base}/v4/sessions/${this.sessionId}/players/${guildId}`, {
+      headers: { Authorization: this.password },
+    });
+    if (!response.ok) return null;
+    return response.json().catch(() => null);
+  }
+
+  async verifyPlayer(guildId) {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const player = this.players.get(guildId);
+    if (player?.lastError) throw new Error(player.lastError);
+
+    const remote = await this.getPlayer(guildId);
+    if (!remote) throw new Error('Lavalink did not create a player for this server.');
+    if (!remote.track) throw new Error('Lavalink player has no active track. The source returned a track but playback did not start.');
+    if (remote.state && remote.state.connected === false) {
+      throw new Error('Lavalink player is not connected to Discord voice. Check bot voice permissions and Lavalink network access.');
+    }
+    return remote;
+  }
+
+  async play(voiceChannel, track, data, textChannel) {
+    const playable = track.encoded
+      ? { encoded: track.encoded }
+      : track.identifier
+        ? { identifier: track.identifier }
+        : null;
+    if (!playable) throw new Error('Lavalink returned metadata but no playable encoded track or direct URL. Your Lavalink source plugin is not returning playable tracks.');
     if (voiceChannel.joinable === false) throw new Error('Bot cannot join your voice channel. Check Connect permission.');
     if (voiceChannel.speakable === false) throw new Error('Bot cannot speak in your voice channel. Check Speak permission.');
-    await this.join(voiceChannel);
-    await this.patchPlayer(voiceChannel.guild.id, { encodedTrack: track.encoded });
-    this.players.set(voiceChannel.guild.id, { paused: false, track });
+    const voice = await this.getVoicePayload(voiceChannel);
+    this.players.set(voiceChannel.guild.id, { paused: false, track, textChannel, reportErrors: false, lastError: null });
+    const player = await this.patchPlayer(voiceChannel.guild.id, {
+      voice,
+      track: playable,
+      volume: volumeFor(data),
+      paused: false,
+    });
+    const activePlayer = player || await this.getPlayer(voiceChannel.guild.id);
+    if (activePlayer?.paused) {
+      await this.patchPlayer(voiceChannel.guild.id, { paused: false });
+    }
+    await this.verifyPlayer(voiceChannel.guild.id);
+    this.players.set(voiceChannel.guild.id, { paused: false, track, textChannel, reportErrors: true, lastError: null });
   }
 
   async pause(guildId) {
     const player = this.players.get(guildId) || { paused: false };
     player.paused = !player.paused;
-    await this.patchPlayer(guildId, { paused: player.paused });
+    const updated = await this.patchPlayer(guildId, { paused: player.paused });
+    if (typeof updated?.paused === 'boolean') player.paused = updated.paused;
     this.players.set(guildId, player);
     return player.paused;
   }
@@ -354,7 +552,7 @@ async function getVoiceChannel(message) {
   }
 }
 
-function playerRows(data, nonce, disabled = false) {
+function playerRows(data, nonce, disabled = false, paused = false) {
   const id = (action) => `musicplay:${action}:${nonce}`;
   const button = (action, label, style = ButtonStyle.Secondary) =>
     new ButtonBuilder().setCustomId(id(action)).setLabel(label).setStyle(style).setDisabled(disabled);
@@ -362,7 +560,7 @@ function playerRows(data, nonce, disabled = false) {
     new ActionRowBuilder().addComponents(
       button('shuffle', data.shuffleButtonLabel || 'Shuffle'),
       button('previous', data.previousButtonLabel || 'Previous'),
-      button('pause', data.pauseButtonLabel || 'Pause', ButtonStyle.Primary),
+      button('pause', paused ? (data.resumeButtonLabel || 'Resume') : (data.pauseButtonLabel || 'Pause'), ButtonStyle.Primary),
       button('skip', data.skipButtonLabel || 'Skip'),
       button('queue', data.queueButtonLabel || 'Queue')
     ),
@@ -434,6 +632,9 @@ module.exports = {
         lavalinkPassword: { type: 'string', default: 'youshallnotpass', required: false },
         lavalinkSecure: { type: 'boolean', default: false, required: false },
         youtubeSearchPrefix: { type: 'string', default: 'ytsearch:', required: false },
+        fallbackSearchPrefixes: { type: 'string', default: 'ytsearch:,ytmsearch:,scsearch:', required: false },
+        volume: { type: 'string', default: '100', required: false },
+        resumeButtonLabel: { type: 'string', default: 'Resume', required: false },
       },
 
       async execute(node, message, ctx) {
@@ -458,23 +659,33 @@ module.exports = {
           return true;
         }
 
-        let track;
+        let candidates;
         try {
-          track = await loadTrack(data, matched.args);
+          candidates = await loadTrackCandidates(data, matched.args);
         } catch (err) {
-          await message.channel.send(applyTemplate(data.lavalinkErrorMessage || 'Could not reach Lavalink. Start your Lavalink server or fix host/port/password. Details: {error}', varsFor(message, data, {}, { prefix, query: matched.args, error: describeLavalinkError(err, data) })));
+          await message.channel.send(applyTemplate(data.lavalinkErrorMessage || 'Music playback failed. Details: {error}', varsFor(message, data, {}, { prefix, query: matched.args, error: describeLavalinkError(err, data) })));
           return true;
         }
-        if (!track) {
+        if (!candidates.length) {
           await message.channel.send(applyTemplate(data.noResultsMessage || 'No tracks found for `{query}`.', varsFor(message, data, {}, { prefix, query: matched.args })));
           return true;
         }
 
         const manager = getManager(message.client, data);
-        try {
-          await manager.play(voiceChannel, track);
-        } catch (err) {
-          await message.channel.send(applyTemplate(data.lavalinkErrorMessage || 'Could not reach Lavalink. Start your Lavalink server or fix host/port/password. Details: {error}', varsFor(message, data, track, { prefix, query: matched.args, error: describeLavalinkError(err, data) })));
+        let track = null;
+        let lastError = null;
+        for (const candidate of candidates) {
+          try {
+            await manager.play(voiceChannel, candidate, data, message.channel);
+            track = candidate;
+            break;
+          } catch (err) {
+            lastError = err;
+            await manager.deletePlayer(message.guild.id);
+          }
+        }
+        if (!track) {
+          await message.channel.send(applyTemplate(data.lavalinkErrorMessage || 'Music playback failed. Details: {error}', varsFor(message, data, candidates[0], { prefix, query: matched.args, error: describeLavalinkError(lastError, data) })));
           return true;
         }
 
@@ -487,6 +698,7 @@ module.exports = {
         });
 
         const collector = panel.createMessageComponentCollector?.({ time: 30 * 60 * 1000 });
+        let paused = false;
         collector?.on('collect', async (interaction) => {
           if (interaction.user?.id !== message.author.id) {
             await safeReply(interaction, 'Only the requester can use these music buttons.');
@@ -500,8 +712,12 @@ module.exports = {
             return;
           }
           if (action === 'pause') {
-            const paused = await manager.pause(message.guild.id);
-            await safeReply(interaction, paused ? 'Paused.' : 'Resumed.');
+            paused = await manager.pause(message.guild.id);
+            await interaction.update({
+              content: applyTemplate(data.queuedMessage || 'Added **{title}** to the queue.', vars),
+              embeds: [buildNowPlayingEmbed(data, vars)],
+              components: playerRows(data, nonce, false, paused),
+            });
             return;
           }
           if (action === 'skip') {
