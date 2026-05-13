@@ -2261,7 +2261,7 @@ function musicPlayPreviewText(template, data, extra = {}) {
     title: 'E-GIRLS ARE RUINING MY LIFE!',
     author: 'CORPSE, Savage Ga$p',
     duration: '1:45',
-    posterUrl: data.defaultPosterUrl || data.imageUrl || 'https://i.scdn.co/image/ab67616d0000b273bd0f5cfcf8f2df07c9c7e272',
+    posterUrl: 'https://i.ytimg.com/vi/5qap5aO4i9A/maxresdefault.jpg',
     error: 'Connection refused',
     ...extra,
   };
@@ -2282,7 +2282,7 @@ function DiscordPreviewMusicPlay({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
   const botName = botInfo?.username || 'Euphony';
-  const poster = d.defaultPosterUrl || d.imageUrl || 'https://i.scdn.co/image/ab67616d0000b273bd0f5cfcf8f2df07c9c7e272';
+  const poster = musicPlayPreviewText('{posterUrl}', d);
   const title = musicPlayPreviewText(d.nowPlayingTitle || '{title}', d);
   const artist = musicPlayPreviewText(d.artistTemplate || '{author}', d);
   const duration = musicPlayPreviewText(d.durationTemplate || '{duration}', d);

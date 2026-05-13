@@ -51,6 +51,32 @@ function lavalinkBase(data) {
   return `${protocol}://${host}${port ? `:${port}` : ''}`;
 }
 
+function youtubeThumbnail(identifier) {
+  const value = String(identifier || '').trim();
+  const match = value.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
+  const videoId = match?.[1] || (/^[a-zA-Z0-9_-]{11}$/.test(value) ? value : '');
+  return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '';
+}
+
+function getTrackArtwork(info) {
+  return info.artworkUrl
+    || info.thumbnail
+    || info.image
+    || info.pluginInfo?.artworkUrl
+    || info.pluginInfo?.thumbnail
+    || youtubeThumbnail(info.uri || info.identifier)
+    || '';
+}
+
+function describeLavalinkError(err, data) {
+  const base = lavalinkBase(data);
+  const message = err?.cause?.message || err?.message || 'fetch failed';
+  if (/fetch failed|ECONNREFUSED|ENOTFOUND|ETIMEDOUT|EAI_AGAIN/i.test(message)) {
+    return `Cannot connect to ${base}`;
+  }
+  return message;
+}
+
 async function loadTrack(data, query) {
   if (typeof fetch !== 'function') throw new Error('Fetch API is unavailable in this runtime.');
   const isUrl = /^https?:\/\//i.test(query);
@@ -71,7 +97,7 @@ async function loadTrack(data, query) {
     title: info.title || query,
     author: info.author || info.artist || 'Unknown Artist',
     duration: formatDuration(info.length || info.duration),
-    posterUrl: info.artworkUrl || info.thumbnail || data.defaultPosterUrl || data.imageUrl || '',
+    posterUrl: getTrackArtwork(info),
     uri: info.uri || info.identifier || '',
   };
 }
@@ -88,7 +114,7 @@ function varsFor(message, data, track = {}, extra = {}) {
     title: track.title || 'E-GIRLS ARE RUINING MY LIFE!',
     author: track.author || 'CORPSE, Savage Ga$p',
     duration: track.duration || '1:45',
-    posterUrl: track.posterUrl || data.defaultPosterUrl || data.imageUrl || '',
+    posterUrl: track.posterUrl || '',
     error: extra.error || '',
   };
 }
@@ -184,7 +210,6 @@ module.exports = {
         lavalinkPassword: { type: 'string', default: 'youshallnotpass', required: false },
         lavalinkSecure: { type: 'boolean', default: false, required: false },
         youtubeSearchPrefix: { type: 'string', default: 'ytsearch:', required: false },
-        defaultPosterUrl: { type: 'string', default: '', required: false },
       },
 
       async execute(node, message, ctx) {
@@ -213,7 +238,7 @@ module.exports = {
         try {
           track = await loadTrack(data, matched.args);
         } catch (err) {
-          await message.channel.send(applyTemplate(data.lavalinkErrorMessage || 'Could not reach Lavalink: {error}', varsFor(message, data, {}, { prefix, query: matched.args, error: err.message })));
+          await message.channel.send(applyTemplate(data.lavalinkErrorMessage || 'Could not reach Lavalink. Start your Lavalink server or fix host/port/password. Details: {error}', varsFor(message, data, {}, { prefix, query: matched.args, error: describeLavalinkError(err, data) })));
           return true;
         }
         if (!track) {

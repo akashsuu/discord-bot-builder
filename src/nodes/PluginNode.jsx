@@ -145,7 +145,7 @@ const NUKE_KEYS = new Set([
 
 const MUSIC_PLAY_KEYS = new Set([
   'aliases', 'lavalinkHost', 'lavalinkPort', 'lavalinkPassword', 'lavalinkSecure',
-  'youtubeSearchPrefix', 'defaultPosterUrl', 'nowPlayingTitle', 'artistTemplate',
+  'youtubeSearchPrefix', 'nowPlayingTitle', 'artistTemplate',
   'durationTemplate', 'queuedMessage', 'missingQueryMessage', 'missingVoiceMessage',
   'noResultsMessage', 'lavalinkErrorMessage', 'completedMessage',
   'shuffleButtonLabel', 'previousButtonLabel', 'pauseButtonLabel', 'skipButtonLabel',
@@ -1600,7 +1600,6 @@ export default function PluginNode({ id, type, data, selected }) {
                 ['lavalinkPort', 'Port', '2333'],
                 ['lavalinkPassword', 'Password', 'youshallnotpass'],
                 ['youtubeSearchPrefix', 'YouTube Search Prefix', 'ytsearch:'],
-                ['defaultPosterUrl', 'Default Poster URL', 'https://...poster.png'],
               ].map(([key, label, fallback]) => (
                 <div key={key} className="bl-field">
                   <span className="bl-field-lbl">{label}</span>
@@ -1621,7 +1620,7 @@ export default function PluginNode({ id, type, data, selected }) {
                 { key: 'missingQueryMessage', label: 'Missing Query', fallback: 'Use `{command} <song name or url>` to play music.', rows: 2 },
                 { key: 'missingVoiceMessage', label: 'Missing Voice', fallback: 'Join a voice channel first.', rows: 2 },
                 { key: 'noResultsMessage', label: 'No Results', fallback: 'No tracks found for `{query}`.', rows: 2 },
-                { key: 'lavalinkErrorMessage', label: 'Lavalink Error', fallback: 'Could not reach Lavalink: {error}', rows: 2 },
+                { key: 'lavalinkErrorMessage', label: 'Lavalink Error', fallback: 'Could not reach Lavalink. Start your Lavalink server or fix host/port/password. Details: {error}', rows: 2 },
                 { key: 'completedMessage', label: 'Completed Message', fallback: 'Use `{command}` to add more songs to the queue', rows: 2 },
               ].map(({ key, label, fallback, rows }) => (
                 <div key={key} className="bl-field">
