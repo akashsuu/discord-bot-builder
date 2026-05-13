@@ -48,13 +48,18 @@ function hexToInt(hex) {
   return Number.isNaN(parsed) ? 0x22C55E : parsed;
 }
 
+function cleanUrl(value) {
+  const url = String(value || '').trim();
+  return /^https?:\/\//i.test(url) ? url : '';
+}
+
 function canManageGuild(message) {
   const perms = message.member?.permissions;
   if (!perms?.has) return true;
   return perms.has(PermissionFlagsBits.ManageGuild);
 }
 
-function varsFor(message, data, activityName) {
+function varsFor(message, data, activityName, profileUpdate = 'Activity only') {
   return {
     user: message.author?.username || 'Unknown',
     tag: message.author?.tag || message.author?.username || 'Unknown',
@@ -71,7 +76,64 @@ function varsFor(message, data, activityName) {
     imageUrl: data.imageUrl || '',
     animatedAvatarUrl: data.animatedAvatarUrl || '',
     animatedBannerUrl: data.animatedBannerUrl || '',
+    profileUpdate,
   };
+}
+
+async function applyProfileAssetsForUser(user, data) {
+  if (!user) return 'Bot user unavailable';
+
+  const updates = [];
+  if (data.useAnimatedAvatar === true) {
+    const avatarUrl = cleanUrl(data.animatedAvatarUrl);
+    if (!avatarUrl) {
+      updates.push('Avatar skipped: invalid URL');
+    } else if (typeof user.setAvatar !== 'function') {
+      updates.push('Avatar skipped: unsupported by this Discord.js version');
+    } else {
+      try {
+        await user.setAvatar(avatarUrl);
+        updates.push('Avatar updated');
+      } catch (err) {
+        updates.push(`Avatar error: ${err.message}`);
+      }
+    }
+  }
+
+  if (data.useAnimatedBanner === true) {
+    const bannerUrl = cleanUrl(data.animatedBannerUrl);
+    if (!bannerUrl) {
+      updates.push('Banner skipped: invalid URL');
+    } else if (typeof user.setBanner !== 'function') {
+      updates.push('Banner skipped: unsupported by this Discord.js version');
+    } else {
+      try {
+        await user.setBanner(bannerUrl);
+        updates.push('Banner updated');
+      } catch (err) {
+        updates.push(`Banner error: ${err.message}`);
+      }
+    }
+  }
+
+  return updates.length ? updates.join('\n') : 'Activity only';
+}
+
+async function applyProfileAssets(message, data) {
+  return applyProfileAssetsForUser(message.client?.user, data);
+}
+
+async function applyBotActivity(client, data) {
+  const activityName = String(data.activityName || 'ROBLOX').slice(0, 128);
+  const activityType = ACTIVITY_TYPES[data.activityType] ?? ActivityType.Playing;
+  const presence = {
+    activities: [{ name: activityName, type: activityType }],
+    status: data.status || 'online',
+  };
+  if (data.activityType === 'Streaming') presence.activities[0].url = 'https://twitch.tv/discord';
+  client?.user?.setPresence?.(presence);
+  const profileUpdate = await applyProfileAssetsForUser(client?.user, data);
+  return { activityName, profileUpdate };
 }
 
 async function sendResponse(message, data, vars) {
@@ -83,7 +145,7 @@ async function sendResponse(message, data, vars) {
   const embed = new EmbedBuilder()
     .setColor(hexToInt(data.embedColor || '#22C55E'))
     .setTitle(applyTemplate(data.titleTemplate || 'Bot Activity Updated', vars))
-    .setDescription(applyTemplate(data.descriptionTemplate || '**Type:** {activityType}\n**Name:** {activityName}\n**Producer:** {producerName}\n**Status:** {status}', vars));
+    .setDescription(applyTemplate(data.descriptionTemplate || '**Type:** {activityType}\n**Name:** {activityName}\n**Producer:** {producerName}\n**Status:** {status}\n**Profile:** {profileUpdate}', vars));
 
   if (data.logoName || data.logoUrl) {
     embed.setAuthor({ name: applyTemplate(data.logoName || 'Activity', vars), iconURL: data.logoUrl || undefined });
@@ -109,8 +171,8 @@ module.exports = {
       icon: 'PLY',
       color: '#22C55E',
       description: 'Prefix command that changes the bot presence activity name, type, and status.',
-      inputs: [{ id: 'in', label: 'Message', type: 'flow' }],
-      outputs: [{ id: 'out', label: 'Continue', type: 'flow' }],
+      inputs: [],
+      outputs: [],
 
       configSchema: {
         command: { type: 'string', default: 'playing', required: true },
@@ -125,6 +187,12 @@ module.exports = {
         useAnimatedAvatar: { type: 'boolean', default: false, required: false },
         useAnimatedBanner: { type: 'boolean', default: false, required: false },
         requireManageGuild: { type: 'boolean', default: true, required: false },
+      },
+
+      async initProject({ node, client }) {
+        const apply = () => applyBotActivity(client, node.data || {}).catch(() => {});
+        if (client?.isReady?.() && client.user) await apply();
+        else client?.once?.('ready', apply);
       },
 
       async execute(node, message, ctx) {
@@ -153,14 +221,13 @@ module.exports = {
 
         const activityName = requested.slice(0, 128);
         const activityType = ACTIVITY_TYPES[data.activityType] ?? ActivityType.Playing;
-        const presence = {
-          activities: [{ name: activityName, type: activityType }],
+        message.client?.user?.setPresence?.({
+          activities: [{ name: activityName, type: activityType, ...(data.activityType === 'Streaming' ? { url: 'https://twitch.tv/discord' } : {}) }],
           status: data.status || 'online',
-        };
-        if (data.activityType === 'Streaming') presence.activities[0].url = 'https://twitch.tv/discord';
-        message.client?.user?.setPresence?.(presence);
+        });
+        const profileUpdate = await applyProfileAssets(message, data);
 
-        await sendResponse(message, data, varsFor(message, data, activityName));
+        await sendResponse(message, data, varsFor(message, data, activityName, profileUpdate));
         return true;
       },
 

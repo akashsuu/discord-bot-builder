@@ -131,11 +131,26 @@ const CALCULATOR_KEYS = new Set([
 ]);
 
 const PLAYING_KEYS = new Set([
-  'aliases', 'activityName', 'activityType', 'producerName', 'status', 'imageUrl',
+  'command', 'aliases', 'activityName', 'activityType', 'producerName', 'status', 'imageUrl',
   'animatedAvatarUrl', 'animatedBannerUrl', 'useAnimatedAvatar', 'useAnimatedBanner',
   'requireManageGuild',
   'titleTemplate', 'descriptionTemplate', 'plainTextTemplate', 'currentMessage',
   'permissionMessage', 'clearedMessage',
+]);
+
+const NUKE_KEYS = new Set([
+  'confirmationRequired', 'confirmationKeyword', 'reason', 'successMessage',
+  'confirmMessage', 'permissionMessage', 'unsupportedMessage', 'errorMessage',
+]);
+
+const MUSIC_PLAY_KEYS = new Set([
+  'aliases', 'lavalinkHost', 'lavalinkPort', 'lavalinkPassword', 'lavalinkSecure',
+  'youtubeSearchPrefix', 'defaultPosterUrl', 'nowPlayingTitle', 'artistTemplate',
+  'durationTemplate', 'queuedMessage', 'missingQueryMessage', 'missingVoiceMessage',
+  'noResultsMessage', 'lavalinkErrorMessage', 'completedMessage',
+  'shuffleButtonLabel', 'previousButtonLabel', 'pauseButtonLabel', 'skipButtonLabel',
+  'queueButtonLabel', 'autoplayButtonLabel', 'restartButtonLabel', 'disconnectButtonLabel',
+  'playlistsButtonLabel', 'browseButtonLabel', 'settingsButtonLabel',
 ]);
 
 const PLUGIN_HEADER_PURPLE = '#7c3aed';
@@ -356,7 +371,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -1355,20 +1370,7 @@ export default function PluginNode({ id, type, data, selected }) {
           {type === 'info_playing' && (
             <>
               <div className="bl-node-divider" />
-              <SectionHead color="#22C55E">Playing Profile</SectionHead>
-              <div className="bl-field">
-                <span className="bl-field-lbl">Aliases</span>
-                <input
-                  className="bl-node-input"
-                  value={data.aliases || ''}
-                  onChange={(e) => update('aliases', e.target.value)}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  placeholder="setplaying,activity,status"
-                  spellCheck={false}
-                />
-              </div>
+              <SectionHead color="#22C55E">Bot Activity</SectionHead>
               <div className="bl-field">
                 <span className="bl-field-lbl">Activity Name</span>
                 <input
@@ -1498,7 +1500,7 @@ export default function PluginNode({ id, type, data, selected }) {
               </label>
               {[
                 { key: 'titleTemplate', label: 'Embed Title', fallback: 'Bot Activity Updated', rows: 2 },
-                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '**Type:** {activityType}\n**Name:** {activityName}\n**Producer:** {producerName}\n**Status:** {status}', rows: 5 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '**Type:** {activityType}\n**Name:** {activityName}\n**Producer:** {producerName}\n**Status:** {status}\n**Profile:** {profileUpdate}', rows: 6 },
                 { key: 'plainTextTemplate', label: 'Plain Text', fallback: 'Bot activity set to {activityType} {activityName} by {producerName}.', rows: 2 },
                 { key: 'permissionMessage', label: 'Permission Text', fallback: 'You need Manage Server permission to change my activity.', rows: 2 },
                 { key: 'clearedMessage', label: 'Cleared Text', fallback: 'Bot activity cleared.', rows: 2 },
@@ -1520,9 +1522,129 @@ export default function PluginNode({ id, type, data, selected }) {
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#22C55E' }}>{'{activityName} {activityType} {producerName} {status}'}</span>
                 {' Â· '}
-                <span style={{ color: '#7EB8F7' }}>{'{imageUrl} {animatedAvatarUrl} {animatedBannerUrl}'}</span>
+                <span style={{ color: '#7EB8F7' }}>{'{imageUrl} {animatedAvatarUrl} {animatedBannerUrl} {profileUpdate}'}</span>
                 {' Â· '}
                 <span style={{ color: '#888' }}>{'{user} {server}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'moderation_nuke' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#DC2626">Nuke Settings</SectionHead>
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input
+                  type="checkbox"
+                  checked={data.confirmationRequired !== false}
+                  onChange={(e) => update('confirmationRequired', e.target.checked)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+                Require Confirmation
+              </label>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Confirm Keyword</span>
+                <input
+                  className="bl-node-input"
+                  value={data.confirmationKeyword || ''}
+                  onChange={(e) => update('confirmationKeyword', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="confirm"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'reason', label: 'Audit Log Reason', fallback: 'Channel nuked by {user}', rows: 2 },
+                { key: 'successMessage', label: 'Success Message', fallback: 'Channel nuked by {mention}. This is the new {channelMention}.', rows: 3 },
+                { key: 'confirmMessage', label: 'Confirm Message', fallback: 'This will delete the whole channel and recreate it. Run `{command} {confirmationKeyword}` to confirm.', rows: 3 },
+                { key: 'permissionMessage', label: 'Permission Message', fallback: 'You and I both need Manage Channels permission to nuke this channel.', rows: 2 },
+                { key: 'unsupportedMessage', label: 'Unsupported Message', fallback: 'This channel type cannot be nuked.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Failed to nuke channel: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#DC2626' }}>{'{command} {confirmationKeyword} {error}'}</span>
+                {' Â· '}
+                <span style={{ color: '#7EB8F7' }}>{'{channel} {channelMention} {channelId}'}</span>
+                {' Â· '}
+                <span style={{ color: '#888' }}>{'{user} {mention} {server}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'music_play' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#5865F2">Lavalink</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="p" spellCheck={false} />
+              </div>
+              {[
+                ['lavalinkHost', 'Host', 'localhost'],
+                ['lavalinkPort', 'Port', '2333'],
+                ['lavalinkPassword', 'Password', 'youshallnotpass'],
+                ['youtubeSearchPrefix', 'YouTube Search Prefix', 'ytsearch:'],
+                ['defaultPosterUrl', 'Default Poster URL', 'https://...poster.png'],
+              ].map(([key, label, fallback]) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <input className="bl-node-input" value={data[key] || ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={fallback} spellCheck={false} />
+                </div>
+              ))}
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input type="checkbox" checked={data.lavalinkSecure === true} onChange={(e) => update('lavalinkSecure', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+                Secure Lavalink
+              </label>
+              <div className="bl-node-divider" />
+              <SectionHead color="#A78BFA">Player Text</SectionHead>
+              {[
+                { key: 'nowPlayingTitle', label: 'Song Title', fallback: '{title}', rows: 1 },
+                { key: 'artistTemplate', label: 'Artist Text', fallback: '{author}', rows: 1 },
+                { key: 'durationTemplate', label: 'Duration Text', fallback: '{duration}', rows: 1 },
+                { key: 'queuedMessage', label: 'Queued Message', fallback: 'Added **{title}** to the queue.', rows: 2 },
+                { key: 'missingQueryMessage', label: 'Missing Query', fallback: 'Use `{command} <song name or url>` to play music.', rows: 2 },
+                { key: 'missingVoiceMessage', label: 'Missing Voice', fallback: 'Join a voice channel first.', rows: 2 },
+                { key: 'noResultsMessage', label: 'No Results', fallback: 'No tracks found for `{query}`.', rows: 2 },
+                { key: 'lavalinkErrorMessage', label: 'Lavalink Error', fallback: 'Could not reach Lavalink: {error}', rows: 2 },
+                { key: 'completedMessage', label: 'Completed Message', fallback: 'Use `{command}` to add more songs to the queue', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <SectionHead color="#60A5FA">Button Labels</SectionHead>
+              {[
+                ['shuffleButtonLabel', 'Shuffle'], ['previousButtonLabel', 'Previous'], ['pauseButtonLabel', 'Pause'],
+                ['skipButtonLabel', 'Skip'], ['queueButtonLabel', 'Queue'], ['autoplayButtonLabel', 'Start Autoplay'],
+                ['restartButtonLabel', 'Restart Queue'], ['disconnectButtonLabel', 'Disconnect bot'],
+                ['playlistsButtonLabel', 'Playlists'], ['browseButtonLabel', 'Browse'], ['settingsButtonLabel', 'Settings'],
+              ].map(([key, fallback]) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{fallback}</span>
+                  <input className="bl-node-input" value={data[key] || ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={fallback} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#5865F2' }}>{'{title} {author} {duration} {posterUrl}'}</span>
+                {' Â· '}
+                <span style={{ color: '#888' }}>{'{command} {query} {user} {error}'}</span>
               </span>
             </>
           )}

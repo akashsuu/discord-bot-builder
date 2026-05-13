@@ -2116,6 +2116,10 @@ function playingPreviewText(template, data, extra = {}) {
     imageUrl: data.imageUrl || '',
     animatedAvatarUrl: data.animatedAvatarUrl || '',
     animatedBannerUrl: data.animatedBannerUrl || '',
+    profileUpdate: [
+      data.useAnimatedAvatar ? 'Avatar updated' : null,
+      data.useAnimatedBanner ? 'Banner updated' : null,
+    ].filter(Boolean).join('\n') || 'Activity only',
     ...extra,
   };
   return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
@@ -2172,6 +2176,162 @@ function DiscordPreviewPlaying({ node }) {
         </div>
         <div className="dc-profile-command">
           {playingPreviewText(d.titleTemplate || 'Bot Activity Updated', d)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function nukePreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    serverId: '123456789012345678',
+    channel: 'general',
+    channelId: '987654321098765432',
+    channelMention: '#general',
+    command: `!${data.command || 'nuke'}`,
+    confirmationKeyword: data.confirmationKeyword || 'confirm',
+    reason: data.reason || 'Channel nuked by {user}',
+    error: 'Missing permissions',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewNuke({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'YourBot';
+  const text = d.confirmationRequired !== false
+    ? nukePreviewText(d.confirmMessage || 'This will delete the whole channel and recreate it. Run `{command} {confirmationKeyword}` to confirm.', d)
+    : nukePreviewText(d.successMessage || 'Channel nuked by {mention}. This is the new {channelMention}.', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#DC2626' }}>NU</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{text}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedTitle: nukePreviewText(d.embedTitle || 'Channel Nuked', d),
+                embedFooter: nukePreviewText(d.embedFooter || 'Nuke requested by {user}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function musicPlayPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'akashsuu',
+    mention: '@akashsuu',
+    command: `/${data.command || 'play'}`,
+    query: 'E-GIRLS ARE RUINING MY LIFE!',
+    title: 'E-GIRLS ARE RUINING MY LIFE!',
+    author: 'CORPSE, Savage Ga$p',
+    duration: '1:45',
+    posterUrl: data.defaultPosterUrl || data.imageUrl || 'https://i.scdn.co/image/ab67616d0000b273bd0f5cfcf8f2df07c9c7e272',
+    error: 'Connection refused',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function MusicButton({ children, color = '#2B2D31', wide = false }) {
+  return (
+    <button type="button" className={`dc-music-button ${wide ? 'wide' : ''}`} style={{ background: color }}>
+      {children}
+    </button>
+  );
+}
+
+function DiscordPreviewMusicPlay({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Euphony';
+  const poster = d.defaultPosterUrl || d.imageUrl || 'https://i.scdn.co/image/ab67616d0000b273bd0f5cfcf8f2df07c9c7e272';
+  const title = musicPlayPreviewText(d.nowPlayingTitle || '{title}', d);
+  const artist = musicPlayPreviewText(d.artistTemplate || '{author}', d);
+  const duration = musicPlayPreviewText(d.durationTemplate || '{duration}', d);
+  const completed = musicPlayPreviewText(d.completedMessage || 'Use `{command}` to add more songs to the queue', d);
+
+  return (
+    <div className="dc-wrap dc-music-preview">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar">🎵</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 10:41</span>
+          </div>
+          <div className="dc-music-card">
+            <div className="dc-music-user-row"><span>01</span><span>@akashsuu</span></div>
+            <img src={poster} className="dc-music-poster" alt={title} onError={(e) => { e.target.style.display = 'none'; }} />
+            <div className="dc-music-title">{title}</div>
+            <div className="dc-music-artist">{artist}</div>
+            <div className="dc-music-duration">{duration}</div>
+            <div className="dc-music-separator" />
+            <div className="dc-music-controls">
+              <MusicButton>{d.shuffleButtonLabel || '↝'}</MusicButton>
+              <MusicButton>{d.previousButtonLabel || '◀'}</MusicButton>
+              <MusicButton color="#3B3D45">{d.pauseButtonLabel || '⏸'}</MusicButton>
+              <MusicButton>{d.skipButtonLabel || '▶'}</MusicButton>
+              <MusicButton>{d.queueButtonLabel || '☷'}</MusicButton>
+            </div>
+            <div className="dc-music-select">Player options <span>⌄</span></div>
+            <div className="dc-music-footer-buttons">
+              <MusicButton wide>{d.playlistsButtonLabel || '▣ Playlists'}</MusicButton>
+              <MusicButton wide>{d.browseButtonLabel || '▦ Browse'}</MusicButton>
+              <MusicButton>{d.settingsButtonLabel || '⚙'}</MusicButton>
+            </div>
+          </div>
+          <div className="dc-music-complete-card">
+            <div className="dc-music-complete-text">{completed}</div>
+            <div className="dc-music-complete-row">
+              <MusicButton color="#5865F2" wide>∞ {d.autoplayButtonLabel || 'Start Autoplay'}</MusicButton>
+              <MusicButton wide>↻ {d.restartButtonLabel || 'Restart Queue'}</MusicButton>
+              <MusicButton color="#DA373C" wide>↷ {d.disconnectButtonLabel || 'Disconnect bot'}</MusicButton>
+            </div>
+            <div className="dc-music-footer-buttons">
+              <MusicButton wide>{d.playlistsButtonLabel || '▣ Playlists'}</MusicButton>
+              <MusicButton wide>{d.browseButtonLabel || '▦ Browse'}</MusicButton>
+              <MusicButton>{d.settingsButtonLabel || '⚙'}</MusicButton>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2266,6 +2426,7 @@ function NPanel({ selectedNode, setNodes }) {
   const isPrefixPreview = selectedNode.type === 'util_prefix';
   const isCalculatorPreview = selectedNode.type === 'util_calculator';
   const isPlayingPreview = selectedNode.type === 'info_playing';
+  const isMusicPlayPreview = selectedNode.type === 'music_play';
 
   return (
     <motion.div 
@@ -2461,6 +2622,8 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewCalculator node={selectedNode} />
               ) : isPlayingPreview ? (
                 <DiscordPreviewPlaying node={selectedNode} />
+              ) : isMusicPlayPreview ? (
+                <DiscordPreviewMusicPlay node={selectedNode} />
               ) : (
                 <DiscordPreview node={selectedNode} />
               )}

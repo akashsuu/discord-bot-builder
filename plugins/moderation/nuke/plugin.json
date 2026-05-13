@@ -1,0 +1,33 @@
+{
+  "name": "Nuke Channel",
+  "version": "1.0.0",
+  "description": "Delete a channel and recreate the same channel again.",
+  "author": "Akashsuu",
+  "icon": "NUK",
+  "nodeConfig": {
+    "label": "Nuke Channel",
+    "icon": "NUK",
+    "color": "#DC2626",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "nuke",
+      "confirmationRequired": true,
+      "confirmationKeyword": "confirm",
+      "reason": "Channel nuked by {user}",
+      "successMessage": "Channel nuked by {mention}. This is the new {channelMention}.",
+      "confirmMessage": "This will delete the whole channel and recreate it. Run `{command} {confirmationKeyword}` to confirm.",
+      "permissionMessage": "You and I both need Manage Channels permission to nuke this channel.",
+      "unsupportedMessage": "This channel type cannot be nuked.",
+      "errorMessage": "Failed to nuke channel: {error}",
+      "embedEnabled": true,
+      "embedColor": "#DC2626",
+      "embedTitle": "Channel Nuked",
+      "embedFooter": "Nuke requested by {user}",
+      "logoUrl": "",
+      "logoName": "",
+      "imageUrl": "",
+      "imagePosition": "bottom"
+    }
+  }
+}

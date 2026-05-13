@@ -155,6 +155,7 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
       GatewayIntentBits.DirectMessages,
       GatewayIntentBits.GuildMembers,
       GatewayIntentBits.GuildEmojisAndStickers,
+      GatewayIntentBits.GuildVoiceStates,
     ],
     partials: [Partials.Channel],
   });
