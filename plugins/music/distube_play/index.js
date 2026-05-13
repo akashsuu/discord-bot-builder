@@ -26,6 +26,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('
 let distube = null;
 let distubeLoadError = null;
 let ffmpegPath = null;
+let youtubePluginLoadError = null;
 
 function loadDistube() {
   try {
@@ -45,6 +46,18 @@ function loadFfmpegPath() {
     ffmpegPath = '';
   }
   return ffmpegPath;
+}
+
+function loadDistubePlugins() {
+  const plugins = [];
+  try {
+    const loaded = require('@distube/youtube');
+    const YouTubePlugin = loaded.YouTubePlugin || loaded.default;
+    if (YouTubePlugin) plugins.push(new YouTubePlugin());
+  } catch (err) {
+    youtubePluginLoadError = err;
+  }
+  return plugins;
 }
 
 function commandWithPrefix(raw, prefix) {
@@ -151,10 +164,17 @@ function createDistube(client) {
 
   distube = new loaded.DisTube(client, {
     emitNewSongOnly: true,
+    plugins: loadDistubePlugins(),
     ffmpeg: {
       path: loadFfmpegPath() || 'ffmpeg',
     },
   });
+
+  if (youtubePluginLoadError) {
+    setTimeout(() => {
+      console.warn(`Distube YouTube plugin failed to load: ${youtubePluginLoadError.message}`);
+    }, 0);
+  }
 
   distube.on('playSong', (queue, song) => {
     queue.textChannel?.send(`Now playing: **${song.name}** (${song.formattedDuration})`).catch(() => {});
@@ -167,6 +187,14 @@ function createDistube(client) {
   distube.on('error', (channel, error) => {
     const target = channel?.send ? channel : channel?.textChannel;
     target?.send?.(`Distube error: ${error?.message || String(error)}`).catch(() => {});
+  });
+
+  distube.on('debug', (message) => {
+    console.log(`[Distube] ${message}`);
+  });
+
+  distube.on('ffmpegDebug', (message) => {
+    console.log(`[Distube:ffmpeg] ${message}`);
   });
 
   return distube;
@@ -258,6 +286,7 @@ module.exports = {
 
         try {
           await player.play(voiceChannel, matched.args, {
+            message,
             textChannel: message.channel,
             member: message.member,
           });

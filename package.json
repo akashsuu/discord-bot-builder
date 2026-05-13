@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@discordjs/voice": "^0.18.0",
+    "@distube/youtube": "^1.0.4",
     "@tailwindcss/postcss": "^4.2.4",
     "autoprefixer": "^10.5.0",
     "clsx": "^2.1.1",

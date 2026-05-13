@@ -1,5 +1,22 @@
 'use strict';
 
+if (typeof globalThis.File === 'undefined') {
+  try {
+    const { File, Blob } = require('node:buffer');
+    if (typeof globalThis.Blob === 'undefined' && Blob) globalThis.Blob = Blob;
+    if (File) globalThis.File = File;
+  } catch {
+    globalThis.File = class File {
+      constructor(parts, name, options = {}) {
+        this.parts = parts;
+        this.name = String(name || '');
+        this.type = options.type || '';
+        this.lastModified = options.lastModified || Date.now();
+      }
+    };
+  }
+}
+
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const { substitute }         = require('./variables');
 const engine                 = require('./engine');
