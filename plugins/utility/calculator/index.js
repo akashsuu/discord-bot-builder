@@ -22,7 +22,7 @@ function matchCommand(content, commands) {
     if (!cmd) continue;
     if (!text.toLowerCase().startsWith(cmd.toLowerCase())) continue;
     const rest = text.slice(cmd.length);
-    if (!rest || /^\s/.test(rest)) return { args: rest.trim() };
+    if (!rest || /^\s/.test(rest) || /^[\d.(+\-πpiexX]/.test(rest)) return { args: rest.trim() };
   }
   return null;
 }
@@ -41,7 +41,10 @@ function hexToInt(hex) {
 }
 
 function tokenize(input) {
-  const source = String(input || '').replace(/[×]/g, '*').replace(/[÷]/g, '/').replace(/π/g, 'pi');
+  const source = String(input || '')
+    .replace(/[×xX]/g, '*')
+    .replace(/[÷]/g, '/')
+    .replace(/π/g, 'pi');
   const tokens = [];
   let i = 0;
   while (i < source.length) {

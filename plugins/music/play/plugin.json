@@ -13,6 +13,7 @@
     "defaults": {
       "command": "play",
       "aliases": "p",
+      "lavalinkUrl": "",
       "lavalinkHost": "localhost",
       "lavalinkPort": "2333",
       "lavalinkPassword": "youshallnotpass",

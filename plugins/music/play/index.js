@@ -45,6 +45,8 @@ function formatDuration(ms) {
 }
 
 function lavalinkBase(data) {
+  const fullUrl = String(data.lavalinkUrl || '').trim();
+  if (fullUrl) return fullUrl.replace(/\/+$/, '');
   const protocol = data.lavalinkSecure === true ? 'https' : 'http';
   const host = String(data.lavalinkHost || 'localhost').trim();
   const port = String(data.lavalinkPort || '2333').trim();
@@ -205,6 +207,7 @@ module.exports = {
       configSchema: {
         command: { type: 'string', default: 'play', required: true },
         aliases: { type: 'string', default: 'p', required: false },
+        lavalinkUrl: { type: 'string', default: '', required: false },
         lavalinkHost: { type: 'string', default: 'localhost', required: false },
         lavalinkPort: { type: 'string', default: '2333', required: false },
         lavalinkPassword: { type: 'string', default: 'youshallnotpass', required: false },

@@ -144,7 +144,7 @@ const NUKE_KEYS = new Set([
 ]);
 
 const MUSIC_PLAY_KEYS = new Set([
-  'aliases', 'lavalinkHost', 'lavalinkPort', 'lavalinkPassword', 'lavalinkSecure',
+  'aliases', 'lavalinkUrl', 'lavalinkHost', 'lavalinkPort', 'lavalinkPassword', 'lavalinkSecure',
   'youtubeSearchPrefix', 'nowPlayingTitle', 'artistTemplate',
   'durationTemplate', 'queuedMessage', 'missingQueryMessage', 'missingVoiceMessage',
   'noResultsMessage', 'lavalinkErrorMessage', 'completedMessage',
@@ -1594,6 +1594,10 @@ export default function PluginNode({ id, type, data, selected }) {
               <div className="bl-field">
                 <span className="bl-field-lbl">Aliases</span>
                 <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="p" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Lavalink URL</span>
+                <input className="bl-node-input" value={data.lavalinkUrl || ''} onChange={(e) => update('lavalinkUrl', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="https://your-lavalink-host.com" spellCheck={false} />
               </div>
               {[
                 ['lavalinkHost', 'Host', 'localhost'],
