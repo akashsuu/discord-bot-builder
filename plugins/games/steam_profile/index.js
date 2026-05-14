@@ -47,6 +47,14 @@ function xmlValue(xml, tag) {
   return match ? match[1].trim() : '';
 }
 
+function xmlValues(xml, tag) {
+  const values = [];
+  const re = new RegExp(`<${tag}>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?</${tag}>`, 'gi');
+  let match;
+  while ((match = re.exec(String(xml || '')))) values.push(match[1].trim());
+  return values;
+}
+
 async function getText(url) {
   if (typeof fetch !== 'function') throw new Error('Fetch API is unavailable in this runtime.');
   const response = await fetch(url, { headers: { Accept: 'application/xml,text/xml,text/plain' } });
@@ -90,11 +98,34 @@ function minutesToHours(minutes) {
   return `${Math.round(mins / 60).toLocaleString('en-US')} hours`;
 }
 
+function parseHourText(value) {
+  const cleaned = String(value || '').replace(/,/g, '').match(/[\d.]+/);
+  return cleaned ? Number(cleaned[0]) : 0;
+}
+
+function hoursToText(hours) {
+  const value = Number(hours || 0);
+  if (!value) return 'Unavailable';
+  return `${Math.round(value).toLocaleString('en-US')} hours`;
+}
+
+function parseXmlGames(xml) {
+  const blocks = String(xml || '').match(/<mostPlayedGame>[\s\S]*?<\/mostPlayedGame>/gi) || [];
+  const games = blocks.map((block) => ({
+    name: xmlValue(block, 'gameName'),
+    hours: parseHourText(xmlValue(block, 'hoursOnRecord') || xmlValue(block, 'hoursPlayed')),
+  })).filter((game) => game.name);
+  const fallbackNames = !games.length ? xmlValues(xml, 'gameName').map((name) => ({ name, hours: 0 })) : [];
+  return games.length ? games : fallbackNames;
+}
+
 async function fetchSteamXmlProfile(steamId) {
   const xml = await getText(`https://steamcommunity.com/profiles/${encodeURIComponent(steamId)}/?xml=1`);
   if (!xml) return null;
   const id = xmlValue(xml, 'steamID64') || steamId;
   if (!id) return null;
+  const xmlGames = parseXmlGames(xml);
+  const totalHours = xmlGames.reduce((sum, game) => sum + Number(game.hours || 0), 0);
   return {
     steamId: id,
     name: xmlValue(xml, 'steamID') || 'Steam User',
@@ -105,6 +136,9 @@ async function fetchSteamXmlProfile(steamId) {
     country: xmlValue(xml, 'location') || 'Unavailable',
     createdAt: xmlValue(xml, 'memberSince') || 'Unavailable',
     lastOnline: xmlValue(xml, 'stateMessage') || 'Unavailable',
+    gameCount: xmlGames.length ? xmlGames.length.toLocaleString('en-US') : 'Unavailable',
+    totalPlaytime: totalHours ? hoursToText(totalHours) : 'Unavailable',
+    recentGames: xmlGames.slice(0, 3).map((game) => game.name).join(', ') || 'Unavailable',
   };
 }
 
@@ -114,21 +148,24 @@ async function fetchSteamProfile(steamId, data) {
   let apiPlayer = {};
   let ownedGames = [];
   let recentGames = [];
+  let ownedResponse = {};
 
   if (apiKey) {
     const key = encodeURIComponent(apiKey);
     const id = encodeURIComponent(steamId);
     const summary = await getJson(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${key}&steamids=${id}`).catch(() => null);
-    const owned = await getJson(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${key}&steamid=${id}&include_appinfo=1`).catch(() => null);
+    const owned = await getJson(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${key}&steamid=${id}&include_appinfo=1&include_played_free_games=1`).catch(() => null);
     const recent = await getJson(`https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=${key}&steamid=${id}`).catch(() => null);
     apiPlayer = summary?.response?.players?.[0] || {};
+    ownedResponse = owned?.response || {};
     ownedGames = owned?.response?.games || [];
     recentGames = recent?.response?.games || [];
   }
 
   if (!apiPlayer.steamid && !xmlProfile) return null;
   const totalMinutes = ownedGames.reduce((sum, game) => sum + Number(game.playtime_forever || 0), 0);
-  const recentText = recentGames.slice(0, 3).map((game) => game.name).filter(Boolean).join(', ') || 'Unavailable';
+  const recentText = recentGames.slice(0, 3).map((game) => game.name).filter(Boolean).join(', ') || xmlProfile?.recentGames || 'Unavailable';
+  const apiGameCount = ownedGames.length || (Number.isFinite(Number(ownedResponse.game_count)) ? Number(ownedResponse.game_count) : 0);
 
   return {
     steamId,
@@ -140,8 +177,8 @@ async function fetchSteamProfile(steamId, data) {
     country: apiPlayer.loccountrycode || xmlProfile?.country || 'Unavailable',
     createdAt: apiPlayer.timecreated ? dateText(apiPlayer.timecreated) : (xmlProfile?.createdAt || 'Unavailable'),
     lastOnline: apiPlayer.lastlogoff ? dateText(apiPlayer.lastlogoff) : (xmlProfile?.lastOnline || 'Unavailable'),
-    gameCount: ownedGames.length ? ownedGames.length.toLocaleString('en-US') : 'Unavailable',
-    totalPlaytime: totalMinutes ? minutesToHours(totalMinutes) : 'Unavailable',
+    gameCount: apiGameCount ? apiGameCount.toLocaleString('en-US') : (xmlProfile?.gameCount || 'Unavailable'),
+    totalPlaytime: totalMinutes ? minutesToHours(totalMinutes) : (xmlProfile?.totalPlaytime || 'Unavailable'),
     recentGames: recentText,
   };
 }

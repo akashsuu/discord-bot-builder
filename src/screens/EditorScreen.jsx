@@ -2364,7 +2364,7 @@ function minecraftProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewMinecraftProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = minecraftProfilePreviewText(d.titleTemplate || 'Minecraft profile for {mc_name}', d);
   const description = minecraftProfilePreviewText(d.descriptionTemplate || '**UUID**\n`{mc_uuid}`\n\n**Textures**\nSkin: {skin_link}\n\n**Information**\nUsername Changes: `{name_change_count}`\nEdition: `{edition}`\nDiscord: {user_tag}\n\n**Name History**\n{name_history}', d);
   const render = minecraftProfilePreviewText('{render_url}', d);
@@ -2427,7 +2427,7 @@ function robloxProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewRobloxProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = robloxProfilePreviewText(d.titleTemplate || 'Roblox profile for {roblox_name}', d);
   const description = robloxProfilePreviewText(d.descriptionTemplate || '**User ID**\n`{roblox_id}`\n\n**Profile**\nUsername: `{roblox_name}`\nDisplay Name: `{display_name}`\nCreated: `{created_at}`\nVerified: `{verified}`\nBanned: `{banned}`\n\n**Social**\nFriends: `{friends}`\nFollowing: `{following}`\nFollowers: `{followers}`\n\n**About**\n{description}\n\n**Links**\nProfile: {profile_link}', d);
   const avatar = robloxProfilePreviewText('{avatar_url}', d);
@@ -2489,7 +2489,7 @@ function fortniteProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewFortniteProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = fortniteProfilePreviewText(d.titleTemplate || 'Fortnite profile for {fortnite_name}', d);
   const description = fortniteProfilePreviewText(d.descriptionTemplate || '**Account**\nName: `{fortnite_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nWindow: `{time_window}`\n\n**Battle Royale**\nWins: `{wins}`\nKills: `{kills}`\nMatches: `{matches}`\nK/D: `{kd}`\nWin Rate: `{win_rate}`\nScore: `{score}`\n\n**Links**\nProfile: {profile_link}', d);
   const image = fortniteProfilePreviewText('{image_url}', d);
@@ -2553,7 +2553,7 @@ function valorantProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewValorantProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = valorantProfilePreviewText(d.titleTemplate || 'Valorant profile for {valorant_name}#{valorant_tag}', d);
   const description = valorantProfilePreviewText(d.descriptionTemplate || '**Account**\nName: `{valorant_name}`\nTag: `{valorant_tag}`\nRegion: `{region}`\nPlatform: `{platform}`\nLevel: `{account_level}`\n\n**Competitive**\nCurrent Rank: `{current_rank}`\nRR: `{rr}`\nELO: `{elo}`\nLast Change: `{last_change}`\nPeak Rank: `{peak_rank}`\nLeaderboard: `{leaderboard_rank}`\n\n**Links**\nProfile: {profile_link}', d);
   const card = valorantProfilePreviewText('{card_url}', d);
@@ -2617,7 +2617,7 @@ function counterStrikeProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewCounterStrikeProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = counterStrikeProfilePreviewText(d.titleTemplate || 'Counter-Strike profile for {steam_name}', d);
   const description = counterStrikeProfilePreviewText(d.descriptionTemplate || '**Steam**\nSteamID: `{steam_id}`\nVisibility: `{visibility}`\nStatus: `{persona_state}`\nProfile: {profile_link}\n\n**Counter-Strike**\nPlaytime: `{playtime}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nWins: `{wins}`\nMVPs: `{mvps}`\nAccuracy: `{accuracy}`\nHeadshots: `{headshots}`', d);
   const avatar = counterStrikeProfilePreviewText('{avatar_url}', d);
@@ -2683,7 +2683,7 @@ function pubgProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewPubgProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = pubgProfilePreviewText(d.titleTemplate || 'PUBG profile for {pubg_name}', d);
   const description = pubgProfilePreviewText(d.descriptionTemplate || '**Account**\nName: `{pubg_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nShard: `{shard}`\nRecent Matches: `{recent_matches}`\n\n**Lifetime Stats ({game_mode})**\nRounds: `{rounds}`\nWins: `{wins}`\nTop 10s: `{top10s}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nDamage: `{damage}`\nLongest Kill: `{longest_kill}`\n\n**Links**\nProfile: {profile_link}', d);
   const logo = pubgProfilePreviewText('{image_url}', d);
@@ -2747,7 +2747,7 @@ function genshinProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewGenshinProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = genshinProfilePreviewText(d.titleTemplate || 'Genshin profile for {nickname}', d);
   const description = genshinProfilePreviewText(d.descriptionTemplate || '**Traveler**\nNickname: `{nickname}`\nUID: `{uid}`\nAdventure Rank: `{level}`\nWorld Level: `{world_level}`\nSignature: {signature}\n\n**Progress**\nAchievements: `{achievements}`\nAbyss: `{abyss}`\nShowcase Characters: `{showcase_count}`\nNamecard ID: `{namecard_id}`\nProfile Icon ID: `{profile_icon_id}`\n\n**Links**\nProfile: {profile_link}', d);
   const icon = genshinProfilePreviewText('{image_url}', d);
@@ -2810,7 +2810,7 @@ function phasmophobiaProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewPhasmophobiaProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = phasmophobiaProfilePreviewText(d.titleTemplate || 'Phasmophobia profile for {steam_name}', d);
   const description = phasmophobiaProfilePreviewText(d.descriptionTemplate || '**Steam**\nSteamID: `{steam_id}`\nStatus: `{persona_state}`\nProfile: {profile_link}\n\n**Phasmophobia**\nPlaytime: `{playtime}`\nAchievements: `{achievements}`\nPerfect Games: `{perfect_games}`\nLevel: `{phasmo_level}`\nPrestige: `{prestige}`\nFavorite Map: `{favorite_map}`\nFavorite Ghost: `{favorite_ghost}`\nDifficulty: `{difficulty}`', d);
   const avatar = phasmophobiaProfilePreviewText('{avatar_url}', d);
@@ -2872,7 +2872,7 @@ function steamProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewSteamProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = steamProfilePreviewText(d.titleTemplate || 'Steam profile for {steam_name}', d);
   const description = steamProfilePreviewText(d.descriptionTemplate || '**Profile**\nSteamID: `{steam_id}`\nVisibility: `{visibility}`\nStatus: `{persona_state}`\nCountry: `{country}`\nCreated: `{created_at}`\nLast Online: `{last_online}`\n\n**Library**\nGames: `{game_count}`\nTotal Playtime: `{total_playtime}`\nRecently Played: `{recent_games}`\n\n**Links**\nProfile: {profile_link}', d);
   const avatar = steamProfilePreviewText('{avatar_url}', d);
@@ -2930,7 +2930,7 @@ function epicGamesProfilePreviewText(template, data, extra = {}) {
 function DiscordPreviewEpicGamesProfile({ node }) {
   const { botInfo } = useProject();
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Crafty';
+  const botName = botInfo?.username || 'Bot';
   const title = epicGamesProfilePreviewText(d.titleTemplate || 'Epic Games profile for {epic_name}', d);
   const description = epicGamesProfilePreviewText(d.descriptionTemplate || '**Account**\nDisplay Name: `{epic_name}`\nAccount ID: `{account_id}`\nCountry: `{country}`\nPrivacy: `{privacy}`\nCreator Code: `{creator_code}`\n\n**Linked Platforms**\n{linked_platforms}\n\n**Games**\n{games}\n\n**Links**\nProfile: {profile_link}', d);
 
