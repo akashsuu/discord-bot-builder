@@ -1,0 +1,28 @@
+{
+  "name": "Epic Games Profile",
+  "version": "1.0.0",
+  "description": "Shows an Epic Games profile card with display name, account id, linked platforms, creator code, and editable profile details.",
+  "author": "Akashsuu",
+  "icon": "EG",
+  "nodeConfig": {
+    "label": "Epic Games Profile",
+    "icon": "EG",
+    "color": "#313338",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "epicgames",
+      "aliases": "epic,egs,epicprofile",
+      "lookupUrlTemplate": "",
+      "apiKey": "",
+      "apiKeyHeader": "Authorization",
+      "profileMap": "Akash=Akashsuu|epic-00000000000000000000000000000000|India|PC, PlayStation|Public|AKASH|Fortnite, Rocket League\nHunter=GhostHunter|epic-11111111111111111111111111111111|United States|PC, Xbox|Friends Only|HUNTER|Fall Guys, Rocket League",
+      "embedColor": "#313338",
+      "titleTemplate": "Epic Games profile for {epic_name}",
+      "descriptionTemplate": "**Account**\nDisplay Name: `{epic_name}`\nAccount ID: `{account_id}`\nCountry: `{country}`\nPrivacy: `{privacy}`\nCreator Code: `{creator_code}`\n\n**Linked Platforms**\n{linked_platforms}\n\n**Games**\n{games}\n\n**Links**\nProfile: {profile_link}",
+      "notFoundMessage": "No Epic Games profile saved or found for `{query}`. Add it in the Epic Games Profile node map.",
+      "errorMessage": "Could not load Epic Games profile: {error}",
+      "profileLinkLabel": "Open Epic"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Phasmophobia Profile",
+  "version": "1.0.0",
+  "description": "Shows a Phasmophobia-style profile using Steam profile data, playtime, achievements, and editable ghost-hunter stats.",
+  "author": "Akashsuu",
+  "icon": "PH",
+  "nodeConfig": {
+    "label": "Phasmophobia Profile",
+    "icon": "PH",
+    "color": "#A3E635",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "phasmophobia",
+      "aliases": "phasmo,phasmoprofile,phprofile",
+      "apiKey": "",
+      "appId": "739630",
+      "statMap": "Akash=Level 84|Prestige 2|Sunny Meadows|Demon|Professional\nHunter=Level 42|Prestige 1|Tanglewood|Mimic|Intermediate",
+      "embedColor": "#A3E635",
+      "titleTemplate": "Phasmophobia profile for {steam_name}",
+      "descriptionTemplate": "**Steam**\nSteamID: `{steam_id}`\nStatus: `{persona_state}`\nProfile: {profile_link}\n\n**Phasmophobia**\nPlaytime: `{playtime}`\nAchievements: `{achievements}`\nPerfect Games: `{perfect_games}`\nLevel: `{phasmo_level}`\nPrestige: `{prestige}`\nFavorite Map: `{favorite_map}`\nFavorite Ghost: `{favorite_ghost}`\nDifficulty: `{difficulty}`",
+      "invalidSteamIdMessage": "Use `{command} <steamid64>` or `{command} https://steamcommunity.com/profiles/STEAM_ID/?xml=1`.",
+      "notFoundMessage": "No Steam profile found for `{query}`.",
+      "errorMessage": "Could not load Phasmophobia profile: {error}",
+      "profileLinkLabel": "Open Steam"
+    }
+  }
+}

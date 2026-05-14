@@ -2779,6 +2779,188 @@ function DiscordPreviewGenshinProfile({ node }) {
   );
 }
 
+function phasmophobiaProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: '76561198000000000',
+    steam_id: '76561198000000000',
+    steam_name: 'Akash',
+    persona_state: 'Online',
+    playtime: '284 hours',
+    achievements: '42/54',
+    perfect_games: '18',
+    phasmo_level: 'Level 84',
+    prestige: 'Prestige 2',
+    favorite_map: 'Sunny Meadows',
+    favorite_ghost: 'Demon',
+    difficulty: 'Professional',
+    avatar_url: 'https://avatars.cloudflare.steamstatic.com/6f746f5ddf6fce2d6f5f6f3f1d1d66fbf0f9623d_full.jpg',
+    profile_url: 'https://steamcommunity.com/profiles/76561198000000000',
+    profile_link: `[${data.profileLinkLabel || 'Open Steam'}](https://steamcommunity.com/profiles/76561198000000000)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewPhasmophobiaProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = phasmophobiaProfilePreviewText(d.titleTemplate || 'Phasmophobia profile for {steam_name}', d);
+  const description = phasmophobiaProfilePreviewText(d.descriptionTemplate || '**Steam**\nSteamID: `{steam_id}`\nStatus: `{persona_state}`\nProfile: {profile_link}\n\n**Phasmophobia**\nPlaytime: `{playtime}`\nAchievements: `{achievements}`\nPerfect Games: `{perfect_games}`\nLevel: `{phasmo_level}`\nPrestige: `{prestige}`\nFavorite Map: `{favorite_map}`\nFavorite Ghost: `{favorite_ghost}`\nDifficulty: `{difficulty}`', d);
+  const avatar = phasmophobiaProfilePreviewText('{avatar_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#A3E635', color: '#1A2E05' }}>PH</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#A3E635', background: '#2B2D31', position: 'relative', minHeight: 245, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={avatar} alt="Steam avatar" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function steamProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: '76561198000000000',
+    steam_id: '76561198000000000',
+    steam_name: 'Akash',
+    visibility: 'Public',
+    persona_state: 'Online',
+    country: 'IN',
+    created_at: 'February 21, 2024',
+    last_online: 'May 14, 2026',
+    game_count: '142',
+    total_playtime: '3,840 hours',
+    recent_games: 'Counter-Strike 2, Phasmophobia, Terraria',
+    avatar_url: 'https://avatars.cloudflare.steamstatic.com/6f746f5ddf6fce2d6f5f6f3f1d1d66fbf0f9623d_full.jpg',
+    profile_url: 'https://steamcommunity.com/profiles/76561198000000000',
+    profile_link: `[${data.profileLinkLabel || 'Open Steam'}](https://steamcommunity.com/profiles/76561198000000000)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewSteamProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = steamProfilePreviewText(d.titleTemplate || 'Steam profile for {steam_name}', d);
+  const description = steamProfilePreviewText(d.descriptionTemplate || '**Profile**\nSteamID: `{steam_id}`\nVisibility: `{visibility}`\nStatus: `{persona_state}`\nCountry: `{country}`\nCreated: `{created_at}`\nLast Online: `{last_online}`\n\n**Library**\nGames: `{game_count}`\nTotal Playtime: `{total_playtime}`\nRecently Played: `{recent_games}`\n\n**Links**\nProfile: {profile_link}', d);
+  const avatar = steamProfilePreviewText('{avatar_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#66C0F4', color: '#0E2433' }}>ST</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#66C0F4', background: '#2B2D31', position: 'relative', minHeight: 245, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={avatar} alt="Steam avatar" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function epicGamesProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: 'Akash',
+    epic_name: 'Akashsuu',
+    account_id: 'epic-00000000000000000000000000000000',
+    country: 'India',
+    privacy: 'Public',
+    creator_code: 'AKASH',
+    linked_platforms: 'PC, PlayStation',
+    games: 'Fortnite, Rocket League',
+    profile_url: 'https://store.epicgames.com/u/Akashsuu',
+    profile_link: `[${data.profileLinkLabel || 'Open Epic'}](https://store.epicgames.com/u/Akashsuu)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewEpicGamesProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = epicGamesProfilePreviewText(d.titleTemplate || 'Epic Games profile for {epic_name}', d);
+  const description = epicGamesProfilePreviewText(d.descriptionTemplate || '**Account**\nDisplay Name: `{epic_name}`\nAccount ID: `{account_id}`\nCountry: `{country}`\nPrivacy: `{privacy}`\nCreator Code: `{creator_code}`\n\n**Linked Platforms**\n{linked_platforms}\n\n**Games**\n{games}\n\n**Links**\nProfile: {profile_link}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#111827', color: '#fff' }}>EG</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#313338', background: '#2B2D31', position: 'relative', minHeight: 235, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 66px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, background: '#111827', color: '#fff', fontWeight: 900, fontSize: 18, border: '1px solid #3F4147' }}>
+                EG
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TicketPanelEditor({ d, update }) {
   return (
     <>
@@ -2875,6 +3057,9 @@ function NPanel({ selectedNode, setNodes }) {
   const isCounterStrikeProfilePreview = selectedNode.type === 'game_counter_strike_profile';
   const isPubgProfilePreview = selectedNode.type === 'game_pubg_profile';
   const isGenshinProfilePreview = selectedNode.type === 'game_genshin_profile';
+  const isPhasmophobiaProfilePreview = selectedNode.type === 'game_phasmophobia_profile';
+  const isSteamProfilePreview = selectedNode.type === 'game_steam_profile';
+  const isEpicGamesProfilePreview = selectedNode.type === 'game_epicgames_profile';
 
   return (
     <motion.div 
@@ -3086,6 +3271,12 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewPubgProfile node={selectedNode} />
               ) : isGenshinProfilePreview ? (
                 <DiscordPreviewGenshinProfile node={selectedNode} />
+              ) : isPhasmophobiaProfilePreview ? (
+                <DiscordPreviewPhasmophobiaProfile node={selectedNode} />
+              ) : isSteamProfilePreview ? (
+                <DiscordPreviewSteamProfile node={selectedNode} />
+              ) : isEpicGamesProfilePreview ? (
+                <DiscordPreviewEpicGamesProfile node={selectedNode} />
               ) : (
                 <DiscordPreview node={selectedNode} />
               )}

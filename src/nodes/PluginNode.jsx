@@ -188,6 +188,21 @@ const GENSHIN_PROFILE_KEYS = new Set([
   'invalidUidMessage', 'nameNotMappedMessage', 'notFoundMessage', 'rateLimitMessage', 'errorMessage', 'profileLinkLabel',
 ]);
 
+const PHASMOPHOBIA_PROFILE_KEYS = new Set([
+  'aliases', 'apiKey', 'appId', 'statMap', 'titleTemplate', 'descriptionTemplate',
+  'invalidSteamIdMessage', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
+const STEAM_PROFILE_KEYS = new Set([
+  'aliases', 'apiKey', 'titleTemplate', 'descriptionTemplate',
+  'invalidSteamIdMessage', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
+const EPICGAMES_PROFILE_KEYS = new Set([
+  'aliases', 'lookupUrlTemplate', 'apiKey', 'apiKeyHeader', 'profileMap',
+  'titleTemplate', 'descriptionTemplate', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
 const PLUGIN_HEADER_PURPLE = '#7c3aed';
 
 function splitCsv(value) {
@@ -406,7 +421,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -1985,6 +2000,124 @@ export default function PluginNode({ id, type, data, selected }) {
                 <span style={{ color: '#67E8F9' }}>{'{nickname} {input_name} {uid} {level} {world_level} {signature}'}</span>
                 {' '}
                 <span style={{ color: '#888' }}>{'{abyss} {showcase_count} {namecard_id} {profile_link} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_phasmophobia_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#A3E635">Phasmophobia Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="phasmo,phasmoprofile,phprofile" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Steam API Key</span>
+                <input className="bl-node-input" value={data.apiKey || ''} onChange={(e) => update('apiKey', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="Optional Steam Web API key" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Steam App ID</span>
+                <input className="bl-node-input" value={data.appId || '739630'} onChange={(e) => update('appId', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="739630" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Manual Stats Map</span>
+                <textarea className="bl-node-textarea" value={data.statMap || 'Akash=Level 84|Prestige 2|Sunny Meadows|Demon|Professional\nHunter=Level 42|Prestige 1|Tanglewood|Mimic|Intermediate'} onChange={(e) => update('statMap', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={4} spellCheck={false} />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Phasmophobia profile for {steam_name}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Steam**\nSteamID: `{steam_id}`\nStatus: `{persona_state}`\nProfile: {profile_link}\n\n**Phasmophobia**\nPlaytime: `{playtime}`\nAchievements: `{achievements}`\nPerfect Games: `{perfect_games}`\nLevel: `{phasmo_level}`\nPrestige: `{prestige}`\nFavorite Map: `{favorite_map}`\nFavorite Ghost: `{favorite_ghost}`\nDifficulty: `{difficulty}`', rows: 14 },
+                { key: 'invalidSteamIdMessage', label: 'Invalid SteamID', fallback: 'Use `{command} <steamid64>` or `{command} https://steamcommunity.com/profiles/STEAM_ID/?xml=1`.', rows: 2 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Steam profile found for `{query}`.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Phasmophobia profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Steam', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#A3E635' }}>{'{steam_name} {steam_id} {playtime} {achievements} {phasmo_level}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{prestige} {favorite_map} {favorite_ghost} {difficulty} {profile_link}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_steam_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#66C0F4">Steam Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="steamprofile,steamuser,st" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Steam API Key</span>
+                <input className="bl-node-input" value={data.apiKey || ''} onChange={(e) => update('apiKey', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="Optional Steam Web API key" spellCheck={false} />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Steam profile for {steam_name}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Profile**\nSteamID: `{steam_id}`\nVisibility: `{visibility}`\nStatus: `{persona_state}`\nCountry: `{country}`\nCreated: `{created_at}`\nLast Online: `{last_online}`\n\n**Library**\nGames: `{game_count}`\nTotal Playtime: `{total_playtime}`\nRecently Played: `{recent_games}`\n\n**Links**\nProfile: {profile_link}', rows: 14 },
+                { key: 'invalidSteamIdMessage', label: 'Invalid SteamID', fallback: 'Use `{command} <steamid64>` or `{command} https://steamcommunity.com/profiles/STEAM_ID/?xml=1`.', rows: 2 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Steam profile found for `{query}`.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Steam profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Steam', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#66C0F4' }}>{'{steam_name} {steam_id} {visibility} {persona_state} {country}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{created_at} {game_count} {total_playtime} {recent_games} {profile_link}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_epicgames_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#D1D5DB">Epic Games Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="epic,egs,epicprofile" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Lookup URL Template</span>
+                <input className="bl-node-input" value={data.lookupUrlTemplate || ''} onChange={(e) => update('lookupUrlTemplate', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="https://example.com/api/lookup/{query}" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">API Key</span>
+                <input className="bl-node-input" value={data.apiKey || ''} onChange={(e) => update('apiKey', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="Optional lookup API key" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">API Key Header</span>
+                <input className="bl-node-input" value={data.apiKeyHeader || 'Authorization'} onChange={(e) => update('apiKeyHeader', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="Authorization" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Profile Map</span>
+                <textarea className="bl-node-textarea" value={data.profileMap || 'Akash=Akashsuu|epic-00000000000000000000000000000000|India|PC, PlayStation|Public|AKASH|Fortnite, Rocket League\nHunter=GhostHunter|epic-11111111111111111111111111111111|United States|PC, Xbox|Friends Only|HUNTER|Fall Guys, Rocket League'} onChange={(e) => update('profileMap', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={4} spellCheck={false} />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Epic Games profile for {epic_name}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Account**\nDisplay Name: `{epic_name}`\nAccount ID: `{account_id}`\nCountry: `{country}`\nPrivacy: `{privacy}`\nCreator Code: `{creator_code}`\n\n**Linked Platforms**\n{linked_platforms}\n\n**Games**\n{games}\n\n**Links**\nProfile: {profile_link}', rows: 13 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Epic Games profile saved or found for `{query}`. Add it in the Epic Games Profile node map.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Epic Games profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Epic', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#D1D5DB' }}>{'{epic_name} {account_id} {country} {privacy} {creator_code}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{linked_platforms} {games} {profile_link} {error}'}</span>
               </span>
             </>
           )}
