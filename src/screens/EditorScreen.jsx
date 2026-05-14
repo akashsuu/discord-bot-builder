@@ -2338,6 +2338,62 @@ function DiscordPreviewMusicPlay({ node }) {
   );
 }
 
+function minecraftProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: 'Google_it',
+    edition: data.defaultEdition === 'bedrock' ? 'Bedrock' : 'Java',
+    mc_name: 'Google_it',
+    mc_uuid: '0362e2fb-bdda-4b49-8608-e0fc8af35cde',
+    skin_link: `[${data.skinLinkLabel || 'Open Skin'}](https://crafatar.com/skins/0362e2fbbdda4b498608e0fc8af35cde)`,
+    skin_url: 'https://crafatar.com/skins/0362e2fbbdda4b498608e0fc8af35cde',
+    render_url: 'https://crafatar.com/renders/body/0362e2fbbdda4b498608e0fc8af35cde?overlay=true',
+    avatar_url: 'https://crafatar.com/avatars/0362e2fbbdda4b498608e0fc8af35cde?overlay=true',
+    name_change_count: '2',
+    name_history: '3. `Google_it` - Sep 7th 2016\n2. `Google_it` - Aug 8th 2016\n1. `13tj` - First username.',
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewMinecraftProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = minecraftProfilePreviewText(d.titleTemplate || 'Minecraft profile for {mc_name}', d);
+  const description = minecraftProfilePreviewText(d.descriptionTemplate || '**UUID**\n`{mc_uuid}`\n\n**Textures**\nSkin: {skin_link}\n\n**Information**\nUsername Changes: `{name_change_count}`\nEdition: `{edition}`\nDiscord: {user_tag}\n\n**Name History**\n{name_history}', d);
+  const render = minecraftProfilePreviewText('{render_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#22C55E' }}>MC</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#22C55E', background: '#2B2D31', position: 'relative', minHeight: 245 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 86px', gap: 12, alignItems: 'start' }}>
+              <div>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12 }}>{description}</div>
+              </div>
+              <img src={render} alt="Minecraft skin render" style={{ width: 78, maxHeight: 128, objectFit: 'contain', justifySelf: 'end' }} onError={(e) => { e.target.style.display = 'none'; }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TicketPanelEditor({ d, update }) {
   return (
     <>
@@ -2427,6 +2483,7 @@ function NPanel({ selectedNode, setNodes }) {
   const isCalculatorPreview = selectedNode.type === 'util_calculator';
   const isPlayingPreview = selectedNode.type === 'info_playing';
   const isMusicPlayPreview = selectedNode.type === 'music_play';
+  const isMinecraftProfilePreview = selectedNode.type === 'game_minecraft_profile';
 
   return (
     <motion.div 
@@ -2624,6 +2681,8 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewPlaying node={selectedNode} />
               ) : isMusicPlayPreview ? (
                 <DiscordPreviewMusicPlay node={selectedNode} />
+              ) : isMinecraftProfilePreview ? (
+                <DiscordPreviewMinecraftProfile node={selectedNode} />
               ) : (
                 <DiscordPreview node={selectedNode} />
               )}

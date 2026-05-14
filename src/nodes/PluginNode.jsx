@@ -153,6 +153,11 @@ const MUSIC_PLAY_KEYS = new Set([
   'playlistsButtonLabel', 'browseButtonLabel', 'settingsButtonLabel',
 ]);
 
+const MINECRAFT_PROFILE_KEYS = new Set([
+  'aliases', 'defaultEdition', 'titleTemplate', 'descriptionTemplate',
+  'notFoundMessage', 'errorMessage', 'skinLinkLabel',
+]);
+
 const PLUGIN_HEADER_PURPLE = '#7c3aed';
 
 function splitCsv(value) {
@@ -371,7 +376,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -1651,6 +1656,42 @@ export default function PluginNode({ id, type, data, selected }) {
                 <span style={{ color: '#5865F2' }}>{'{title} {author} {duration} {posterUrl}'}</span>
                 {' Â· '}
                 <span style={{ color: '#888' }}>{'{command} {query} {user} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_minecraft_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#22C55E">Minecraft Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="profile,mcprofile,minecraftprofile" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Default Edition</span>
+                <select className="bl-node-input" value={data.defaultEdition || 'auto'} onChange={(e) => update('defaultEdition', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <option value="auto">Auto</option>
+                  <option value="java">Java</option>
+                  <option value="bedrock">Bedrock</option>
+                </select>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Minecraft profile for {mc_name}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**UUID**\n`{mc_uuid}`\n\n**Textures**\nSkin: {skin_link}\n\n**Information**\nUsername Changes: `{name_change_count}`\nEdition: `{edition}`\nDiscord: {user_tag}\n\n**Name History**\n{name_history}', rows: 9 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Minecraft profile found for `{query}`.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Minecraft profile: {error}', rows: 2 },
+                { key: 'skinLinkLabel', label: 'Skin Link Label', fallback: 'Open Skin', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#22C55E' }}>{'{mc_name} {mc_uuid} {edition} {name_history}'}</span>
+                {' Ã‚Â· '}
+                <span style={{ color: '#888' }}>{'{query} {user_tag} {skin_link} {error}'}</span>
               </span>
             </>
           )}
