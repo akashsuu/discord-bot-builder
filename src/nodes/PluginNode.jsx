@@ -158,6 +158,21 @@ const MINECRAFT_PROFILE_KEYS = new Set([
   'notFoundMessage', 'errorMessage', 'skinLinkLabel',
 ]);
 
+const ROBLOX_PROFILE_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate',
+  'notFoundMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
+const FORTNITE_PROFILE_KEYS = new Set([
+  'aliases', 'apiKey', 'accountType', 'timeWindow', 'titleTemplate', 'descriptionTemplate',
+  'missingKeyMessage', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
+const VALORANT_PROFILE_KEYS = new Set([
+  'aliases', 'apiKey', 'region', 'platform', 'titleTemplate', 'descriptionTemplate',
+  'missingKeyMessage', 'invalidNameMessage', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
 const PLUGIN_HEADER_PURPLE = '#7c3aed';
 
 function splitCsv(value) {
@@ -376,7 +391,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -1692,6 +1707,134 @@ export default function PluginNode({ id, type, data, selected }) {
                 <span style={{ color: '#22C55E' }}>{'{mc_name} {mc_uuid} {edition} {name_history}'}</span>
                 {' Ã‚Â· '}
                 <span style={{ color: '#888' }}>{'{query} {user_tag} {skin_link} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_roblox_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#E11D48">Roblox Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="robloxprofile,rbprofile,roblox" spellCheck={false} />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Roblox profile for {roblox_name}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**User ID**\n`{roblox_id}`\n\n**Profile**\nUsername: `{roblox_name}`\nDisplay Name: `{display_name}`\nCreated: `{created_at}`\nVerified: `{verified}`\nBanned: `{banned}`\n\n**Social**\nFriends: `{friends}`\nFollowing: `{following}`\nFollowers: `{followers}`\n\n**About**\n{description}\n\n**Links**\nProfile: {profile_link}', rows: 13 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Roblox profile found for `{query}`.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Roblox profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Profile', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                  <span style={{ color: '#E11D48' }}>{'{roblox_name} {roblox_id} {display_name} {friends} {followers}'}</span>
+                {' Ã‚Â· '}
+                <span style={{ color: '#888' }}>{'{profile_link} {description} {created_at} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_fortnite_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#8B5CF6">Fortnite Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="fprofile,fnprofile,fortniteprofile" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Fortnite API Key</span>
+                <input className="bl-node-input" value={data.apiKey || ''} onChange={(e) => update('apiKey', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="Paste fortnite-api.com key" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Account Type</span>
+                <select className="bl-node-input" value={data.accountType || 'epic'} onChange={(e) => update('accountType', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <option value="epic">Epic</option>
+                  <option value="psn">PlayStation</option>
+                  <option value="xbl">Xbox</option>
+                </select>
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Stats Window</span>
+                <select className="bl-node-input" value={data.timeWindow || 'lifetime'} onChange={(e) => update('timeWindow', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <option value="lifetime">Lifetime</option>
+                  <option value="season">Season</option>
+                </select>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Fortnite profile for {fortnite_name}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Account**\nName: `{fortnite_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nWindow: `{time_window}`\n\n**Battle Royale**\nWins: `{wins}`\nKills: `{kills}`\nMatches: `{matches}`\nK/D: `{kd}`\nWin Rate: `{win_rate}`\nScore: `{score}`\n\n**Links**\nProfile: {profile_link}', rows: 14 },
+                { key: 'missingKeyMessage', label: 'Missing API Key', fallback: 'Fortnite API key is missing. Add it in the Fortnite Profile node.', rows: 2 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Fortnite profile found for `{query}`.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Fortnite profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Profile', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#8B5CF6' }}>{'{fortnite_name} {account_id} {platform} {time_window} {wins} {kills}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{matches} {kd} {win_rate} {score} {profile_link} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_valorant_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#FF4655">Valorant Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="vprofile,valprofile,valorantprofile" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Valorant API Key</span>
+                <input className="bl-node-input" value={data.apiKey || ''} onChange={(e) => update('apiKey', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="Paste HenrikDev API key" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Region</span>
+                <select className="bl-node-input" value={data.region || 'ap'} onChange={(e) => update('region', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <option value="ap">AP</option>
+                  <option value="na">NA</option>
+                  <option value="eu">EU</option>
+                  <option value="kr">KR</option>
+                  <option value="br">BR</option>
+                  <option value="latam">LATAM</option>
+                </select>
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Platform</span>
+                <select className="bl-node-input" value={data.platform || 'pc'} onChange={(e) => update('platform', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <option value="pc">PC</option>
+                  <option value="console">Console</option>
+                </select>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Valorant profile for {valorant_name}#{valorant_tag}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Account**\nName: `{valorant_name}`\nTag: `{valorant_tag}`\nRegion: `{region}`\nPlatform: `{platform}`\nLevel: `{account_level}`\n\n**Competitive**\nCurrent Rank: `{current_rank}`\nRR: `{rr}`\nELO: `{elo}`\nLast Change: `{last_change}`\nPeak Rank: `{peak_rank}`\nLeaderboard: `{leaderboard_rank}`\n\n**Links**\nProfile: {profile_link}', rows: 15 },
+                { key: 'missingKeyMessage', label: 'Missing API Key', fallback: 'Set a HenrikDev Valorant API key in this node before using `{command}`.', rows: 2 },
+                { key: 'invalidNameMessage', label: 'Invalid Riot ID', fallback: 'Use `{command} Name#TAG` to check a Valorant profile.', rows: 2 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Valorant profile found for `{query}`. Check the Riot ID, tag, region, or privacy settings.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Valorant profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Profile', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#FF4655' }}>{'{valorant_name} {valorant_tag} {region} {platform} {current_rank} {rr}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{elo} {peak_rank} {leaderboard_rank} {profile_link} {error}'}</span>
               </span>
             </>
           )}

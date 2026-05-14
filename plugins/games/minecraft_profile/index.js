@@ -101,8 +101,8 @@ async function fetchJavaProfile(username) {
     name: user.name,
     uuid,
     skinUrl,
-    renderUrl: `https://crafatar.com/renders/body/${compactUuid(uuid)}?overlay=true`,
-    avatarUrl: `https://crafatar.com/avatars/${compactUuid(uuid)}?overlay=true`,
+    renderUrl: `https://minotar.net/armor/body/${encodeURIComponent(user.name)}/100.png`,
+    avatarUrl: `https://minotar.net/avatar/${encodeURIComponent(user.name)}/100.png`,
     nameHistory: formatNameHistory(history, user.name),
     nameChangeCount: String(Math.max(0, history.length - 1)),
   };
@@ -124,8 +124,8 @@ async function fetchBedrockProfile(gamertag) {
     name: gamertag,
     uuid: String(xuid),
     skinUrl: skin?.value ? `https://api.geysermc.org/v2/skin/${encodeURIComponent(String(xuid))}` : 'Unavailable',
-    renderUrl: `https://mc-heads.net/body/${encodeURIComponent(texture)}/right`,
-    avatarUrl: `https://mc-heads.net/avatar/${encodeURIComponent(texture)}`,
+    renderUrl: `https://mc-heads.net/body/${encodeURIComponent(texture)}/right.png`,
+    avatarUrl: `https://mc-heads.net/avatar/${encodeURIComponent(texture)}/100.png`,
     nameHistory: `1. \`${gamertag}\` - Bedrock gamertag.`,
     nameChangeCount: '0',
   };

@@ -2347,10 +2347,10 @@ function minecraftProfilePreviewText(template, data, extra = {}) {
     edition: data.defaultEdition === 'bedrock' ? 'Bedrock' : 'Java',
     mc_name: 'Google_it',
     mc_uuid: '0362e2fb-bdda-4b49-8608-e0fc8af35cde',
-    skin_link: `[${data.skinLinkLabel || 'Open Skin'}](https://crafatar.com/skins/0362e2fbbdda4b498608e0fc8af35cde)`,
-    skin_url: 'https://crafatar.com/skins/0362e2fbbdda4b498608e0fc8af35cde',
-    render_url: 'https://crafatar.com/renders/body/0362e2fbbdda4b498608e0fc8af35cde?overlay=true',
-    avatar_url: 'https://crafatar.com/avatars/0362e2fbbdda4b498608e0fc8af35cde?overlay=true',
+    skin_link: `[${data.skinLinkLabel || 'Open Skin'}](https://minotar.net/skin/Google_it)`,
+    skin_url: 'https://minotar.net/skin/Google_it',
+    render_url: 'https://minotar.net/armor/body/Google_it/100.png',
+    avatar_url: 'https://minotar.net/avatar/Google_it/100.png',
     name_change_count: '2',
     name_history: '3. `Google_it` - Sep 7th 2016\n2. `Google_it` - Aug 8th 2016\n1. `13tj` - First username.',
     error: 'Profile unavailable',
@@ -2368,6 +2368,7 @@ function DiscordPreviewMinecraftProfile({ node }) {
   const title = minecraftProfilePreviewText(d.titleTemplate || 'Minecraft profile for {mc_name}', d);
   const description = minecraftProfilePreviewText(d.descriptionTemplate || '**UUID**\n`{mc_uuid}`\n\n**Textures**\nSkin: {skin_link}\n\n**Information**\nUsername Changes: `{name_change_count}`\nEdition: `{edition}`\nDiscord: {user_tag}\n\n**Name History**\n{name_history}', d);
   const render = minecraftProfilePreviewText('{render_url}', d);
+  const avatar = minecraftProfilePreviewText('{avatar_url}', d);
 
   return (
     <div className="dc-wrap">
@@ -2379,13 +2380,203 @@ function DiscordPreviewMinecraftProfile({ node }) {
             <span className="dc-bot-badge">BOT</span>
             <span className="dc-timestamp">Today at 00:12</span>
           </div>
-          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#22C55E', background: '#2B2D31', position: 'relative', minHeight: 245 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 86px', gap: 12, alignItems: 'start' }}>
-              <div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#22C55E', background: '#2B2D31', position: 'relative', minHeight: 245, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 64px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
                 <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
-                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12 }}>{description}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
               </div>
-              <img src={render} alt="Minecraft skin render" style={{ width: 78, maxHeight: 128, objectFit: 'contain', justifySelf: 'end' }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <div style={{ width: 64, minHeight: 112, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={render} alt="Minecraft skin render" style={{ width: 58, maxWidth: '100%', maxHeight: 112, objectFit: 'contain' }} onError={(e) => { e.currentTarget.src = avatar; e.currentTarget.style.width = '50px'; }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function robloxProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: 'Builderman',
+    roblox_id: '156',
+    roblox_name: 'builderman',
+    display_name: 'builderman',
+    description: 'Welcome to my Roblox profile.',
+    created_at: 'February 21, 2024 (2 years ago)',
+    verified: 'Yes',
+    banned: 'No',
+    friends: '142',
+    following: '37',
+    followers: '2,481',
+    avatar_url: 'https://tr.rbxcdn.com/30DAY-Avatar-420x420.png',
+    profile_url: 'https://www.roblox.com/users/156/profile',
+    profile_link: `[${data.profileLinkLabel || 'Open Profile'}](https://www.roblox.com/users/156/profile)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewRobloxProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = robloxProfilePreviewText(d.titleTemplate || 'Roblox profile for {roblox_name}', d);
+  const description = robloxProfilePreviewText(d.descriptionTemplate || '**User ID**\n`{roblox_id}`\n\n**Profile**\nUsername: `{roblox_name}`\nDisplay Name: `{display_name}`\nCreated: `{created_at}`\nVerified: `{verified}`\nBanned: `{banned}`\n\n**Social**\nFriends: `{friends}`\nFollowing: `{following}`\nFollowers: `{followers}`\n\n**About**\n{description}\n\n**Links**\nProfile: {profile_link}', d);
+  const avatar = robloxProfilePreviewText('{avatar_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#E11D48' }}>RB</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#E11D48', background: '#2B2D31', position: 'relative', minHeight: 245, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 72, minHeight: 82, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={avatar} alt="Roblox avatar" style={{ width: 68, maxWidth: '100%', maxHeight: 82, objectFit: 'contain', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function fortniteProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: 'Ninja',
+    fortnite_name: 'Ninja',
+    account_id: '4735ce91-3292-4caf-8a5b-17789b40f79c',
+    platform: String(data.accountType || 'epic').toUpperCase(),
+    time_window: data.timeWindow || 'lifetime',
+    wins: '3,412',
+    kills: '125,884',
+    matches: '28,430',
+    kd: '4.42',
+    win_rate: '12%',
+    score: '9,840,221',
+    image_url: 'https://fortnite-api.com/images/cosmetics/br/cid_028_athena_commando_f/icon.png',
+    profile_url: 'https://fortnitetracker.com/profile/all/Ninja',
+    profile_link: `[${data.profileLinkLabel || 'Open Profile'}](https://fortnitetracker.com/profile/all/Ninja)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewFortniteProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = fortniteProfilePreviewText(d.titleTemplate || 'Fortnite profile for {fortnite_name}', d);
+  const description = fortniteProfilePreviewText(d.descriptionTemplate || '**Account**\nName: `{fortnite_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nWindow: `{time_window}`\n\n**Battle Royale**\nWins: `{wins}`\nKills: `{kills}`\nMatches: `{matches}`\nK/D: `{kd}`\nWin Rate: `{win_rate}`\nScore: `{score}`\n\n**Links**\nProfile: {profile_link}', d);
+  const image = fortniteProfilePreviewText('{image_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#8B5CF6' }}>FN</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#8B5CF6', background: '#2B2D31', position: 'relative', minHeight: 245, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 74px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 74, minHeight: 74, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={image} alt="Fortnite outfit" style={{ width: 70, maxWidth: '100%', maxHeight: 84, objectFit: 'contain', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function valorantProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: 'TenZ#0505',
+    valorant_name: 'TenZ',
+    valorant_tag: '0505',
+    puuid: '7f4f0f2b-8f8f-42d0-9f5e-valorantpreview',
+    region: String(data.region || 'ap').toUpperCase(),
+    platform: String(data.platform || 'pc').toUpperCase(),
+    account_level: '438',
+    current_rank: 'Radiant',
+    rr: '812',
+    elo: '2,147',
+    last_change: '+21',
+    peak_rank: 'Radiant',
+    leaderboard_rank: '#128',
+    card_url: 'https://media.valorant-api.com/playercards/0819fb02-4b7a-9c46-8742-aac3a771a252/wideart.png',
+    profile_url: 'https://tracker.gg/valorant/profile/riot/TenZ%230505/overview',
+    profile_link: `[${data.profileLinkLabel || 'Open Profile'}](https://tracker.gg/valorant/profile/riot/TenZ%230505/overview)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewValorantProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = valorantProfilePreviewText(d.titleTemplate || 'Valorant profile for {valorant_name}#{valorant_tag}', d);
+  const description = valorantProfilePreviewText(d.descriptionTemplate || '**Account**\nName: `{valorant_name}`\nTag: `{valorant_tag}`\nRegion: `{region}`\nPlatform: `{platform}`\nLevel: `{account_level}`\n\n**Competitive**\nCurrent Rank: `{current_rank}`\nRR: `{rr}`\nELO: `{elo}`\nLast Change: `{last_change}`\nPeak Rank: `{peak_rank}`\nLeaderboard: `{leaderboard_rank}`\n\n**Links**\nProfile: {profile_link}', d);
+  const card = valorantProfilePreviewText('{card_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#FF4655' }}>V</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#FF4655', background: '#2B2D31', position: 'relative', minHeight: 250, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 82px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 82, minHeight: 82, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={card} alt="Valorant player card" style={{ width: 80, maxWidth: '100%', maxHeight: 96, objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
             </div>
           </div>
         </div>
@@ -2484,6 +2675,9 @@ function NPanel({ selectedNode, setNodes }) {
   const isPlayingPreview = selectedNode.type === 'info_playing';
   const isMusicPlayPreview = selectedNode.type === 'music_play';
   const isMinecraftProfilePreview = selectedNode.type === 'game_minecraft_profile';
+  const isRobloxProfilePreview = selectedNode.type === 'game_roblox_profile';
+  const isFortniteProfilePreview = selectedNode.type === 'game_fortnite_profile';
+  const isValorantProfilePreview = selectedNode.type === 'game_valorant_profile';
 
   return (
     <motion.div 
@@ -2683,6 +2877,12 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewMusicPlay node={selectedNode} />
               ) : isMinecraftProfilePreview ? (
                 <DiscordPreviewMinecraftProfile node={selectedNode} />
+              ) : isRobloxProfilePreview ? (
+                <DiscordPreviewRobloxProfile node={selectedNode} />
+              ) : isFortniteProfilePreview ? (
+                <DiscordPreviewFortniteProfile node={selectedNode} />
+              ) : isValorantProfilePreview ? (
+                <DiscordPreviewValorantProfile node={selectedNode} />
               ) : (
                 <DiscordPreview node={selectedNode} />
               )}

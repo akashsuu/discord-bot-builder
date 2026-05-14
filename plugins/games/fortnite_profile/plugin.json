@@ -1,0 +1,28 @@
+{
+  "name": "Fortnite Profile",
+  "version": "1.0.0",
+  "description": "Shows a Fortnite Battle Royale profile and stats with an optional API key.",
+  "author": "Akashsuu",
+  "icon": "FN",
+  "nodeConfig": {
+    "label": "Fortnite Profile",
+    "icon": "FN",
+    "color": "#8B5CF6",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "fortnite",
+      "aliases": "fprofile,fnprofile,fortniteprofile",
+      "apiKey": "",
+      "accountType": "epic",
+      "timeWindow": "lifetime",
+      "embedColor": "#8B5CF6",
+      "titleTemplate": "Fortnite profile for {fortnite_name}",
+      "descriptionTemplate": "**Account**\nName: `{fortnite_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nWindow: `{time_window}`\n\n**Battle Royale**\nWins: `{wins}`\nKills: `{kills}`\nMatches: `{matches}`\nK/D: `{kd}`\nWin Rate: `{win_rate}`\nScore: `{score}`\n\n**Links**\nProfile: {profile_link}",
+      "missingKeyMessage": "Set a Fortnite API key in this node before using `{command}`.",
+      "notFoundMessage": "No Fortnite profile found for `{query}`. The account may be private or the platform may be wrong.",
+      "errorMessage": "Could not load Fortnite profile: {error}",
+      "profileLinkLabel": "Open Profile"
+    }
+  }
+}
