@@ -1,78 +1,365 @@
 /**
  * Centralized template variable definitions.
- * Mirrors backend/variables.js — keep both in sync when adding new vars.
+ * Keep this in sync with backend/variables.js when adding shared variables.
  */
-export const VARIABLES = [
-  // ── Sender ───────────────────────────────────────────────────────────────
-  { name: 'user',          demo: 'Akashsuu',           desc: "Sender's username" },
-  { name: 'tag',           demo: 'Akashsuu#0000',      desc: "Sender's full tag (name#discriminator)" },
-  { name: 'id',            demo: '123456789012345678',  desc: "Sender's Discord user ID" },
-  { name: 'mention',       demo: '@Akashsuu',          desc: "Sender's @mention" },
-  // ── Target (moderation) ──────────────────────────────────────────────────
-  { name: 'target',        demo: 'OwO#8456',           desc: "Target user's full tag" },
-  { name: 'targetName',    demo: 'OwO',                desc: "Target user's username (no discriminator)" },
-  { name: 'targetId',      demo: '987654321098765432',  desc: "Target user's Discord ID" },
-  { name: 'targetMention', demo: '@OwO',               desc: "Target user's @mention" },
-  // ── Command ───────────────────────────────────────────────────────────────
-  { name: 'command',       demo: '!kick',              desc: 'Full command string that triggered this node' },
-  { name: 'args',          demo: 'hello world',        desc: 'All text typed after the command word' },
-  { name: 'reason',        demo: 'No reason provided', desc: 'Action reason (moderation nodes)' },
-  // ── Server / channel ──────────────────────────────────────────────────────
-  { name: 'server',        demo: 'My Server',          desc: 'Server (guild) name' },
-  { name: 'channel',       demo: 'general',            desc: 'Channel name where message was sent' },
-  { name: 'memberCount',   demo: '1,234',              desc: 'Total member count of the server' },
-  // ── Utility ───────────────────────────────────────────────────────────────
-  { name: 'latency',       demo: '42',                 desc: 'Bot API latency in ms (ping plugin)' },
-  { name: 'date',          demo: '2026-05-05',         desc: 'Current date (YYYY-MM-DD)' },
-  { name: 'time',          demo: '12:00:00',           desc: 'Current time (HH:MM:SS UTC)' },
-];
+
+export const DEMO_VALUES = {
+  // Sender / target
+  user: 'Akashsuu',
+  username: 'Akashsuu',
+  tag: 'Akashsuu#0000',
+  user_tag: 'Akashsuu#0000',
+  id: '123456789012345678',
+  user_id: '123456789012345678',
+  mention: '@Akashsuu',
+  target: 'OwO#8456',
+  targetName: 'OwO',
+  target_name: 'OwO',
+  targetId: '987654321098765432',
+  target_id: '987654321098765432',
+  targetMention: '@OwO',
+  target_mention: '@OwO',
+  afkMention: '@OwO',
+  member: 'Akashsuu',
+  memberMention: '@Akashsuu',
+
+  // Command / server / channel
+  prefix: '!',
+  command: '!command',
+  args: 'hello world',
+  query: 'akashsuu',
+  reason: 'No reason provided',
+  error: 'No error',
+  server: 'My Server',
+  guild: 'My Server',
+  guildId: '222222222222222222',
+  guild_id: '222222222222222222',
+  serverId: '222222222222222222',
+  server_id: '222222222222222222',
+  channel: 'general',
+  channelName: 'general',
+  channel_name: 'general',
+  channelId: '333333333333333333',
+  channel_id: '333333333333333333',
+  channelMention: '#general',
+  channel_mention: '#general',
+  channelType: 'Text',
+  category: 'Community',
+  topic: 'General chat',
+  nsfw: 'No',
+  slowmode: '0s',
+  position: '3',
+  permissionsSummary: 'View Channel, Send Messages',
+  createdAt: 'February 21, 2024',
+  created_at: 'February 21, 2024',
+  memberCount: '1,234',
+  member_count: '1,234',
+  count: '1,234',
+  date: '2026-05-14',
+  time: '12:00:00',
+  latency: '42',
+
+  // Bot / app info
+  bot_name: 'Bot',
+  bot_tag: 'Bot#0000',
+  bot_id: '444444444444444444',
+  owner: 'Bot Owner',
+  owner_id: '555555555555555555',
+  command_count: '81',
+  ping: '42ms',
+  uptime: '12d 4h 18m',
+  server_count: '128',
+  user_count: '42,981',
+  channel_count: '1,204',
+  discordjs_version: '14.x',
+  node_version: 'v20.x',
+  memory: '148 MB',
+  avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+  banner_url: 'https://cdn.discordapp.com/embed/avatars/1.png',
+  invite_url: 'https://discord.com/oauth2/authorize',
+  support_url: 'https://discord.gg/support',
+  invite_link: '[Open Invite](https://discord.com/oauth2/authorize)',
+  support_link: '[Support Server](https://discord.gg/support)',
+
+  // Welcome / activity
+  account_created: 'February 21, 2024',
+  server_icon: 'https://cdn.discordapp.com/embed/avatars/2.png',
+  activityName: 'ROBLOX',
+  activityType: 'Playing',
+  producerName: 'Producer',
+  status: 'online',
+  imageUrl: 'https://cdn.discordapp.com/embed/avatars/3.png',
+  animatedAvatarUrl: 'https://cdn.discordapp.com/embed/avatars/4.png',
+  animatedBannerUrl: 'https://cdn.discordapp.com/embed/avatars/5.png',
+  profileUpdate: 'Activity updated',
+
+  // Music / calculator
+  title: 'Song Title',
+  author: 'Artist',
+  duration: '3:21',
+  posterUrl: 'https://cdn.discordapp.com/embed/avatars/0.png',
+  expression: '2-5x0',
+  result: '2',
+  aliases: 'calc, math, solve',
+
+  // Minecraft
+  edition: 'Java',
+  mc_name: 'akashsuu',
+  mc_uuid: '0362e2fb-bd0a-4b49-8608-e0fc8af35cde',
+  skin_link: '[Open Skin](https://minecraft.net)',
+  skin_url: 'https://crafatar.com/skins/0362e2fbbd0a4b498608e0fc8af35cde',
+  render_url: 'https://crafatar.com/renders/body/0362e2fbbd0a4b498608e0fc8af35cde',
+  name_change_count: '2',
+  name_history: 'akashsuu - First username',
+
+  // Roblox
+  roblox_id: '156',
+  roblox_name: 'builderman',
+  display_name: 'builderman',
+  description: 'Welcome to my profile.',
+  verified: 'Yes',
+  banned: 'No',
+  friends: '142',
+  following: '37',
+  followers: '2,481',
+
+  // Fortnite / Valorant / shooter profiles
+  fortnite_name: 'Ninja',
+  account_id: 'account_123',
+  platform: 'PC',
+  time_window: 'lifetime',
+  wins: '3,412',
+  kills: '125,884',
+  matches: '28,430',
+  kd: '4.42',
+  win_rate: '12%',
+  score: '9,840,221',
+  profile_url: 'https://example.com/profile',
+  profile_link: '[Open Profile](https://example.com/profile)',
+  valorant_name: 'TenZ',
+  valorant_tag: '0505',
+  puuid: 'valorant-puuid',
+  region: 'AP',
+  account_level: '438',
+  current_rank: 'Radiant',
+  rr: '812',
+  elo: '2,147',
+  last_change: '+21',
+  peak_rank: 'Radiant',
+  leaderboard_rank: '#128',
+  card_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+  steam_id: '76561198000000000',
+  steam_name: 'Akashsuu',
+  visibility: 'Public',
+  persona_state: 'Online',
+  playtime: '284 hours',
+  deaths: '83,102',
+  mvps: '14,921',
+  accuracy: '23.6%',
+  headshots: '91,884',
+
+  // PUBG / Genshin / Phasmophobia / Steam / Epic
+  pubg_name: 'shroud',
+  shard: 'steam',
+  game_mode: 'squad-fpp',
+  recent_matches: '14',
+  rounds: '1,382',
+  top10s: '602',
+  damage: '1,024,391',
+  longest_kill: '612.4m',
+  uid: '618285856',
+  input_name: 'Lumine',
+  nickname: 'Lumine',
+  level: '60',
+  world_level: '8',
+  signature: 'Ad astra abyssosque.',
+  achievements: '1,102',
+  abyss: '12-3',
+  showcase_count: '8',
+  namecard_id: '210001',
+  profile_icon_id: '10000007',
+  ttl: '300',
+  phasmo_level: 'Level 84',
+  prestige: 'Prestige 2',
+  favorite_map: 'Sunny Meadows',
+  favorite_ghost: 'Demon',
+  difficulty: 'Professional',
+  perfect_games: '18',
+  country: 'IN',
+  last_online: 'May 14, 2026',
+  game_count: '142',
+  total_playtime: '3,840 hours',
+  recent_games: 'Counter-Strike 2, Phasmophobia, Terraria',
+  epic_name: 'Akashsuu',
+  linked_platforms: 'PC, PlayStation',
+  privacy: 'Public',
+  creator_code: 'AKASH',
+  games: 'Fortnite, Rocket League',
+
+  // Moderation / tickets / logs
+  role: '@Member',
+  roleMention: '@Member',
+  roleId: '666666666666666666',
+  deleted: '25',
+  seconds: '10',
+  lockedCount: '8',
+  failedCount: '0',
+  unlockedCount: '8',
+  bannedCount: '2',
+  targets: '@User1, @User2',
+  ticketId: 'ticket-1024',
+  ticket_id: 'ticket-1024',
+  ticketUser: 'Akashsuu',
+  ticket_user: 'Akashsuu',
+  claimedBy: 'Staff',
+  claimed_by: 'Staff',
+  confirmationKeyword: 'confirm',
+};
+
+Object.assign(DEMO_VALUES, {
+  // Common camelCase aliases used by plugin UI panels and older templates
+  userId: DEMO_VALUES.user_id,
+  targetTag: DEMO_VALUES.target,
+  botName: DEMO_VALUES.bot_name,
+  botId: DEMO_VALUES.bot_id,
+  ownerId: DEMO_VALUES.owner_id,
+  ownerMention: '@Bot Owner',
+  serverCount: DEMO_VALUES.server_count,
+  userCount: DEMO_VALUES.user_count,
+  botCount: '12',
+  channelCount: DEMO_VALUES.channel_count,
+  roleCount: '42',
+  textChannels: '24',
+  voiceChannels: '8',
+  channels: '32',
+  roles: '42',
+  members: DEMO_VALUES.member_count,
+  nodeVersion: DEMO_VALUES.node_version,
+  discordVersion: DEMO_VALUES.discordjs_version,
+  memoryUsed: '148 MB',
+  memoryTotal: '512 MB',
+  avatarUrl: DEMO_VALUES.avatar_url,
+  bannerUrl: DEMO_VALUES.banner_url,
+  inviteUrl: DEMO_VALUES.invite_url,
+  iconUrl: DEMO_VALUES.avatar_url,
+  authorName: DEMO_VALUES.user,
+  image_url: DEMO_VALUES.imageUrl,
+  thumbUrl: DEMO_VALUES.avatar_url,
+  image: DEMO_VALUES.imageUrl,
+  thumb: DEMO_VALUES.avatar_url,
+  icon: DEMO_VALUES.avatar_url,
+  logo: DEMO_VALUES.avatar_url,
+  banner: DEMO_VALUES.banner_url,
+  footer: 'Requested by Akashsuu',
+  color: '#5865F2',
+  url: DEMO_VALUES.profile_url,
+
+  // Utility/info plugin variables
+  boostCount: '14',
+  boostTier: '2',
+  boostTierLabel: 'Level 2',
+  boostLevel: 'Level 2',
+  boosts: '14',
+  boostBar: '######----',
+  since: '5 minutes',
+  days: '2',
+  hours: '4',
+  minutes: '18',
+  years: '2',
+  joinedAt: 'May 10, 2026',
+  createdTimestamp: 'February 21, 2024',
+  topRole: '@Member',
+  isBot: 'No',
+  statusText: 'Online',
+  currentName: 'Old name',
+  newName: 'New name',
+  oldName: 'Old name',
+  newPrefix: '?',
+  oldPrefix: '!',
+  emoji: ':sparkles:',
+  answer: '42',
+  question: 'What is the answer?',
+  fact: 'Discord bots can be customized.',
+  quote: 'Stay curious.',
+  cat: 'https://cdn.discordapp.com/embed/avatars/0.png',
+  gif: 'https://media.giphy.com/media/example/giphy.gif',
+  gifUrl: 'https://media.giphy.com/media/example/giphy.gif',
+  anime: 'Naruto',
+  artist: DEMO_VALUES.author,
+  poster: DEMO_VALUES.posterUrl,
+
+  // Ticket variables
+  ticketNum: '1024',
+  openedAt: 'May 14, 2026 12:00',
+  closedAt: 'May 14, 2026 12:30',
+  requester: DEMO_VALUES.mention,
+  closerTag: 'Staff#0001',
+  closeCommand: '!close',
+
+  // Game aliases
+  steamId: DEMO_VALUES.steam_id,
+  gamertag: 'Akashsuu',
+  abyssFloor: '12',
+  abyssChamber: '3',
+});
+
+const VARIABLE_DESCRIPTIONS = {
+  user: "Sender's username",
+  username: "Sender's username",
+  tag: "Sender's Discord tag",
+  user_tag: "Sender's Discord tag",
+  id: "Sender's Discord user ID",
+  user_id: "Sender's Discord user ID",
+  mention: "Sender's mention",
+  target: "Target user's tag",
+  targetName: "Target user's username",
+  targetId: "Target user's ID",
+  targetMention: "Target user's mention",
+  command: 'Command that triggered the node',
+  args: 'Text typed after the command',
+  reason: 'Action reason',
+  server: 'Server name',
+  channel: 'Channel name',
+  memberCount: 'Server member count',
+  date: 'Current date',
+  time: 'Current time',
+  error: 'Plugin error text',
+};
+
+export const VARIABLES = Object.entries(DEMO_VALUES).map(([name, demo]) => ({
+  name,
+  demo,
+  desc: VARIABLE_DESCRIPTIONS[name] || 'Plugin template variable',
+}));
 
 /**
- * Replace all {token} placeholders in `text` with demo/preview values.
- * nodeData is optional — used for node-specific live values like {command} and {reason}.
+ * Replace all {token} placeholders in text with preview values.
+ * nodeData can provide plugin-specific live values and always wins over demos.
  */
 export function demoSub(text, nodeData) {
-  const d = nodeData || {};
-  return (text || '')
-    // Sender
-    .replace(/\{user\}/g,          'Akashsuu')
-    .replace(/\{tag\}/g,           'Akashsuu#0000')
-    .replace(/\{id\}/g,            '123456789012345678')
-    .replace(/\{mention\}/g,       '@Akashsuu')
-    // Target
-    .replace(/\{target\}/g,        'OwO#8456')
-    .replace(/\{targetName\}/g,    'OwO')
-    .replace(/\{targetId\}/g,      '987654321098765432')
-    .replace(/\{targetMention\}/g, '@OwO')
-    // Command
-    .replace(/\{command\}/g,       d.command || '!command')
-    .replace(/\{args\}/g,          'hello world')
-    .replace(/\{reason\}/g,        d.reason  || 'No reason provided')
-    // Server / channel
-    .replace(/\{server\}/g,        'My Server')
-    .replace(/\{channel\}/g,       'general')
-    .replace(/\{memberCount\}/g,   '1,234')
-    // Utility
-    .replace(/\{latency\}/g,       '42')
-    .replace(/\{date\}/g,          '2026-05-05')
-    .replace(/\{time\}/g,          '12:00:00')
-    // Page menu
-    .replace(/\{page\}/g,       d.page       ?? '1')
-    .replace(/\{totalPages\}/g, d.totalPages ?? '1')
-    .replace(/\{selected\}/g,   d.selected   ?? '')
-    .replace(/\{button\}/g,     d.button     ?? '');
+  const values = { ...DEMO_VALUES, ...(nodeData || {}) };
+  return String(text || '').replace(/\{([A-Za-z_][A-Za-z0-9_]*)\}/g, (match, key) => {
+    const value = values[key];
+    return value === undefined || value === null ? match : String(value);
+  });
 }
 
-/** Variable names available in standard command / message nodes */
-export const BUILTIN_VARS = ['user', 'tag', 'id', 'mention', 'args', 'server', 'channel', 'memberCount', 'date', 'time'];
+export const BUILTIN_VARS = [
+  'user',
+  'tag',
+  'id',
+  'mention',
+  'args',
+  'server',
+  'channel',
+  'memberCount',
+  'date',
+  'time',
+  'prefix',
+];
 
-/** Variable names available in plugin nodes (superset — includes moderation + latency) */
-export const PLUGIN_VARS  = ['user', 'tag', 'mention', 'target', 'targetName', 'targetId', 'targetMention', 'reason', 'command', 'args', 'server', 'channel', 'memberCount', 'latency', 'date', 'time'];
+export const PLUGIN_VARS = Object.keys(DEMO_VALUES);
 
-/**
- * Build a compact variable-hint string.
- * varHint(['user','target','reason']) → "{user}  {target}  {reason}"
- */
 export function varHint(names) {
   const list = names || VARIABLES.map((v) => v.name);
   return list.map((n) => `{${n}}`).join('  ');

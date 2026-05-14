@@ -1,0 +1,38 @@
+{
+  "name": "Welcome",
+  "version": "1.0.0",
+  "description": "Create a customizable welcome message/embed for new members, with a prefix test command.",
+  "author": "Akashsuu",
+  "icon": "WLC",
+  "nodeConfig": {
+    "label": "Welcome",
+    "icon": "WLC",
+    "color": "#22C55E",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "welcome",
+      "aliases": "welcometest,testwelcome,wlc",
+      "channelId": "",
+      "requireManageGuild": true,
+      "mentionUser": true,
+      "deleteAfterSeconds": "0",
+      "embedEnabled": true,
+      "embedColor": "#22C55E",
+      "titleTemplate": "Welcome to {server}, {username}!",
+      "descriptionTemplate": "Hey {mention}, we are happy to have you here.\n\nYou are member **#{member_count}**.\nAccount created: `{account_created}`",
+      "plainTextTemplate": "Welcome {mention} to {server}! You are member #{member_count}.",
+      "footerTemplate": "User ID: {user_id}",
+      "authorName": "{server}",
+      "authorIconUrl": "{server_icon}",
+      "thumbnailUrl": "{avatar_url}",
+      "imageUrl": "",
+      "buttonLabel": "Read Rules",
+      "buttonUrl": "",
+      "testModeMessage": "Welcome preview sent in {channel}.",
+      "permissionMessage": "You need Manage Server permission to test the welcome message.",
+      "missingChannelMessage": "Welcome channel not found. Add a channel ID in the Welcome node.",
+      "errorMessage": "Could not send welcome message: {error}"
+    }
+  }
+}

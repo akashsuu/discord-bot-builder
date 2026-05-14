@@ -144,6 +144,13 @@ const BOTINFO_KEYS = new Set([
   'profileLinkLabel', 'supportLinkLabel',
 ]);
 
+const WELCOME_KEYS = new Set([
+  'aliases', 'channelId', 'requireManageGuild', 'mentionUser', 'deleteAfterSeconds',
+  'titleTemplate', 'descriptionTemplate', 'plainTextTemplate', 'footerTemplate',
+  'authorName', 'authorIconUrl', 'thumbnailUrl', 'imageUrl', 'buttonLabel', 'buttonUrl',
+  'testModeMessage', 'permissionMessage', 'missingChannelMessage', 'errorMessage',
+]);
+
 const NUKE_KEYS = new Set([
   'confirmationRequired', 'confirmationKeyword', 'reason', 'successMessage',
   'confirmMessage', 'permissionMessage', 'unsupportedMessage', 'errorMessage',
@@ -427,7 +434,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -1623,6 +1630,71 @@ export default function PluginNode({ id, type, data, selected }) {
                 <span style={{ color: '#5865F2' }}>{'{bot_name} {bot_id} {owner} {command_count} {ping} {uptime}'}</span>
                 {' '}
                 <span style={{ color: '#888' }}>{'{server_count} {user_count} {memory} {avatar_url} {banner_url}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'admin_welcome' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#22C55E">Welcome</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="welcometest,testwelcome,wlc" spellCheck={false} />
+              </div>
+              {[
+                ['channelId', 'Welcome Channel ID', '123456789012345678'],
+                ['deleteAfterSeconds', 'Delete After Seconds', '0'],
+                ['authorName', 'Author Name', '{server}'],
+                ['authorIconUrl', 'Author Icon URL', '{server_icon}'],
+                ['thumbnailUrl', 'Thumbnail URL', '{avatar_url}'],
+                ['imageUrl', 'Banner Image URL', 'https://.../welcome.png'],
+                ['buttonLabel', 'Button Label', 'Read Rules'],
+                ['buttonUrl', 'Button URL', 'https://...'],
+              ].map(([key, label, placeholder]) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <input className="bl-node-input" value={data[key] || ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={placeholder} spellCheck={false} />
+                </div>
+              ))}
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input type="checkbox" checked={data.requireManageGuild !== false} onChange={(e) => update('requireManageGuild', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+                Require Manage Server for test command
+              </label>
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input type="checkbox" checked={data.mentionUser !== false} onChange={(e) => update('mentionUser', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+                Mention user above welcome embed
+              </label>
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input type="checkbox" checked={data.embedEnabled !== false} onChange={(e) => update('embedEnabled', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+                Send as embed
+              </label>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#22C55E'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#22C55E'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Welcome to {server}, {username}!', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: 'Hey {mention}, we are happy to have you here.\n\nYou are member **#{member_count}**.\nAccount created: `{account_created}`', rows: 6 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: 'Welcome {mention} to {server}! You are member #{member_count}.', rows: 2 },
+                { key: 'footerTemplate', label: 'Footer', fallback: 'User ID: {user_id}', rows: 1 },
+                { key: 'testModeMessage', label: 'Test Sent Message', fallback: 'Welcome preview sent in {channel}.', rows: 2 },
+                { key: 'permissionMessage', label: 'Permission Message', fallback: 'You need Manage Server permission to test the welcome message.', rows: 2 },
+                { key: 'missingChannelMessage', label: 'Missing Channel Message', fallback: 'Welcome channel not found. Add a channel ID in the Welcome node.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not send welcome message: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#22C55E' }}>{'{username} {mention} {server} {member_count} {account_created}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{avatar_url} {server_icon} {channel} {user_id} {error}'}</span>
               </span>
             </>
           )}

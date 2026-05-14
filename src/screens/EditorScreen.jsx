@@ -2259,6 +2259,87 @@ function DiscordPreviewBotInfo({ node }) {
   );
 }
 
+function welcomePreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    username: 'Akashsuu',
+    user_tag: 'Akashsuu#0000',
+    user_id: '123456789012345678',
+    mention: '@Akashsuu',
+    avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+    server: 'My Server',
+    server_id: '987654321098765432',
+    server_icon: 'https://cdn.discordapp.com/embed/avatars/1.png',
+    member_count: '1,337',
+    account_created: 'February 21, 2024',
+    channel: '#welcome',
+    channel_id: data.channelId || '111222333444555666',
+    prefix: '!',
+    command: data.command || 'welcome',
+    error: 'Missing permissions',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewWelcome({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const avatar = botInfo?.avatarURL || 'https://cdn.discordapp.com/embed/avatars/0.png';
+  const title = welcomePreviewText(d.titleTemplate || 'Welcome to {server}, {username}!', d);
+  const description = welcomePreviewText(d.descriptionTemplate || 'Hey {mention}, we are happy to have you here.\n\nYou are member **#{member_count}**.\nAccount created: `{account_created}`', d);
+  const plain = welcomePreviewText(d.plainTextTemplate || 'Welcome {mention} to {server}! You are member #{member_count}.', d);
+  const footer = welcomePreviewText(d.footerTemplate || 'User ID: {user_id}', d);
+  const authorName = welcomePreviewText(d.authorName || '{server}', d);
+  const thumb = welcomePreviewText(d.thumbnailUrl || '{avatar_url}', d);
+  const image = d.imageUrl ? welcomePreviewText(d.imageUrl, d) : '';
+  const buttonLabel = welcomePreviewText(d.buttonLabel || '', d);
+  const hasButton = buttonLabel && /^https?:\/\//i.test(welcomePreviewText(d.buttonUrl || '', d));
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {avatar ? <img src={avatar} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: d.embedColor || '#22C55E' }}>W</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          {d.mentionUser !== false && <div style={{ color: '#DCDDDE', marginBottom: 6 }}>@Akashsuu</div>}
+          {d.embedEnabled === false ? (
+            <div style={{ color: '#DCDDDE', whiteSpace: 'pre-wrap', lineHeight: 1.45 }}>{plain}</div>
+          ) : (
+            <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#22C55E', background: '#2B2D31', maxWidth: '100%', overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
+                <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                  {authorName && <div style={{ color: '#fff', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>{authorName}</div>}
+                  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                  <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+                </div>
+                <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                  <img src={thumb} alt="Welcome thumbnail" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                </div>
+              </div>
+              {image && <img src={image} alt="Welcome banner" style={{ marginTop: 10, width: '100%', maxHeight: 130, objectFit: 'cover', borderRadius: 6 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+              {footer && <div style={{ color: '#B5BAC1', fontSize: 10, marginTop: 8 }}>{footer}</div>}
+            </div>
+          )}
+          {hasButton && (
+            <div style={{ marginTop: 8, display: 'inline-flex', padding: '7px 12px', borderRadius: 4, background: '#2B2D31', color: '#F2F3F5', border: '1px solid #3F4147', fontWeight: 700 }}>
+              {buttonLabel}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function nukePreviewText(template, data, extra = {}) {
   const vars = {
     ...data,
@@ -2420,16 +2501,16 @@ function minecraftProfilePreviewText(template, data, extra = {}) {
     user: 'Akashsuu',
     user_tag: 'Tj#0001',
     mention: '@Akashsuu',
-    query: 'Google_it',
+    query: 'akashsuu',
     edition: data.defaultEdition === 'bedrock' ? 'Bedrock' : 'Java',
-    mc_name: 'Google_it',
+    mc_name: 'akashsuu',
     mc_uuid: '0362e2fb-bdda-4b49-8608-e0fc8af35cde',
-    skin_link: `[${data.skinLinkLabel || 'Open Skin'}](https://minotar.net/skin/Google_it)`,
-    skin_url: 'https://minotar.net/skin/Google_it',
-    render_url: 'https://minotar.net/armor/body/Google_it/100.png',
-    avatar_url: 'https://minotar.net/avatar/Google_it/100.png',
+    skin_link: `[${data.skinLinkLabel || 'Open Skin'}](https://minotar.net/skin/akashsuu)`,
+    skin_url: 'https://minotar.net/skin/akashsuu',
+    render_url: 'https://minotar.net/armor/body/akashsuu/100.png',
+    avatar_url: 'https://minotar.net/avatar/akashsuu/100.png',
     name_change_count: '2',
-    name_history: '3. `Google_it` - Sep 7th 2016\n2. `Google_it` - Aug 8th 2016\n1. `13tj` - First username.',
+    name_history: '3. `akashsuu` - Current username.\n2. `Akashsuu` - Previous username.\n1. `Akash` - First username.',
     error: 'Profile unavailable',
     ...extra,
   };
@@ -3127,6 +3208,7 @@ function NPanel({ selectedNode, setNodes }) {
   const isCalculatorPreview = selectedNode.type === 'util_calculator';
   const isPlayingPreview = selectedNode.type === 'info_playing';
   const isBotInfoPreview = selectedNode.type === 'info_botinfo';
+  const isWelcomePreview = selectedNode.type === 'admin_welcome';
   const isMusicPlayPreview = selectedNode.type === 'music_play';
   const isMinecraftProfilePreview = selectedNode.type === 'game_minecraft_profile';
   const isRobloxProfilePreview = selectedNode.type === 'game_roblox_profile';
@@ -3335,6 +3417,8 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewPlaying node={selectedNode} />
               ) : isBotInfoPreview ? (
                 <DiscordPreviewBotInfo node={selectedNode} />
+              ) : isWelcomePreview ? (
+                <DiscordPreviewWelcome node={selectedNode} />
               ) : isMusicPlayPreview ? (
                 <DiscordPreviewMusicPlay node={selectedNode} />
               ) : isMinecraftProfilePreview ? (

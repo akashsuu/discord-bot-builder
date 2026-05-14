@@ -141,8 +141,8 @@ module.exports = {
       icon: 'BI',
       color: '#5865F2',
       description: 'Prefix command that shows bot information and runtime stats.',
-      inputs: [],
-      outputs: [],
+      inputs: [{ id: 'in', label: 'Message', type: 'flow' }],
+      outputs: [{ id: 'out', label: 'Continue', type: 'flow' }],
 
       configSchema: {
         command: { type: 'string', default: 'botinfo', required: true },

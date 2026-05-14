@@ -8,8 +8,8 @@
     "label": "Bot Info",
     "icon": "BI",
     "color": "#5865F2",
-    "hasInput": false,
-    "hasOutput": false,
+    "hasInput": true,
+    "hasOutput": true,
     "defaults": {
       "command": "botinfo",
       "aliases": "bot,aboutbot,bi",
