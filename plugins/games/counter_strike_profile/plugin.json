@@ -1,0 +1,28 @@
+{
+  "name": "Counter-Strike Profile",
+  "version": "1.0.0",
+  "description": "Shows a Counter-Strike profile with Steam avatar, playtime, kills, wins, accuracy, and K/D.",
+  "author": "Akashsuu",
+  "icon": "CS",
+  "nodeConfig": {
+    "label": "Counter-Strike Profile",
+    "icon": "CS",
+    "color": "#F59E0B",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "cs",
+      "aliases": "cstrike,csprofile,counterstrike",
+      "apiKey": "",
+      "appId": "730",
+      "embedColor": "#F59E0B",
+      "titleTemplate": "Counter-Strike profile for {steam_name}",
+      "descriptionTemplate": "**Steam**\nSteamID: `{steam_id}`\nVisibility: `{visibility}`\nStatus: `{persona_state}`\nProfile: {profile_link}\n\n**Counter-Strike**\nPlaytime: `{playtime}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nWins: `{wins}`\nMVPs: `{mvps}`\nAccuracy: `{accuracy}`\nHeadshots: `{headshots}`",
+      "missingKeyMessage": "Set a Steam Web API key in this node to show Counter-Strike stats. Steam XML profile info can still work without it.",
+      "invalidSteamIdMessage": "Use `{command} <steamid64>` or `{command} https://steamcommunity.com/profiles/STEAM_ID/?xml=1`.",
+      "notFoundMessage": "No Steam profile or Counter-Strike stats found for `{query}`. The profile or game stats may be private.",
+      "errorMessage": "Could not load Counter-Strike profile: {error}",
+      "profileLinkLabel": "Open Steam"
+    }
+  }
+}

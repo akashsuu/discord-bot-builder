@@ -173,6 +173,21 @@ const VALORANT_PROFILE_KEYS = new Set([
   'missingKeyMessage', 'invalidNameMessage', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
 ]);
 
+const COUNTER_STRIKE_PROFILE_KEYS = new Set([
+  'aliases', 'apiKey', 'appId', 'titleTemplate', 'descriptionTemplate',
+  'missingKeyMessage', 'invalidSteamIdMessage', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
+const PUBG_PROFILE_KEYS = new Set([
+  'aliases', 'apiKey', 'platform', 'gameMode', 'titleTemplate', 'descriptionTemplate',
+  'missingKeyMessage', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
+const GENSHIN_PROFILE_KEYS = new Set([
+  'aliases', 'apiBase', 'userAgent', 'nameMap', 'titleTemplate', 'descriptionTemplate',
+  'invalidUidMessage', 'nameNotMappedMessage', 'notFoundMessage', 'rateLimitMessage', 'errorMessage', 'profileLinkLabel',
+]);
+
 const PLUGIN_HEADER_PURPLE = '#7c3aed';
 
 function splitCsv(value) {
@@ -391,7 +406,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -1835,6 +1850,141 @@ export default function PluginNode({ id, type, data, selected }) {
                 <span style={{ color: '#FF4655' }}>{'{valorant_name} {valorant_tag} {region} {platform} {current_rank} {rr}'}</span>
                 {' '}
                 <span style={{ color: '#888' }}>{'{elo} {peak_rank} {leaderboard_rank} {profile_link} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_counter_strike_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F59E0B">Counter-Strike Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="cstrike,csprofile,counterstrike" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Steam API Key</span>
+                <input className="bl-node-input" value={data.apiKey || ''} onChange={(e) => update('apiKey', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="Paste Steam Web API key" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Steam App ID</span>
+                <input className="bl-node-input" value={data.appId || '730'} onChange={(e) => update('appId', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="730" spellCheck={false} />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Counter-Strike profile for {steam_name}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Steam**\nSteamID: `{steam_id}`\nVisibility: `{visibility}`\nStatus: `{persona_state}`\nProfile: {profile_link}\n\n**Counter-Strike**\nPlaytime: `{playtime}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nWins: `{wins}`\nMVPs: `{mvps}`\nAccuracy: `{accuracy}`\nHeadshots: `{headshots}`', rows: 14 },
+                { key: 'missingKeyMessage', label: 'Missing API Key', fallback: 'Set a Steam Web API key in this node to show Counter-Strike stats. Steam XML profile info can still work without it.', rows: 2 },
+                { key: 'invalidSteamIdMessage', label: 'Invalid SteamID', fallback: 'Use `{command} <steamid64>` or `{command} https://steamcommunity.com/profiles/STEAM_ID/?xml=1`.', rows: 2 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Steam profile or Counter-Strike stats found for `{query}`. The profile or game stats may be private.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Counter-Strike profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Steam', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#F59E0B' }}>{'{steam_name} {steam_id} {playtime} {kills} {deaths} {kd}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{wins} {mvps} {accuracy} {headshots} {profile_link} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_pubg_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F2A900">PUBG Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="pubgprofile,bgprofile,battlegrounds" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">PUBG API Key</span>
+                <input className="bl-node-input" value={data.apiKey || ''} onChange={(e) => update('apiKey', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="Paste developer.pubg.com API key" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Platform</span>
+                <select className="bl-node-input" value={data.platform || 'steam'} onChange={(e) => update('platform', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <option value="steam">Steam</option>
+                  <option value="kakao">Kakao</option>
+                  <option value="psn">PSN</option>
+                  <option value="xbox">Xbox</option>
+                  <option value="console">Console</option>
+                </select>
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Game Mode</span>
+                <select className="bl-node-input" value={data.gameMode || 'squad-fpp'} onChange={(e) => update('gameMode', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <option value="solo">Solo</option>
+                  <option value="solo-fpp">Solo FPP</option>
+                  <option value="duo">Duo</option>
+                  <option value="duo-fpp">Duo FPP</option>
+                  <option value="squad">Squad</option>
+                  <option value="squad-fpp">Squad FPP</option>
+                </select>
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'PUBG profile for {pubg_name}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Account**\nName: `{pubg_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nShard: `{shard}`\nRecent Matches: `{recent_matches}`\n\n**Lifetime Stats ({game_mode})**\nRounds: `{rounds}`\nWins: `{wins}`\nTop 10s: `{top10s}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nDamage: `{damage}`\nLongest Kill: `{longest_kill}`\n\n**Links**\nProfile: {profile_link}', rows: 17 },
+                { key: 'missingKeyMessage', label: 'Missing API Key', fallback: 'Set a PUBG API key in this node before using `{command}`.', rows: 2 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No PUBG profile found for `{query}` on `{platform}`.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load PUBG profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Profile', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#F2A900' }}>{'{pubg_name} {account_id} {platform} {game_mode} {wins} {kills}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{kd} {damage} {longest_kill} {profile_link} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'game_genshin_profile' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#67E8F9">Genshin Profile</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="gprofile,genshinprofile,gi" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">API Base</span>
+                <input className="bl-node-input" value={data.apiBase || 'https://enka.network/api/uid'} onChange={(e) => update('apiBase', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="https://enka.network/api/uid" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">User-Agent</span>
+                <input className="bl-node-input" value={data.userAgent || 'DiscordBotBuilder/1.0 contact: owner'} onChange={(e) => update('userAgent', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="DiscordBotBuilder/1.0 contact: owner" spellCheck={false} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Name to UID Map</span>
+                <textarea className="bl-node-textarea" value={data.nameMap || 'Akash=618285856\nLumine=618285856'} onChange={(e) => update('nameMap', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={3} spellCheck={false} />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: 'Genshin profile for {nickname}', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Traveler**\nNickname: `{nickname}`\nUID: `{uid}`\nAdventure Rank: `{level}`\nWorld Level: `{world_level}`\nSignature: {signature}\n\n**Progress**\nAchievements: `{achievements}`\nAbyss: `{abyss}`\nShowcase Characters: `{showcase_count}`\nNamecard ID: `{namecard_id}`\nProfile Icon ID: `{profile_icon_id}`\n\n**Links**\nProfile: {profile_link}', rows: 15 },
+                { key: 'invalidUidMessage', label: 'Invalid UID', fallback: 'Use `{command} <genshin uid>` to check a Genshin profile.', rows: 2 },
+                { key: 'nameNotMappedMessage', label: 'Name Not Mapped', fallback: 'No UID saved for `{query}`. Add it in the Genshin Profile node name map like `Name=UID`.', rows: 2 },
+                { key: 'notFoundMessage', label: 'Not Found', fallback: 'No Genshin profile found for UID `{query}`. The UID may be wrong or unavailable.', rows: 2 },
+                { key: 'rateLimitMessage', label: 'Rate Limited', fallback: 'Genshin profile lookup is rate limited right now. Try again later.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not load Genshin profile: {error}', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Profile Link Label', fallback: 'Open Enka', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#67E8F9' }}>{'{nickname} {input_name} {uid} {level} {world_level} {signature}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{abyss} {showcase_count} {namecard_id} {profile_link} {error}'}</span>
               </span>
             </>
           )}

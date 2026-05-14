@@ -2585,6 +2585,200 @@ function DiscordPreviewValorantProfile({ node }) {
   );
 }
 
+function counterStrikeProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: '76561198000000000',
+    steam_id: '76561198000000000',
+    steam_name: 's1mple',
+    visibility: 'Public',
+    persona_state: 'Online',
+    playtime: '5,482 hours',
+    kills: '192,438',
+    deaths: '83,102',
+    kd: '2.32',
+    wins: '4,812',
+    mvps: '14,921',
+    accuracy: '23.6%',
+    headshots: '91,884',
+    avatar_url: 'https://avatars.cloudflare.steamstatic.com/6f746f5ddf6fce2d6f5f6f3f1d1d66fbf0f9623d_full.jpg',
+    profile_url: 'https://steamcommunity.com/profiles/76561198000000000',
+    profile_link: `[${data.profileLinkLabel || 'Open Steam'}](https://steamcommunity.com/profiles/76561198000000000)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewCounterStrikeProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = counterStrikeProfilePreviewText(d.titleTemplate || 'Counter-Strike profile for {steam_name}', d);
+  const description = counterStrikeProfilePreviewText(d.descriptionTemplate || '**Steam**\nSteamID: `{steam_id}`\nVisibility: `{visibility}`\nStatus: `{persona_state}`\nProfile: {profile_link}\n\n**Counter-Strike**\nPlaytime: `{playtime}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nWins: `{wins}`\nMVPs: `{mvps}`\nAccuracy: `{accuracy}`\nHeadshots: `{headshots}`', d);
+  const avatar = counterStrikeProfilePreviewText('{avatar_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#F59E0B' }}>CS</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#F59E0B', background: '#2B2D31', position: 'relative', minHeight: 245, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={avatar} alt="Steam avatar" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function pubgProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: 'shroud',
+    pubg_name: 'shroud',
+    account_id: 'account.00000000000000000000000000000000',
+    platform: String(data.platform || 'steam').toUpperCase(),
+    shard: data.platform || 'steam',
+    game_mode: data.gameMode || 'squad-fpp',
+    recent_matches: '14',
+    rounds: '1,382',
+    wins: '184',
+    top10s: '602',
+    kills: '5,934',
+    deaths: '1,198',
+    kd: '4.95',
+    damage: '1,024,391',
+    longest_kill: '612.4m',
+    image_url: 'https://wstatic-prod.pubg.com/web/live/main_073eb13/img/pubg_logo.png',
+    profile_url: 'https://pubglookup.com/players/shroud',
+    profile_link: `[${data.profileLinkLabel || 'Open Profile'}](https://pubglookup.com/players/shroud)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewPubgProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = pubgProfilePreviewText(d.titleTemplate || 'PUBG profile for {pubg_name}', d);
+  const description = pubgProfilePreviewText(d.descriptionTemplate || '**Account**\nName: `{pubg_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nShard: `{shard}`\nRecent Matches: `{recent_matches}`\n\n**Lifetime Stats ({game_mode})**\nRounds: `{rounds}`\nWins: `{wins}`\nTop 10s: `{top10s}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nDamage: `{damage}`\nLongest Kill: `{longest_kill}`\n\n**Links**\nProfile: {profile_link}', d);
+  const logo = pubgProfilePreviewText('{image_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#F2A900', color: '#111' }}>PG</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#F2A900', background: '#2B2D31', position: 'relative', minHeight: 260, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={logo} alt="PUBG logo" style={{ width: 68, maxWidth: '100%', maxHeight: 68, objectFit: 'contain', borderRadius: 4, background: '#111827' }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function genshinProfilePreviewText(template, data, extra = {}) {
+  const vars = {
+    user: 'Akashsuu',
+    user_tag: 'Tj#0001',
+    mention: '@Akashsuu',
+    query: '618285856',
+    uid: '618285856',
+    input_name: 'Lumine',
+    nickname: 'Lumine',
+    level: '60',
+    world_level: '8',
+    signature: 'Ad astra abyssosque.',
+    achievements: '1,102',
+    abyss: '12-3',
+    showcase_count: '8',
+    namecard_id: '210001',
+    profile_icon_id: '10000007',
+    ttl: '300',
+    image_url: 'https://enka.network/ui/UI_AvatarIcon_PlayerGirl.png',
+    profile_url: 'https://enka.network/u/618285856/',
+    profile_link: `[${data.profileLinkLabel || 'Open Enka'}](https://enka.network/u/618285856/)`,
+    error: 'Profile unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewGenshinProfile({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Crafty';
+  const title = genshinProfilePreviewText(d.titleTemplate || 'Genshin profile for {nickname}', d);
+  const description = genshinProfilePreviewText(d.descriptionTemplate || '**Traveler**\nNickname: `{nickname}`\nUID: `{uid}`\nAdventure Rank: `{level}`\nWorld Level: `{world_level}`\nSignature: {signature}\n\n**Progress**\nAchievements: `{achievements}`\nAbyss: `{abyss}`\nShowcase Characters: `{showcase_count}`\nNamecard ID: `{namecard_id}`\nProfile Icon ID: `{profile_icon_id}`\n\n**Links**\nProfile: {profile_link}', d);
+  const icon = genshinProfilePreviewText('{image_url}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#67E8F9', color: '#083344' }}>GI</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#67E8F9', background: '#2B2D31', position: 'relative', minHeight: 250, maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={icon} alt="Genshin profile icon" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TicketPanelEditor({ d, update }) {
   return (
     <>
@@ -2678,6 +2872,9 @@ function NPanel({ selectedNode, setNodes }) {
   const isRobloxProfilePreview = selectedNode.type === 'game_roblox_profile';
   const isFortniteProfilePreview = selectedNode.type === 'game_fortnite_profile';
   const isValorantProfilePreview = selectedNode.type === 'game_valorant_profile';
+  const isCounterStrikeProfilePreview = selectedNode.type === 'game_counter_strike_profile';
+  const isPubgProfilePreview = selectedNode.type === 'game_pubg_profile';
+  const isGenshinProfilePreview = selectedNode.type === 'game_genshin_profile';
 
   return (
     <motion.div 
@@ -2883,6 +3080,12 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewFortniteProfile node={selectedNode} />
               ) : isValorantProfilePreview ? (
                 <DiscordPreviewValorantProfile node={selectedNode} />
+              ) : isCounterStrikeProfilePreview ? (
+                <DiscordPreviewCounterStrikeProfile node={selectedNode} />
+              ) : isPubgProfilePreview ? (
+                <DiscordPreviewPubgProfile node={selectedNode} />
+              ) : isGenshinProfilePreview ? (
+                <DiscordPreviewGenshinProfile node={selectedNode} />
               ) : (
                 <DiscordPreview node={selectedNode} />
               )}
