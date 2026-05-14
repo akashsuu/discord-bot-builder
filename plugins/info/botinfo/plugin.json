@@ -1,0 +1,31 @@
+{
+  "name": "Bot Info",
+  "version": "1.0.0",
+  "description": "Shows bot details including avatar, banner, command count, ping, owner, uptime, servers, and users.",
+  "author": "Akashsuu",
+  "icon": "BI",
+  "nodeConfig": {
+    "label": "Bot Info",
+    "icon": "BI",
+    "color": "#5865F2",
+    "hasInput": false,
+    "hasOutput": false,
+    "defaults": {
+      "command": "botinfo",
+      "aliases": "bot,aboutbot,bi",
+      "ownerId": "",
+      "ownerName": "Bot Owner",
+      "manualCommandCount": "0",
+      "bannerUrl": "",
+      "inviteUrl": "",
+      "supportUrl": "",
+      "embedColor": "#5865F2",
+      "titleTemplate": "{bot_name} Bot Info",
+      "descriptionTemplate": "**Identity**\nBot: `{bot_name}`\nBot ID: `{bot_id}`\nOwner: {owner}\nCreated: `{created_at}`\n\n**Stats**\nCommands: `{command_count}`\nPing: `{ping}`\nUptime: `{uptime}`\nServers: `{server_count}`\nUsers: `{user_count}`\nChannels: `{channel_count}`\n\n**System**\nDiscord.js: `{discordjs_version}`\nNode.js: `{node_version}`\nMemory: `{memory}`\nPrefix: `{prefix}`\n\n**Links**\nInvite: {invite_link}\nSupport: {support_link}",
+      "footerTemplate": "Requested by {user}",
+      "notBotMessage": "Bot information is unavailable right now.",
+      "profileLinkLabel": "Open Invite",
+      "supportLinkLabel": "Support Server"
+    }
+  }
+}

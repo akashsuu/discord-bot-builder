@@ -138,6 +138,12 @@ const PLAYING_KEYS = new Set([
   'permissionMessage', 'clearedMessage',
 ]);
 
+const BOTINFO_KEYS = new Set([
+  'aliases', 'ownerId', 'ownerName', 'manualCommandCount', 'bannerUrl', 'inviteUrl', 'supportUrl',
+  'titleTemplate', 'descriptionTemplate', 'footerTemplate', 'notBotMessage',
+  'profileLinkLabel', 'supportLinkLabel',
+]);
+
 const NUKE_KEYS = new Set([
   'confirmationRequired', 'confirmationKeyword', 'reason', 'successMessage',
   'confirmMessage', 'permissionMessage', 'unsupportedMessage', 'errorMessage',
@@ -421,7 +427,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -1575,6 +1581,48 @@ export default function PluginNode({ id, type, data, selected }) {
                 <span style={{ color: '#7EB8F7' }}>{'{imageUrl} {animatedAvatarUrl} {animatedBannerUrl} {profileUpdate}'}</span>
                 {' Â· '}
                 <span style={{ color: '#888' }}>{'{user} {server}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'info_botinfo' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#5865F2">Bot Info</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="bot,aboutbot,bi" spellCheck={false} />
+              </div>
+              {[
+                ['ownerId', 'Owner ID', ''],
+                ['ownerName', 'Owner Name', 'Bot Owner'],
+                ['manualCommandCount', 'Manual Command Count', '0'],
+                ['bannerUrl', 'Banner URL', 'https://.../banner.png'],
+                ['inviteUrl', 'Invite URL', 'https://discord.com/oauth2/authorize?...'],
+                ['supportUrl', 'Support URL', 'https://discord.gg/...'],
+              ].map(([key, label, placeholder]) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <input className="bl-node-input" value={data[key] || ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={placeholder} spellCheck={false} />
+                </div>
+              ))}
+              {[
+                { key: 'titleTemplate', label: 'Title', fallback: '{bot_name} Bot Info', rows: 1 },
+                { key: 'descriptionTemplate', label: 'Description', fallback: '**Identity**\nBot: `{bot_name}`\nBot ID: `{bot_id}`\nOwner: {owner}\nCreated: `{created_at}`\n\n**Stats**\nCommands: `{command_count}`\nPing: `{ping}`\nUptime: `{uptime}`\nServers: `{server_count}`\nUsers: `{user_count}`\nChannels: `{channel_count}`\n\n**System**\nDiscord.js: `{discordjs_version}`\nNode.js: `{node_version}`\nMemory: `{memory}`\nPrefix: `{prefix}`\n\n**Links**\nInvite: {invite_link}\nSupport: {support_link}', rows: 19 },
+                { key: 'footerTemplate', label: 'Footer', fallback: 'Requested by {user}', rows: 1 },
+                { key: 'notBotMessage', label: 'Unavailable Message', fallback: 'Bot information is unavailable right now.', rows: 2 },
+                { key: 'profileLinkLabel', label: 'Invite Link Label', fallback: 'Open Invite', rows: 1 },
+                { key: 'supportLinkLabel', label: 'Support Link Label', fallback: 'Support Server', rows: 1 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#5865F2' }}>{'{bot_name} {bot_id} {owner} {command_count} {ping} {uptime}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{server_count} {user_count} {memory} {avatar_url} {banner_url}'}</span>
               </span>
             </>
           )}

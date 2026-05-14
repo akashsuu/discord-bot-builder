@@ -2182,6 +2182,83 @@ function DiscordPreviewPlaying({ node }) {
   );
 }
 
+function botInfoPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    user_tag: 'Akashsuu#0000',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    prefix: '!',
+    command: data.command || 'botinfo',
+    bot_name: 'Bot',
+    bot_tag: 'Bot#0000',
+    bot_id: '123456789012345678',
+    owner: data.ownerId ? `<@${data.ownerId}>` : (data.ownerName || 'Bot Owner'),
+    owner_id: data.ownerId || '987654321098765432',
+    created_at: 'February 21, 2024',
+    command_count: data.manualCommandCount || '86',
+    ping: '42ms',
+    uptime: '12d 4h 18m',
+    server_count: '128',
+    user_count: '42,981',
+    channel_count: '1,204',
+    discordjs_version: '14.x',
+    node_version: 'v20.x',
+    memory: '148 MB',
+    avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+    banner_url: data.bannerUrl || 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=80',
+    invite_url: data.inviteUrl || 'https://discord.com/oauth2/authorize',
+    support_url: data.supportUrl || 'https://discord.gg/support',
+    invite_link: `[${data.profileLinkLabel || 'Open Invite'}](${data.inviteUrl || 'https://discord.com/oauth2/authorize'})`,
+    support_link: `[${data.supportLinkLabel || 'Support Server'}](${data.supportUrl || 'https://discord.gg/support'})`,
+    error: 'Unavailable',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewBotInfo({ node }) {
+  const { botInfo } = useProject();
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const avatar = botInfo?.avatarURL || botInfoPreviewText('{avatar_url}', d);
+  const banner = d.bannerUrl || botInfoPreviewText('{banner_url}', d);
+  const title = botInfoPreviewText(d.titleTemplate || '{bot_name} Bot Info', d, { bot_name: botName });
+  const description = botInfoPreviewText(d.descriptionTemplate || '**Identity**\nBot: `{bot_name}`\nBot ID: `{bot_id}`\nOwner: {owner}\nCreated: `{created_at}`\n\n**Stats**\nCommands: `{command_count}`\nPing: `{ping}`\nUptime: `{uptime}`\nServers: `{server_count}`\nUsers: `{user_count}`\nChannels: `{channel_count}`\n\n**System**\nDiscord.js: `{discordjs_version}`\nNode.js: `{node_version}`\nMemory: `{memory}`\nPrefix: `{prefix}`\n\n**Links**\nInvite: {invite_link}\nSupport: {support_link}', d, { bot_name: botName });
+  const footer = botInfoPreviewText(d.footerTemplate || 'Requested by {user}', d);
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {avatar ? <img src={avatar} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: d.embedColor || '#5865F2' }}>B</div>}
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at 00:12</span>
+          </div>
+          <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#5865F2', background: '#2B2D31', maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+                <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+              </div>
+              <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
+                <img src={avatar} alt="Bot avatar" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 8 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            </div>
+            {banner && <img src={banner} alt="Bot banner" style={{ marginTop: 10, width: '100%', maxHeight: 115, objectFit: 'cover', borderRadius: 6 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+            <div style={{ color: '#B5BAC1', fontSize: 10, marginTop: 8 }}>{footer}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function nukePreviewText(template, data, extra = {}) {
   const vars = {
     ...data,
@@ -3049,6 +3126,7 @@ function NPanel({ selectedNode, setNodes }) {
   const isPrefixPreview = selectedNode.type === 'util_prefix';
   const isCalculatorPreview = selectedNode.type === 'util_calculator';
   const isPlayingPreview = selectedNode.type === 'info_playing';
+  const isBotInfoPreview = selectedNode.type === 'info_botinfo';
   const isMusicPlayPreview = selectedNode.type === 'music_play';
   const isMinecraftProfilePreview = selectedNode.type === 'game_minecraft_profile';
   const isRobloxProfilePreview = selectedNode.type === 'game_roblox_profile';
@@ -3255,6 +3333,8 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewCalculator node={selectedNode} />
               ) : isPlayingPreview ? (
                 <DiscordPreviewPlaying node={selectedNode} />
+              ) : isBotInfoPreview ? (
+                <DiscordPreviewBotInfo node={selectedNode} />
               ) : isMusicPlayPreview ? (
                 <DiscordPreviewMusicPlay node={selectedNode} />
               ) : isMinecraftProfilePreview ? (
