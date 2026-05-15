@@ -1,4 +1,5 @@
-﻿import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
 // -- Demo variable substitution -------------------------------------------------
@@ -159,6 +160,12 @@ const RESTART_KEYS = new Set([
 const SHUTDOWN_KEYS = new Set([
  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
  'permissionMessage', 'unavailableMessage', 'errorMessage', 'delayMs',
+]);
+
+const BOTLEAVE_KEYS = new Set([
+ 'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+ 'confirmRequired', 'confirmKeyword', 'confirmMessage', 'permissionMessage',
+ 'ownerOnlyMessage', 'errorMessage', 'delayMs',
 ]);
 
 const NUKE_KEYS = new Set([
@@ -335,6 +342,67 @@ function SectionHead({ color = '#888', children }) {
  );
 }
 
+function PluginSelect({ value, onChange, options = [], placeholder = 'Select' }) {
+ const [open, setOpen] = useState(false);
+ const wrapRef = React.useRef(null);
+ const current = options.find((option) => option.value === value) || options[0];
+
+ React.useEffect(() => {
+ if (!open) return undefined;
+ const close = (event) => {
+ if (!wrapRef.current?.contains(event.target)) setOpen(false);
+ };
+ document.addEventListener('pointerdown', close, true);
+ return () => document.removeEventListener('pointerdown', close, true);
+ }, [open]);
+
+ const choose = useCallback((nextValue) => {
+ onChange(nextValue);
+ setOpen(false);
+ }, [onChange]);
+
+ const stopNodeCapture = (event) => {
+ event.stopPropagation();
+ };
+
+ return (
+ <div
+ ref={wrapRef}
+ className="bl-plugin-select nodrag nopan"
+ onPointerDown={stopNodeCapture}
+ onMouseDown={stopNodeCapture}
+ onClick={stopNodeCapture}
+ >
+ <button
+ type="button"
+ className="bl-plugin-select-trigger"
+  onPointerDown={(e) => e.stopPropagation()}
+  onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => { e.stopPropagation(); setOpen((next) => !next); }}
+ >
+ <span>{current?.label || placeholder}</span>
+ <span className="bl-plugin-select-arrow">v</span>
+ </button>
+ {open && (
+ <div className="bl-plugin-select-menu">
+ {options.map((option) => (
+ <button
+ key={option.value}
+ type="button"
+ className={`bl-plugin-select-option ${option.value === value ? 'selected' : ''}`}
+ onPointerDown={(e) => e.stopPropagation()}
+  onMouseDown={(e) => e.stopPropagation()}
+  onClick={(e) => { e.stopPropagation(); choose(option.value); }}
+ >
+ {option.label}
+ </button>
+ ))}
+ </div>
+ )}
+ </div>
+ );
+}
+
 // -- Inline Discord message preview --------------------------------------------
 function DiscordPreviewInline({ pages, pageIdx, data }) {
  const pgs = Array.isArray(pages) ? pages : [];
@@ -464,6 +532,142 @@ export default function PluginNode({ id, type, data, selected }) {
  const { setNodes } = useReactFlow();
  const collapsed = !!data.collapsed;
  const [previewPg, setPreviewPg] = useState(0);
+ const [menuOpen, setMenuOpen] = useState(false);
+ const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
+ const menuRef = React.useRef(null);
+ const actionMenuRef = React.useRef(null);
+ const menuPointerHandledRef = React.useRef(false);
+ const actionPointerHandledRef = React.useRef(false);
+ const collapsePointerHandledRef = React.useRef(false);
+
+ React.useEffect(() => {
+  if (!menuOpen) return undefined;
+  const close = (event) => {
+  if (!menuRef.current?.contains(event.target) && !actionMenuRef.current?.contains(event.target)) setMenuOpen(false);
+  };
+  document.addEventListener('pointerdown', close, true);
+  return () => document.removeEventListener('pointerdown', close, true);
+ }, [menuOpen]);
+
+ const cloneNode = useCallback(() => {
+  setNodes((ns) => {
+  const current = ns.find((n) => n.id === id);
+  if (!current) return ns;
+  const newId = `${current.type}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+  const clone = {
+   ...current,
+   id: newId,
+   selected: false,
+   position: { x: current.position.x + 20, y: current.position.y + 20 },
+   data: JSON.parse(JSON.stringify(current.data)),
+  };
+  return [...ns, clone];
+  });
+  setMenuOpen(false);
+ }, [id, setNodes]);
+
+ const deleteNode = useCallback(() => {
+ setNodes((ns) => ns.filter((n) => n.id !== id));
+ }, [id, setNodes]);
+
+ const toggleNodeMenu = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ const rect = event.currentTarget.getBoundingClientRect();
+ const left = Math.max(8, Math.min(window.innerWidth - 148, rect.right - 128));
+ const top = Math.max(8, Math.min(window.innerHeight - 92, rect.bottom + 6));
+ setMenuPos({ top, left });
+ setMenuOpen((open) => !open);
+ }, []);
+
+ const handleNodeMenuPointerDown = useCallback((event) => {
+ menuPointerHandledRef.current = true;
+ toggleNodeMenu(event);
+ }, [toggleNodeMenu]);
+
+ const handleNodeMenuClick = useCallback((event) => {
+ if (menuPointerHandledRef.current) {
+ menuPointerHandledRef.current = false;
+ event.preventDefault();
+ event.stopPropagation();
+ return;
+ }
+ toggleNodeMenu(event);
+ }, [toggleNodeMenu]);
+
+ const stopNodeMenuEvent = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ }, []);
+
+ const handleClonePointerDown = useCallback((event) => {
+ actionPointerHandledRef.current = true;
+ event.preventDefault();
+ event.stopPropagation();
+ cloneNode();
+ }, [cloneNode]);
+
+ const handleCloneClick = useCallback((event) => {
+ if (actionPointerHandledRef.current) {
+ actionPointerHandledRef.current = false;
+ event.preventDefault();
+ event.stopPropagation();
+ return;
+ }
+ event.preventDefault();
+ event.stopPropagation();
+ cloneNode();
+ }, [cloneNode]);
+
+ const handleDeletePointerDown = useCallback((event) => {
+ actionPointerHandledRef.current = true;
+ event.preventDefault();
+ event.stopPropagation();
+ deleteNode();
+ }, [deleteNode]);
+
+ const handleDeleteClick = useCallback((event) => {
+ if (actionPointerHandledRef.current) {
+ actionPointerHandledRef.current = false;
+ event.preventDefault();
+ event.stopPropagation();
+ return;
+ }
+ event.preventDefault();
+ event.stopPropagation();
+ deleteNode();
+ }, [deleteNode]);
+
+ const actionMenu = menuOpen && typeof document !== 'undefined' ? createPortal(
+ <div
+ ref={actionMenuRef}
+ className="bl-node-action-menu nodrag nopan"
+ style={{ top: menuPos.top, left: menuPos.left }}
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => e.stopPropagation()}
+ >
+  <button
+  type="button"
+  className="bl-node-action-item"
+  onPointerDown={handleClonePointerDown}
+  onMouseDown={(e) => e.stopPropagation()}
+  onClick={handleCloneClick}
+  >
+  Clone Node
+  </button>
+  <button
+  type="button"
+  className="bl-node-action-item danger"
+  onPointerDown={handleDeletePointerDown}
+  onMouseDown={(e) => e.stopPropagation()}
+  onClick={handleDeleteClick}
+  >
+  Delete Node
+  </button>
+ </div>,
+ document.body,
+ ) : null;
 
  // -- Top-level updater -----------------------------------------------------
  const update = useCallback((key, val) => {
@@ -483,6 +687,23 @@ export default function PluginNode({ id, type, data, selected }) {
  n.id === id ? { ...n, data: { ...n.data, collapsed: !n.data.collapsed } } : n
  ));
  }, [id, setNodes]);
+
+ const handleCollapsePointerDown = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ collapsePointerHandledRef.current = true;
+ toggle();
+ }, [toggle]);
+
+ const handleCollapseClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ if (collapsePointerHandledRef.current) {
+ collapsePointerHandledRef.current = false;
+ return;
+ }
+ toggle();
+ }, [toggle]);
 
  // -- Dropdown updater ------------------------------------------------------
  const updateDropdown = useCallback((key, val) => {
@@ -509,7 +730,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
  // -- Derived values --------------------------------------------------------
  const inputFields = Object.entries(data).filter(
- ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(RESTART_KEYS.has(k) && type === 'admin_restart') && !(SHUTDOWN_KEYS.has(k) && type === 'admin_shutdown') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(VOICEKICK_KEYS.has(k) && type === 'moderation_voicekick') && !(VOICEBAN_KEYS.has(k) && type === 'moderation_voiceban') && !(VOICEUNBAN_KEYS.has(k) && type === 'moderation_voiceunban') && !(VOICEMUTE_KEYS.has(k) && type === 'moderation_voicemute') && !(VOICEUNMUTE_KEYS.has(k) && type === 'moderation_voiceunmute') && !(VMOVEALL_KEYS.has(k) && type === 'moderation_vmoveall') && !(ANTINUKE_KEYS.has(k) && type === 'moderation_antinuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(GIVEAWAY_CREATE_KEYS.has(k) && type === 'giveaway_create') && !(GIVEAWAY_STOP_KEYS.has(k) && type === 'giveaway_stop') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+ ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(RESTART_KEYS.has(k) && type === 'admin_restart') && !(SHUTDOWN_KEYS.has(k) && type === 'admin_shutdown') && !(BOTLEAVE_KEYS.has(k) && type === 'admin_botleave') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(VOICEKICK_KEYS.has(k) && type === 'moderation_voicekick') && !(VOICEBAN_KEYS.has(k) && type === 'moderation_voiceban') && !(VOICEUNBAN_KEYS.has(k) && type === 'moderation_voiceunban') && !(VOICEMUTE_KEYS.has(k) && type === 'moderation_voicemute') && !(VOICEUNMUTE_KEYS.has(k) && type === 'moderation_voiceunmute') && !(VMOVEALL_KEYS.has(k) && type === 'moderation_vmoveall') && !(ANTINUKE_KEYS.has(k) && type === 'moderation_antinuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(GIVEAWAY_CREATE_KEYS.has(k) && type === 'giveaway_create') && !(GIVEAWAY_STOP_KEYS.has(k) && type === 'giveaway_stop') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
  );
  const commandFields = inputFields.filter(([key]) => key === 'command');
  const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -583,11 +804,32 @@ export default function PluginNode({ id, type, data, selected }) {
  >
  {/* -- Header ------------------------------------------------------- */}
  <div className="bl-node-hdr" style={{ background: PLUGIN_HEADER_PURPLE }}>
- <button className="bl-collapse-btn" onClick={toggle} title={collapsed ? 'Expand' : 'Minimize'}>
- {collapsed ? '>' : 'v'}
+ <button
+  type="button"
+  className="bl-collapse-btn nodrag nopan"
+  onPointerDown={handleCollapsePointerDown}
+  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+  onClick={handleCollapseClick}
+  title={collapsed ? 'Expand' : 'Minimize'}
+  aria-label={collapsed ? 'Expand node' : 'Collapse node'}
+ >
+ {collapsed ? '▶' : '▼'}
  </button>
  <span className="bl-node-hdr-icon">{data._icon || ''}</span>
  <span className="bl-node-hdr-title">{data._label || 'Plugin Node'}</span>
+ <div ref={menuRef} className="bl-node-menu-anchor nodrag nopan">
+  <button
+  type="button"
+  className="bl-node-menu-btn nodrag nopan"
+  onPointerDown={handleNodeMenuPointerDown}
+  onMouseDown={stopNodeMenuEvent}
+  onClick={handleNodeMenuClick}
+  title="Options"
+ >
+  ⋮
+  </button>
+  {actionMenu}
+ </div>
  {collapsed && (
  <>
  {data._hasInput && <Handle type="target" position={Position.Left} id="input" className="handle-gray" />}
@@ -597,7 +839,11 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
 
  {!collapsed && (
- <div className="bl-node-body nodrag nowheel">
+ <div
+   className="bl-node-body nodrag nopan"
+   onPointerDown={(e) => e.stopPropagation()}
+   onMouseDown={(e) => e.stopPropagation()}
+   >
  {/* -- Input socket ----------------------------------------------- */}
  {data._hasInput && (
  <div className="bl-row bl-row-in">
@@ -1662,21 +1908,17 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Activity Type</span>
- <select
- className="bl-node-input"
+ <PluginSelect
  value={data.activityType || 'Playing'}
- onChange={(e) => update('activityType', e.target.value)}
- onPointerDown={(e) => e.stopPropagation()}
- onMouseDown={(e) => e.stopPropagation()}
- onClick={(e) => e.stopPropagation()}
- onKeyDown={(e) => e.stopPropagation()}
- >
- <option value="Playing">Playing</option>
- <option value="Watching">Watching</option>
- <option value="Listening">Listening</option>
- <option value="Competing">Competing</option>
- <option value="Streaming">Streaming</option>
- </select>
+ onChange={(nextValue) => update('activityType', nextValue)}
+ options={[
+  { value: 'Playing', label: 'Playing' },
+  { value: 'Watching', label: 'Watching' },
+  { value: 'Listening', label: 'Listening' },
+  { value: 'Competing', label: 'Competing' },
+  { value: 'Streaming', label: 'Streaming' }
+ ]}
+ />
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Producer Name</span>
@@ -1693,20 +1935,16 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Status</span>
- <select
- className="bl-node-input"
+ <PluginSelect
  value={data.status || 'online'}
- onChange={(e) => update('status', e.target.value)}
- onPointerDown={(e) => e.stopPropagation()}
- onMouseDown={(e) => e.stopPropagation()}
- onClick={(e) => e.stopPropagation()}
- onKeyDown={(e) => e.stopPropagation()}
- >
- <option value="online">online</option>
- <option value="idle">idle</option>
- <option value="dnd">dnd</option>
- <option value="invisible">invisible</option>
- </select>
+ onChange={(nextValue) => update('status', nextValue)}
+ options={[
+  { value: 'online', label: 'online' },
+  { value: 'idle', label: 'idle' },
+  { value: 'dnd', label: 'dnd' },
+  { value: 'invisible', label: 'invisible' }
+ ]}
+ />
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Activity Image URL</span>
@@ -2439,11 +2677,15 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Punishment</span>
- <select className="bl-node-input nodrag nowheel" value={data.punishment || 'remove_roles'} onChange={(e) => update('punishment', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
- <option value="remove_roles">Remove Roles</option>
- <option value="kick">Kick</option>
- <option value="ban">Ban</option>
- </select>
+ <PluginSelect
+ value={data.punishment || 'remove_roles'}
+ onChange={(nextValue) => update('punishment', nextValue)}
+ options={[
+  { value: 'remove_roles', label: 'Remove Roles' },
+  { value: 'kick', label: 'Kick' },
+  { value: 'ban', label: 'Ban' }
+ ]}
+ />
  </div>
  {[
  ['enabledByDefault', 'Enabled by default'],
@@ -2602,11 +2844,15 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Default Edition</span>
- <select className="bl-node-input nodrag nowheel" value={data.defaultEdition || 'auto'} onChange={(e) => update('defaultEdition', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
- <option value="auto">Auto</option>
- <option value="java">Java</option>
- <option value="bedrock">Bedrock</option>
- </select>
+ <PluginSelect
+ value={data.defaultEdition || 'auto'}
+ onChange={(nextValue) => update('defaultEdition', nextValue)}
+ options={[
+  { value: 'auto', label: 'Auto' },
+  { value: 'java', label: 'Java' },
+  { value: 'bedrock', label: 'Bedrock' }
+ ]}
+ />
  </div>
  {[
  { key: 'titleTemplate', label: 'Title', fallback: 'Minecraft profile for {mc_name}', rows: 1 },
@@ -2670,18 +2916,26 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Account Type</span>
- <select className="bl-node-input nodrag nowheel" value={data.accountType || 'epic'} onChange={(e) => update('accountType', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
- <option value="epic">Epic</option>
- <option value="psn">PlayStation</option>
- <option value="xbl">Xbox</option>
- </select>
+ <PluginSelect
+ value={data.accountType || 'epic'}
+ onChange={(nextValue) => update('accountType', nextValue)}
+ options={[
+  { value: 'epic', label: 'Epic' },
+  { value: 'psn', label: 'PlayStation' },
+  { value: 'xbl', label: 'Xbox' }
+ ]}
+ />
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Stats Window</span>
- <select className="bl-node-input nodrag nowheel" value={data.timeWindow || 'lifetime'} onChange={(e) => update('timeWindow', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
- <option value="lifetime">Lifetime</option>
- <option value="season">Season</option>
- </select>
+ <PluginSelect
+ value={data.timeWindow || 'lifetime'}
+ onChange={(nextValue) => update('timeWindow', nextValue)}
+ options={[
+  { value: 'lifetime', label: 'Lifetime' },
+  { value: 'season', label: 'Season' }
+ ]}
+ />
  </div>
  {[
  { key: 'titleTemplate', label: 'Title', fallback: 'Fortnite profile for {fortnite_name}', rows: 1 },
@@ -2718,21 +2972,29 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Region</span>
- <select className="bl-node-input nodrag nowheel" value={data.region || 'ap'} onChange={(e) => update('region', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
- <option value="ap">AP</option>
- <option value="na">NA</option>
- <option value="eu">EU</option>
- <option value="kr">KR</option>
- <option value="br">BR</option>
- <option value="latam">LATAM</option>
- </select>
+ <PluginSelect
+ value={data.region || 'ap'}
+ onChange={(nextValue) => update('region', nextValue)}
+ options={[
+  { value: 'ap', label: 'AP' },
+  { value: 'na', label: 'NA' },
+  { value: 'eu', label: 'EU' },
+  { value: 'kr', label: 'KR' },
+  { value: 'br', label: 'BR' },
+  { value: 'latam', label: 'LATAM' }
+ ]}
+ />
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Platform</span>
- <select className="bl-node-input nodrag nowheel" value={data.platform || 'pc'} onChange={(e) => update('platform', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
- <option value="pc">PC</option>
- <option value="console">Console</option>
- </select>
+ <PluginSelect
+ value={data.platform || 'pc'}
+ onChange={(nextValue) => update('platform', nextValue)}
+ options={[
+  { value: 'pc', label: 'PC' },
+  { value: 'console', label: 'Console' }
+ ]}
+ />
  </div>
  {[
  { key: 'titleTemplate', label: 'Title', fallback: 'Valorant profile for {valorant_name}#{valorant_tag}', rows: 1 },
@@ -2808,24 +3070,32 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Platform</span>
- <select className="bl-node-input nodrag nowheel" value={data.platform || 'steam'} onChange={(e) => update('platform', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
- <option value="steam">Steam</option>
- <option value="kakao">Kakao</option>
- <option value="psn">PSN</option>
- <option value="xbox">Xbox</option>
- <option value="console">Console</option>
- </select>
+ <PluginSelect
+ value={data.platform || 'steam'}
+ onChange={(nextValue) => update('platform', nextValue)}
+ options={[
+  { value: 'steam', label: 'Steam' },
+  { value: 'kakao', label: 'Kakao' },
+  { value: 'psn', label: 'PSN' },
+  { value: 'xbox', label: 'Xbox' },
+  { value: 'console', label: 'Console' }
+ ]}
+ />
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Game Mode</span>
- <select className="bl-node-input nodrag nowheel" value={data.gameMode || 'squad-fpp'} onChange={(e) => update('gameMode', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
- <option value="solo">Solo</option>
- <option value="solo-fpp">Solo FPP</option>
- <option value="duo">Duo</option>
- <option value="duo-fpp">Duo FPP</option>
- <option value="squad">Squad</option>
- <option value="squad-fpp">Squad FPP</option>
- </select>
+ <PluginSelect
+ value={data.gameMode || 'squad-fpp'}
+ onChange={(nextValue) => update('gameMode', nextValue)}
+ options={[
+  { value: 'solo', label: 'Solo' },
+  { value: 'solo-fpp', label: 'Solo FPP' },
+  { value: 'duo', label: 'Duo' },
+  { value: 'duo-fpp', label: 'Duo FPP' },
+  { value: 'squad', label: 'Squad' },
+  { value: 'squad-fpp', label: 'Squad FPP' }
+ ]}
+ />
  </div>
  {[
  { key: 'titleTemplate', label: 'Title', fallback: 'PUBG profile for {pubg_name}', rows: 1 },
@@ -3015,18 +3285,14 @@ export default function PluginNode({ id, type, data, selected }) {
  <SectionHead color="#F59E0B">Ticket Buttons</SectionHead>
  <div className="bl-field">
  <span className="bl-field-lbl">Panel Mode</span>
- <select
- className="bl-node-input nodrag nowheel"
+ <PluginSelect
  value={data.panelMode || 'buttons'}
- onChange={(e) => update('panelMode', e.target.value)}
- onPointerDown={(e) => e.stopPropagation()}
- onMouseDown={(e) => e.stopPropagation()}
- onClick={(e) => e.stopPropagation()}
- onKeyDown={(e) => e.stopPropagation()}
- >
- <option value="buttons">Buttons</option>
- <option value="dropdown">Dropdown</option>
- </select>
+ onChange={(nextValue) => update('panelMode', nextValue)}
+ options={[
+  { value: 'buttons', label: 'Buttons' },
+  { value: 'dropdown', label: 'Dropdown' }
+ ]}
+ />
  </div>
  <div style={{ display: 'grid', gap: 6 }}>
  {ticketOptions.map((option, index) => (

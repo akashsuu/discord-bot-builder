@@ -60,7 +60,7 @@ export default function SendMessageNode({ id, data, selected }) {
  {/* Embed section */}
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle">
+ <label className="bl-embed-toggle nodrag nowheel">
  <input type="checkbox" checked={!!data.embedEnabled} onChange={(e) => update('embedEnabled', e.target.checked)} />
  Embed Output
  </label>

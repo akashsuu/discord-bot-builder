@@ -43,7 +43,11 @@ export default function ConditionBranchNode({ id, data, selected }) {
 
  <div className="bl-field">
  <span className="bl-field-lbl">Condition</span>
- <select className="bl-node-select" value={data.condition || 'starts_with'} onChange={(e) => update('condition', e.target.value)}>
+ <select
+ className="bl-node-select nodrag nopan"
+ value={data.condition || 'starts_with'}
+ onChange={(e) => update('condition', e.target.value)}
+ >
  {CONDITIONS.map((c) => <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>)}
  </select>
  </div>

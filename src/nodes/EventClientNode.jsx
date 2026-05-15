@@ -35,7 +35,11 @@ export default function EventClientNode({ id, data, selected }) {
  {!collapsed && (
  <div className="bl-node-body">
  <div className="bl-field">
- <select className="bl-node-select" value={ev} onChange={(e) => onChange(e.target.value)}>
+ <select
+ className="bl-node-select nodrag nopan"
+ value={ev}
+ onChange={(e) => onChange(e.target.value)}
+ >
  {CLIENT_EVENTS.map((e) => <option key={e.value} value={e.value}>{e.label}</option>)}
  </select>
  </div>

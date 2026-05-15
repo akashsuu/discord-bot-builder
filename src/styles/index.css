@@ -63,10 +63,26 @@ input, textarea, select {
 }
 
 /* React Flow drag/wheel passthrough prevention helpers */
-.nodrag { cursor: default !important; }
+/* nodrag stops RF drag — keep cursor:pointer on interactive children */
+.nodrag { cursor: default; }
 .nowheel { overflow-y: auto; }
 
+/* Ensure collapse button + selects always receive pointer events */
+button.nodrag,
+.bl-collapse-btn,
+.bl-plugin-select-trigger,
+.bl-plugin-select-option {
+ cursor: pointer !important;
+ pointer-events: auto !important;
+}
+
 input, textarea, select, button { font-family: inherit; font-size: 12px; color: var(--bl-text); }
+select.nodrag,
+select.nopan,
+.bl-node select {
+ pointer-events: auto;
+ cursor: pointer;
+}
 
 /* ── scrollbars ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -303,6 +319,22 @@ code {
 }
 .react-flow__attribution { display: none !important; }
 .react-flow__pane { cursor: default; }
+.node-editor-flow .react-flow__viewport {
+ pointer-events: auto !important;
+}
+.node-editor-flow .react-flow__nodes {
+ pointer-events: auto !important;
+}
+.node-editor-flow .react-flow__node,
+.node-editor-flow .react-flow__node button,
+.node-editor-flow .react-flow__node input,
+.node-editor-flow .react-flow__node textarea,
+.node-editor-flow .react-flow__node .bl-plugin-select {
+ pointer-events: auto !important;
+}
+.node-editor-flow .react-flow__node {
+ z-index: 10 !important;
+}
 
 .react-flow__controls {
  background: var(--bl-panel) !important;
@@ -609,12 +641,17 @@ code {
 
 .bl-ctx-item {
  display: flex;
+ width: 100%;
  align-items: center;
  gap: 8px;
  padding: 5px 12px 5px 10px;
+ border: 0;
+ background: transparent;
  cursor: pointer;
  transition: background .08s;
  color: var(--bl-text);
+ font: inherit;
+ text-align: left;
 }
 .bl-ctx-item:hover { background: #3D5A8A; color: #fff; }
 
@@ -716,6 +753,11 @@ code {
 
 .bl-node {
  @apply node-card;
+ cursor: grab;
+}
+
+.bl-node:active {
+ cursor: grabbing;
 }
 
 .bl-node.selected {
@@ -723,7 +765,8 @@ code {
 }
 
 .bl-node-hdr {
- @apply h-8 flex items-center px-3 border-b border-purple-900/40 rounded-t-2xl text-[11px] font-semibold gap-2 cursor-default relative bg-gradient-to-r from-purple-500/20 to-fuchsia-500/10;
+ @apply h-8 flex items-center px-3 border-b border-purple-900/40 rounded-t-2xl text-[11px] font-semibold gap-2 relative bg-gradient-to-r from-purple-500/20 to-fuchsia-500/10;
+ cursor: grab;
 }
 
 /* minimized: round all corners, no bottom border radius gap */
@@ -736,9 +779,86 @@ code {
 
 .bl-collapse-btn {
  @apply bg-transparent border-none text-zinc-500 cursor-pointer text-[9px] p-1 rounded-md transition-colors flex items-center justify-center w-5 h-5 shrink-0 hover:text-zinc-200 hover:bg-zinc-800;
+ position: relative;
+ z-index: 25;
+ pointer-events: auto !important;
+ touch-action: none;
 }
 .bl-node-hdr-icon { @apply text-sm; }
 .bl-node-hdr-title { @apply text-zinc-200 tracking-wide font-['Outfit']; }
+
+.bl-node-menu-anchor {
+ position: relative;
+ z-index: 20;
+ margin-left: auto;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ width: 28px;
+ height: 28px;
+ pointer-events: auto;
+}
+
+.bl-node-menu-btn {
+ display: flex;
+ width: 26px;
+ height: 26px;
+ align-items: center;
+ justify-content: center;
+ border: 0;
+ border-radius: 7px;
+ background: transparent;
+ color: rgba(255, 255, 255, 0.82);
+ cursor: pointer;
+ font-size: 18px;
+ line-height: 1;
+ padding: 0;
+ pointer-events: auto;
+}
+
+.bl-node-menu-btn:hover,
+.bl-node-menu-btn:focus {
+ background: rgba(24, 24, 27, 0.55);
+ color: #fff;
+ outline: none;
+}
+
+.bl-node-action-menu {
+ position: fixed;
+ z-index: 3000;
+ min-width: 128px;
+ padding: 4px;
+ border: 1px solid #3f3f46;
+ border-radius: 7px;
+ background: #18181b;
+ box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55);
+}
+
+.bl-node-action-item {
+ display: block;
+ width: 100%;
+ border: 0;
+ border-radius: 5px;
+ background: transparent;
+ color: #e4e4e7;
+ cursor: pointer;
+ font-size: 12px;
+ padding: 7px 10px;
+ text-align: left;
+}
+
+.bl-node-action-item:hover {
+ background: #27272a;
+}
+
+.bl-node-action-item.danger {
+ color: #f87171;
+}
+
+.bl-node-action-item.danger:hover {
+ background: #450a0a;
+ color: #fca5a5;
+}
 
 .bl-hdr-event { background: #555; }
 .bl-hdr-channel { background: var(--nh-channel); }
@@ -813,6 +933,76 @@ code {
  cursor: pointer;
 }
 .bl-node-select:focus { border-color: var(--select-col); }
+
+.bl-plugin-select {
+ position: relative;
+ width: 100%;
+}
+
+.bl-plugin-select-trigger {
+ display: flex;
+ width: 100%;
+ min-height: 30px;
+ align-items: center;
+ justify-content: space-between;
+ gap: 8px;
+ border: 1px solid rgba(88, 28, 135, 0.65);
+ border-radius: 8px;
+ background: rgba(0, 0, 0, 0.5);
+ color: #e4e4e7;
+ padding: 6px 10px;
+ font-size: 11px;
+ line-height: 1.2;
+ cursor: pointer;
+ text-align: left;
+}
+
+.bl-plugin-select-trigger:hover,
+.bl-plugin-select-trigger:focus {
+ background: #0d0b14;
+ border-color: #8b5cf6;
+ outline: none;
+}
+
+.bl-plugin-select-arrow {
+ color: #a78bfa;
+ font-size: 10px;
+ font-weight: 800;
+ line-height: 1;
+}
+
+.bl-plugin-select-menu {
+ position: absolute;
+ z-index: 9999;
+ top: calc(100% + 4px);
+ left: 0;
+ right: 0;
+ max-height: 190px;
+ overflow-y: auto;
+ padding: 4px;
+ border: 1px solid rgba(139, 92, 246, 0.55);
+ border-radius: 8px;
+ background: #0d0b14;
+ box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+}
+
+.bl-plugin-select-option {
+ display: block;
+ width: 100%;
+ border: 0;
+ border-radius: 6px;
+ background: transparent;
+ color: #d4d4d8;
+ cursor: pointer;
+ padding: 7px 8px;
+ text-align: left;
+}
+
+.bl-plugin-select-option:hover,
+.bl-plugin-select-option.selected {
+ background: rgba(139, 92, 246, 0.24);
+ color: #fff;
+}
 
 .bl-field-hint {
  font-size: 9px;

@@ -12,6 +12,7 @@ export default function NodePalette() {
 
  const onDragStart = (event, nodeType) => {
  event.dataTransfer.setData('application/reactflow', nodeType);
+ event.dataTransfer.setData('text/plain', nodeType);
  event.dataTransfer.effectAllowed = 'move';
  };
 

@@ -1,0 +1,30 @@
+{
+ "name": "Bot Leave",
+ "version": "1.0.0",
+ "description": "Make the bot leave the current Discord server with an admin prefix command.",
+ "author": "Kiodium",
+ "icon": "EXIT",
+ "nodeConfig": {
+ "label": "Bot Leave",
+ "icon": "EXIT",
+ "color": "#DC2626",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "botleave",
+ "aliases": "leave,leaveserver,botexit",
+ "embedEnabled": true,
+ "embedColor": "#DC2626",
+ "titleTemplate": "Leaving Server",
+ "descriptionTemplate": "{botName} is leaving **{server}** now.",
+ "plainTextTemplate": "{botName} is leaving {server} now.",
+ "confirmRequired": true,
+ "confirmKeyword": "CONFIRM",
+ "confirmMessage": "Type `{command} CONFIRM` to make me leave this server.",
+ "permissionMessage": "You need Administrator permission to make the bot leave this server.",
+ "ownerOnlyMessage": "Only the bot owner can use this command when owner-only mode is enabled.",
+ "errorMessage": "Could not leave server: {error}",
+ "delayMs": 1200
+ }
+ }
+}

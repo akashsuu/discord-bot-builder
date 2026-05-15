@@ -74,7 +74,7 @@ export default function CustomCommandNode({ id, data, selected }) {
 
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle">
+ <label className="bl-embed-toggle nodrag nowheel">
  <input type="checkbox" checked={!!data.apiEnabled} onChange={(e) => update('apiEnabled', e.target.checked)} />
  API Request
  </label>
@@ -85,7 +85,11 @@ export default function CustomCommandNode({ id, data, selected }) {
  <>
  <div className="bl-field">
  <span className="bl-field-lbl">Method</span>
- <select className="bl-node-input" value={data.apiMethod || 'GET'} onChange={(e) => update('apiMethod', e.target.value)}>
+ <select
+ className="bl-node-input nodrag nopan"
+ value={data.apiMethod || 'GET'}
+ onChange={(e) => update('apiMethod', e.target.value)}
+ >
  <option value="GET">GET</option>
  <option value="POST">POST</option>
  <option value="PUT">PUT</option>
@@ -164,7 +168,7 @@ export default function CustomCommandNode({ id, data, selected }) {
  {/* Embed section */}
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle">
+ <label className="bl-embed-toggle nodrag nowheel">
  <input type="checkbox" checked={!!data.embedEnabled} onChange={(e) => update('embedEnabled', e.target.checked)} />
  Embed Reply
  </label>

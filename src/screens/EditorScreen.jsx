@@ -110,19 +110,20 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  // activeSub: { key, top, left, right } — screen rect of the hovered row
  const [activeSub, setActive] = useState(null);
  const inputRef = useRef(null);
- const hoverTimer = useRef(null);
 
  useEffect(() => { inputRef.current?.focus(); }, []);
- useEffect(() => () => clearTimeout(hoverTimer.current), []);
 
  // Capture the row's screen rect so the submenu can be placed with position:fixed
  const openSub = (key, el) => {
- clearTimeout(hoverTimer.current);
  const r = el.getBoundingClientRect();
  setActive({ key, top: r.top, left: r.left, right: r.right });
  };
- const closeSub = () => { hoverTimer.current = setTimeout(() => setActive(null), 150); };
- const keepSub = () => clearTimeout(hoverTimer.current);
+ const selectNode = (event, type) => {
+ event.preventDefault();
+ event.stopPropagation();
+ onAdd(type);
+ onClose();
+ };
 
  const extraPluginGroups = useMemo(() => {
  const list = (pluginMeta || []).filter((p) => !EVENT_SUBMENU_CATS.has(p.category));
@@ -157,10 +158,10 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  {eventNode && (
  <>
  <div className="bl-ctx-sub-section">Event Node</div>
- <div className="bl-ctx-item" onMouseDown={() => { onAdd(catDef.eventType); onClose(); }}>
+ <button type="button" className="bl-ctx-item" onClick={(e) => selectNode(e, catDef.eventType)}>
  <span className="bl-ctx-item-dot" style={{ background: eventNode.color }} />
  {eventNode.label}
- </div>
+ </button>
  </>
  )}
  {folderPlugins.length > 0 ? (
@@ -168,10 +169,10 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  {eventNode && <div className="bl-ctx-divider" />}
  <div className="bl-ctx-sub-section">Plugins</div>
  {folderPlugins.map((pl) => (
- <div key={pl.type} className="bl-ctx-item" onMouseDown={() => { onAdd(pl.type); onClose(); }}>
+ <button key={pl.type} type="button" className="bl-ctx-item" onClick={(e) => selectNode(e, pl.type)}>
  <span className="bl-ctx-item-dot" style={{ background: pl.color }} />
  {pl.label}
- </div>
+ </button>
  ))}
  </>
  ) : (
@@ -184,10 +185,10 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  const group = extraPluginGroups.find(([label]) => label === key);
  if (group) {
  return group[1].map((p) => (
- <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
+ <button key={p.type} type="button" className="bl-ctx-item" onClick={(e) => selectNode(e, p.type)}>
  <span className="bl-ctx-item-dot" style={{ background: p.color }} />
  {p.label}
- </div>
+ </button>
  ));
  }
  return null;
@@ -195,16 +196,19 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
 
  // Fixed-position left edge: right of the row, or left-shifted near screen edge
  const subLeft = activeSub
- ? (activeSub.right > window.innerWidth - 400 ? activeSub.left - 196 : activeSub.right)
+ ? (activeSub.right > window.innerWidth - 400 ? Math.max(8, activeSub.left - 196) : activeSub.right - 1)
+ : 0;
+ const subTop = activeSub
+ ? Math.max(8, Math.min(activeSub.top, window.innerHeight - 340))
  : 0;
 
  return (
  <>
- <div className="bl-ctx-overlay" onMouseDown={onClose}>
+ <div className="bl-ctx-overlay" onPointerDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
  <div
  className="bl-ctx-menu"
  style={{ left: menu.x, top: menu.y }}
- onMouseDown={(e) => e.stopPropagation()}
+ onPointerDown={(e) => e.stopPropagation()}
  >
  <div className="bl-ctx-header">Add Node</div>
  <input
@@ -219,10 +223,10 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  filtered.length === 0
  ? <div style={{ padding: '8px 10px', color: '#555', fontSize: 11 }}>No results</div>
  : filtered.map((p) => (
- <div key={p.type} className="bl-ctx-item" onMouseDown={() => { onAdd(p.type); onClose(); }}>
+ <button key={p.type} type="button" className="bl-ctx-item" onClick={(e) => selectNode(e, p.type)}>
  <span className="bl-ctx-item-dot" style={{ background: p.color }} />
  {p.label}
- </div>
+ </button>
  ))
  ) : (
  <>
@@ -234,8 +238,10 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  <div
  key={cat.key}
  className={`bl-ctx-item bl-ctx-item-sub${isActive ? ' bl-ctx-item-active' : ''}`}
- onMouseEnter={(e) => openSub(cat.key, e.currentTarget)}
- onMouseLeave={closeSub}
+ onPointerEnter={(e) => openSub(cat.key, e.currentTarget)}
+ onPointerMove={(e) => openSub(cat.key, e.currentTarget)}
+ onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); openSub(cat.key, e.currentTarget); }}
+ onClick={(e) => { e.preventDefault(); e.stopPropagation(); openSub(cat.key, e.currentTarget); }}
  >
  <span className="bl-ctx-item-dot" style={{ background: cat.color }} />
  <span style={{ flex: 1 }}>{cat.label}</span>
@@ -256,10 +262,10 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  const p = palette.find((x) => x.type === type);
  if (!p) return null;
  return (
- <div key={type} className="bl-ctx-item" onMouseDown={() => { onAdd(type); onClose(); }}>
+ <button key={type} type="button" className="bl-ctx-item" onClick={(e) => selectNode(e, type)}>
  <span className="bl-ctx-item-dot" style={{ background: p.color }} />
  {p.label}
- </div>
+ </button>
  );
  })}
  </React.Fragment>
@@ -275,8 +281,10 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  <div
  key={label}
  className={`bl-ctx-item bl-ctx-item-sub${isActive ? ' bl-ctx-item-active' : ''}`}
- onMouseEnter={(e) => openSub(label, e.currentTarget)}
- onMouseLeave={closeSub}
+ onPointerEnter={(e) => openSub(label, e.currentTarget)}
+ onPointerMove={(e) => openSub(label, e.currentTarget)}
+ onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); openSub(label, e.currentTarget); }}
+ onClick={(e) => { e.preventDefault(); e.stopPropagation(); openSub(label, e.currentTarget); }}
  >
  <span className="bl-ctx-item-dot" style={{ background: items[0]?.color || '#555' }} />
  <span style={{ flex: 1 }}>{label}</span>
@@ -295,10 +303,8 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  {activeSub && (
  <div
  className="bl-ctx-submenu-panel"
- style={{ top: activeSub.top, left: subLeft }}
- onMouseEnter={keepSub}
- onMouseLeave={closeSub}
- onMouseDown={(e) => e.stopPropagation()}
+ style={{ top: subTop, left: subLeft }}
+ onPointerDown={(e) => e.stopPropagation()}
  >
  {buildSubContent(activeSub.key)}
  </div>
@@ -2798,7 +2804,7 @@ function DiscordPreviewRestart({ node }) {
  ...d,
  embedColor: d.embedColor || '#F97316',
  embedTitle: title,
- embedFooter: `Restart delay: ${d.delayMs - 1200}ms`,
+ embedFooter: `Restart delay: ${d.delayMs ?? 1200}ms`,
  }}
  text={text}
  />
@@ -2836,9 +2842,52 @@ function DiscordPreviewShutdown({ node }) {
  <div className="dc-plain">{plain}</div>
  ) : (
  <DiscordEmbed
- data={{ ...d, embedColor: d.embedColor || '#EF4444', embedTitle: title, embedFooter: `Shutdown delay: ${d.delayMs - 1200}ms` }}
+ data={{ ...d, embedColor: d.embedColor || '#EF4444', embedTitle: title, embedFooter: `Shutdown delay: ${d.delayMs ?? 1200}ms` }}
  text={text}
  />
+ )}
+ </div>
+ </div>
+ </div>
+ );
+}
+
+function DiscordPreviewBotLeave({ node }) {
+ const { botInfo } = useProject();
+ const now = new Date();
+ const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+ const d = node?.data || {};
+ const botName = botInfo?.username || 'Bot';
+ const vars = { botName, server: 'Kiodium Server', serverId: '123456789012345678', command: '!botleave', confirmKeyword: d.confirmKeyword || 'CONFIRM' };
+ const title = restartPreviewText(d.titleTemplate || 'Leaving Server', d, vars);
+ const text = restartPreviewText(d.descriptionTemplate || '{botName} is leaving **{server}** now.', d, vars);
+ const plain = restartPreviewText(d.plainTextTemplate || '{botName} is leaving {server} now.', d, vars);
+
+ return (
+ <div className="dc-wrap">
+ <div className="dc-msg">
+ {botInfo?.avatarURL ? (
+ <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+ ) : null}
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#DC2626' }}>L</div>
+ <div className="dc-msg-body">
+ <div className="dc-msg-hdr">
+ <span className="dc-bot-name">{botName}</span>
+ <span className="dc-bot-badge">BOT</span>
+ <span className="dc-timestamp">Today at {time}</span>
+ </div>
+ {d.embedEnabled === false ? (
+ <div className="dc-plain">{plain}</div>
+ ) : (
+ <DiscordEmbed
+ data={{ ...d, embedColor: d.embedColor || '#DC2626', embedTitle: title, embedFooter: `Leave delay: ${d.delayMs ?? 1200}ms` }}
+ text={text}
+ />
+ )}
+ {d.confirmRequired !== false && (
+ <div className="dc-plain" style={{ marginTop: 6, color: '#FCA5A5' }}>
+ {restartPreviewText(d.confirmMessage || 'Type `{command} CONFIRM` to make me leave this server.', d, vars)}
+ </div>
  )}
  </div>
  </div>
@@ -4037,6 +4086,7 @@ function NPanel({ selectedNode, setNodes }) {
  const isWelcomePreview = selectedNode.type === 'admin_welcome';
  const isRestartPreview = selectedNode.type === 'admin_restart';
  const isShutdownPreview = selectedNode.type === 'admin_shutdown';
+ const isBotLeavePreview = selectedNode.type === 'admin_botleave';
  const isVoiceKickPreview = selectedNode.type === 'moderation_voicekick';
  const isVoiceBanPreview = selectedNode.type === 'moderation_voiceban';
  const isVoiceUnbanPreview = selectedNode.type === 'moderation_voiceunban';
@@ -4314,6 +4364,8 @@ function NPanel({ selectedNode, setNodes }) {
  <DiscordPreviewRestart node={selectedNode} />
  ) : isShutdownPreview ? (
  <DiscordPreviewShutdown node={selectedNode} />
+ ) : isBotLeavePreview ? (
+ <DiscordPreviewBotLeave node={selectedNode} />
  ) : isVoiceKickPreview ? (
  <DiscordPreviewVoiceKick node={selectedNode} />
  ) : isVoiceBanPreview ? (
@@ -4479,20 +4531,17 @@ function EditorInner() {
  setContextMenu({ x: e.clientX, y: e.clientY, flowPos });
  }, [rfProject]);
 
- const addNodeAtPos = useCallback((type) => {
- if (!contextMenu) return;
- const id = `${type}_${Date.now()}_${_nc++}`;
-
- let data;
+ const getNodeData = useCallback((type) => {
  const builtin = DEFAULT_NODE_DATA[type];
  if (builtin) {
  // Deep-clone so we don't share array/object references between nodes
- data = JSON.parse(JSON.stringify(builtin));
- } else {
+ return JSON.parse(JSON.stringify(builtin));
+ }
+
  // Plugin node — seed embed fields first so they're always present,
  // then plugin defaults override anything they define
  const pm = pluginMeta.find((p) => p.type === type) || {};
- data = {
+ return {
  _label: pm.label || type,
  _icon: pm.icon || 'Plugin',
  _color: pm.color || '#2A2A3A',
@@ -4507,10 +4556,43 @@ function EditorInner() {
  embedFooter: '',
  ...JSON.parse(JSON.stringify(pm.defaults || {})),
  };
- }
+ }, [pluginMeta]);
 
- setNodes((prev) => [...prev, { id, type, position: contextMenu.flowPos, data }]);
- }, [contextMenu, setNodes, pluginMeta]);
+ const addNode = useCallback((type, position) => {
+ if (!type || !position) return;
+ const id = `${type}_${Date.now()}_${_nc++}`;
+ const data = getNodeData(type);
+ setNodes((prev) => [...prev, { id, type, position, data }]);
+ }, [getNodeData, setNodes]);
+
+ const addNodeAtPos = useCallback((type) => {
+ if (!contextMenu) return;
+ addNode(type, contextMenu.flowPos);
+ }, [addNode, contextMenu]);
+
+ const onDragOver = useCallback((event) => {
+ event.preventDefault();
+ event.dataTransfer.dropEffect = 'move';
+ }, []);
+
+ const onDrop = useCallback((event) => {
+ event.preventDefault();
+ if (!wrapperRef.current) return;
+
+ const type =
+ event.dataTransfer.getData('application/reactflow') ||
+ event.dataTransfer.getData('text/plain');
+ if (!type) return;
+
+ const bounds = wrapperRef.current.getBoundingClientRect();
+ const position = rfProject({
+ x: event.clientX - bounds.left,
+ y: event.clientY - bounds.top,
+ });
+
+ setContextMenu(null);
+ addNode(type, position);
+ }, [addNode, rfProject]);
 
  // close context menu when clicking outside
  const onPaneClick = useCallback(() => {
@@ -4529,15 +4611,21 @@ function EditorInner() {
  onNodesChange={onNodesChange}
  onEdgesChange={onEdgesChange}
  onConnect={onConnect}
+ onDragOver={onDragOver}
+ onDrop={onDrop}
  onPaneContextMenu={onPaneContextMenu}
  onPaneClick={onPaneClick}
  nodeTypes={nodeTypes}
+ nodesDraggable
+ noPanClassName="nopan"
+ noDragClassName="nodrag"
+ noWheelClassName="nowheel"
  fitView
  fitViewOptions={{ padding: 0.3 }}
  deleteKeyCode="Delete"
  snapToGrid
  snapGrid={[10, 10]}
- selectionOnDrag={true}
+ selectionOnDrag={false}
  panOnDrag={[1, 2]}
  panOnScroll={false}
  zoomOnScroll={true}
