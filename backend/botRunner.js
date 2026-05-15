@@ -27,6 +27,10 @@ const log                    = rootLogger.child('BotRunner');
 
 let client  = null;
 let running = false;
+let lastProjectData = null;
+let lastLegacyPlugins = {};
+let lastIpcLog = null;
+let lastOnInfo = () => {};
 
 // ── Discord event → built-in event node type ──────────────────────────────────
 const NODE_EVENT_DEFAULT = {
@@ -151,6 +155,20 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
 
   const { nodes = [], edges = [], token, prefix: rawPrefix = '!' } = projectData;
   const prefix = String(rawPrefix ?? '!').trim() || '!';
+  lastProjectData = projectData;
+  lastLegacyPlugins = _legacyPlugins;
+  lastIpcLog = ipcLog;
+  lastOnInfo = onInfo;
+  globalThis.__kiodiumRestartBot = async () => {
+    if (!lastProjectData) throw new Error('No running project is available to restart.');
+    const restartData = lastProjectData;
+    const restartPlugins = lastLegacyPlugins;
+    const restartLog = lastIpcLog;
+    const restartInfo = lastOnInfo;
+    await stop();
+    await start(restartData, restartPlugins, restartLog, restartInfo);
+    return true;
+  };
 
   if (!token?.trim()) {
     throw new Error('Bot token is missing. Add it via the Token button.');
@@ -261,6 +279,7 @@ async function stop() {
   running = false;
   // Reset interaction handler so it re-attaches cleanly on next start
   detach();
+  if (globalThis.__kiodiumRestartBot && !lastProjectData) delete globalThis.__kiodiumRestartBot;
   log.info('Bot stopped.');
 }
 

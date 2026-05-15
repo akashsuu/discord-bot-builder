@@ -74,6 +74,16 @@ input, textarea, select, button { font-family: inherit; font-size: 12px; color: 
 ::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: #555; }
 
+.bl-scroll-invisible {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.bl-scroll-invisible::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 /* ────────────────────────────────────────────────────
    HOME / CREATE / TOKEN SCREENS
 ──────────────────────────────────────────────────── */

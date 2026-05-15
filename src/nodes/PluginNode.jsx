@@ -151,6 +151,11 @@ const WELCOME_KEYS = new Set([
   'testModeMessage', 'permissionMessage', 'missingChannelMessage', 'errorMessage',
 ]);
 
+const RESTART_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+  'successMessage', 'permissionMessage', 'unavailableMessage', 'errorMessage', 'delayMs',
+]);
+
 const NUKE_KEYS = new Set([
   'confirmationRequired', 'confirmationKeyword', 'reason', 'successMessage',
   'confirmMessage', 'permissionMessage', 'unsupportedMessage', 'errorMessage',
@@ -169,6 +174,8 @@ const MUSIC_PLAY_KEYS = new Set([
 const GIVEAWAY_CREATE_KEYS = new Set([
   'aliases', 'panelTitle', 'setupMessage', 'prize', 'duration', 'winnerCount', 'channelId',
   'enterEmoji', 'enterButtonLabel', 'durationButtons', 'winnerLabel', 'footerTemplate',
+  'prizeButtonLabel', 'winnersButtonLabel', 'customDurationButtonLabel',
+  'sendButtonLabel', 'abortButtonLabel', 'channelSelectPlaceholder',
   'hostedByTemplate', 'endedTitle', 'endedDescription', 'noEntriesText',
   'permissionMessage', 'sentMessage', 'abortedMessage',
 ]);
@@ -446,7 +453,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // â”€â”€ Derived values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(GIVEAWAY_CREATE_KEYS.has(k) && type === 'giveaway_create') && !(GIVEAWAY_STOP_KEYS.has(k) && type === 'giveaway_stop') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(RESTART_KEYS.has(k) && type === 'admin_restart') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(GIVEAWAY_CREATE_KEYS.has(k) && type === 'giveaway_create') && !(GIVEAWAY_STOP_KEYS.has(k) && type === 'giveaway_stop') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -976,6 +983,12 @@ export default function PluginNode({ id, type, data, selected }) {
                 { key: 'duration', label: 'Default Duration', fallback: '1d', rows: 1 },
                 { key: 'channelId', label: 'Default Channel ID', fallback: 'Leave blank to use current channel', rows: 1 },
                 { key: 'durationButtons', label: 'Duration Buttons', fallback: '1h,6h,1d,3d,7d', rows: 2 },
+                { key: 'prizeButtonLabel', label: 'Prize Button Text', fallback: 'Prize', rows: 1 },
+                { key: 'winnersButtonLabel', label: 'Winners Button Text', fallback: 'Winners', rows: 1 },
+                { key: 'customDurationButtonLabel', label: 'Custom Duration Button Text', fallback: 'Custom Duration', rows: 1 },
+                { key: 'sendButtonLabel', label: 'Send Button Text', fallback: 'Send Giveaway', rows: 1 },
+                { key: 'abortButtonLabel', label: 'Abort Button Text', fallback: 'Abort', rows: 1 },
+                { key: 'channelSelectPlaceholder', label: 'Channel Select Placeholder', fallback: 'Select giveaway channel', rows: 1 },
                 { key: 'enterEmoji', label: 'Entry Emoji', fallback: '🎉', rows: 1 },
                 { key: 'enterButtonLabel', label: 'Entry Button Text', fallback: '{emoji} {count}', rows: 1 },
                 { key: 'hostedByTemplate', label: 'Hosted By Text', fallback: 'Hosted by: {host}', rows: 2 },
@@ -1025,6 +1038,61 @@ export default function PluginNode({ id, type, data, selected }) {
                 Admins use the Discord setup panel to change prize, duration, winners, and target channel.
                 {' '}
                 <span style={{ color: '#F59E0B' }}>{'{prize} {duration} {host} {winnerCount} {giveawayId} {endTime} {count}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'giveaway_stop' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#DC2626">Stop Giveaways</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="gstop,endgiveaway,stopgiveaway"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Giveaways Stopped', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: 'Stopped **{count}** active giveaway(s) across all channels.', rows: 3 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: 'Stopped {count} active giveaway(s) across all channels.', rows: 2 },
+                { key: 'noneMessage', label: 'No Active Message', fallback: 'No active giveaways found in this server.', rows: 2 },
+                { key: 'permissionMessage', label: 'Permission Error', fallback: 'You need Manage Server permission to stop giveaways.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Could not stop giveaways: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? ''}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder={fallback}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#DC2626'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#DC2626'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                Stops every active giveaway in this server, no matter which channel it was posted in.
+                {' '}
+                <span style={{ color: '#F87171' }}>{'{count} {server} {channel} {error}'}</span>
               </span>
             </>
           )}
@@ -1784,6 +1852,73 @@ export default function PluginNode({ id, type, data, selected }) {
                 <span style={{ color: '#22C55E' }}>{'{username} {mention} {server} {member_count} {account_created}'}</span>
                 {' '}
                 <span style={{ color: '#888' }}>{'{avatar_url} {server_icon} {channel} {user_id} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'admin_restart' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F97316">Restart Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="reboot,restartbot"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Restarting Bot', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '{botName} is restarting now. I will reconnect in a moment.', rows: 3 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: '{botName} is restarting now.', rows: 2 },
+                { key: 'successMessage', label: 'Success Text', fallback: 'Restart command accepted.', rows: 2 },
+                { key: 'permissionMessage', label: 'Permission Error', fallback: 'You need Manage Server permission to restart the bot.', rows: 2 },
+                { key: 'unavailableMessage', label: 'Unavailable Text', fallback: 'Restart is not available in this runtime.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Text', fallback: 'Could not restart bot: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? ''}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder={fallback}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Restart Delay MS</span>
+                <input
+                  className="bl-node-input"
+                  type="number"
+                  min="250"
+                  value={data.delayMs ?? 1200}
+                  onChange={(e) => update('delayMs', Number(e.target.value) || 1200)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#F97316'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#F97316'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                Variables: <span style={{ color: '#F97316' }}>{'{botName} {botTag} {user} {mention} {server} {channel} {error}'}</span>
               </span>
             </>
           )}

@@ -123,11 +123,11 @@ function setupRows(data, nonce) {
   const durations = String(data.durationButtons || '1h,6h,1d,3d,7d').split(',').map((d) => d.trim()).filter(Boolean).slice(0, 5);
   return [
     new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId(`giveaway_setup:prize:${nonce}`).setLabel('Prize').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId(`giveaway_setup:winners:${nonce}`).setLabel('Winners').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId(`giveaway_setup:duration:${nonce}`).setLabel('Custom Duration').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId(`giveaway_setup:send:${nonce}`).setLabel('Send Giveaway').setStyle(ButtonStyle.Success),
-      new ButtonBuilder().setCustomId(`giveaway_setup:abort:${nonce}`).setLabel('Abort').setStyle(ButtonStyle.Danger)
+      new ButtonBuilder().setCustomId(`giveaway_setup:prize:${nonce}`).setLabel(String(data.prizeButtonLabel || 'Prize').slice(0, 80)).setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId(`giveaway_setup:winners:${nonce}`).setLabel(String(data.winnersButtonLabel || 'Winners').slice(0, 80)).setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId(`giveaway_setup:duration:${nonce}`).setLabel(String(data.customDurationButtonLabel || 'Custom Duration').slice(0, 80)).setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId(`giveaway_setup:send:${nonce}`).setLabel(String(data.sendButtonLabel || 'Send Giveaway').slice(0, 80)).setStyle(ButtonStyle.Success),
+      new ButtonBuilder().setCustomId(`giveaway_setup:abort:${nonce}`).setLabel(String(data.abortButtonLabel || 'Abort').slice(0, 80)).setStyle(ButtonStyle.Danger)
     ),
     new ActionRowBuilder().addComponents(
       ...durations.map((duration) => new ButtonBuilder()
@@ -138,7 +138,7 @@ function setupRows(data, nonce) {
     new ActionRowBuilder().addComponents(
       new ChannelSelectMenuBuilder()
         .setCustomId(`giveaway_setup:channel:${nonce}`)
-        .setPlaceholder('Select giveaway channel')
+        .setPlaceholder(String(data.channelSelectPlaceholder || 'Select giveaway channel').slice(0, 150))
         .setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
     ),
   ];
@@ -245,6 +245,12 @@ module.exports = {
         enterEmoji: { type: 'string', default: '🎉' },
         enterButtonLabel: { type: 'string', default: '{emoji} {count}' },
         durationButtons: { type: 'string', default: '1h,6h,1d,3d,7d' },
+        prizeButtonLabel: { type: 'string', default: 'Prize' },
+        winnersButtonLabel: { type: 'string', default: 'Winners' },
+        customDurationButtonLabel: { type: 'string', default: 'Custom Duration' },
+        sendButtonLabel: { type: 'string', default: 'Send Giveaway' },
+        abortButtonLabel: { type: 'string', default: 'Abort' },
+        channelSelectPlaceholder: { type: 'string', default: 'Select giveaway channel' },
         winnerLabel: { type: 'string', default: '{winnerCount} winner' },
         footerTemplate: { type: 'string', default: '{winnerCount} winner • ID: {giveawayId} • Ends • {endTime}' },
         hostedByTemplate: { type: 'string', default: 'Hosted by: {host}' },

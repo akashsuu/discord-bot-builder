@@ -1446,7 +1446,7 @@ function DiscordPreviewGiveawayCreate({ node }) {
   const now = new Date();
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const d = node?.data || {};
-  const botName = botInfo?.username || 'Cinnamon';
+  const botName = botInfo?.username || 'Bot';
   const emoji = d.enterEmoji || '🎉';
   const duration = giveawayPreviewDuration(d.duration || '1d');
   const durationButtons = String(d.durationButtons || '1h,6h,1d,3d,7d').split(',').map((x) => x.trim()).filter(Boolean).slice(0, 5);
@@ -1454,6 +1454,106 @@ function DiscordPreviewGiveawayCreate({ node }) {
   const hostedBy = giveawayPreviewText(d.hostedByTemplate || 'Hosted by: {host}', d);
   const enterLabel = giveawayPreviewText(d.enterButtonLabel || '{emoji} {count}', d);
   const relativeEnd = String(d.duration || '1d').trim().toLowerCase() === '1h' ? 'in an hour' : String(d.duration || '1d').trim().toLowerCase() === '1d' ? 'in a day' : `in ${duration}`;
+  const setupButtons = [
+    d.prizeButtonLabel || 'Prize',
+    d.winnersButtonLabel || 'Winners',
+    d.customDurationButtonLabel || 'Custom Duration',
+    d.sendButtonLabel || 'Send Giveaway',
+    d.abortButtonLabel || 'Abort',
+  ];
+
+  return (
+    <div className="dc-wrap" style={{ display: 'grid', gap: 14 }}>
+      <div>
+        <div style={{ color: '#B5BAC1', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', margin: '0 0 6px 44px' }}>
+          Admin setup preview
+        </div>
+        <div className="dc-msg">
+          {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} /> : null}
+          <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#B45309' }}>{emoji}</div>
+          <div className="dc-msg-body">
+            <div className="dc-msg-hdr">
+              <span className="dc-bot-name">{botName}</span>
+              <span className="dc-bot-badge">BOT</span>
+              <span className="dc-timestamp">Today at {time}</span>
+            </div>
+            <DiscordEmbed
+              data={{ ...d, embedColor: d.embedColor || '#B45309', embedTitle: d.panelTitle || `${emoji} GIVEAWAY ${emoji}`, embedFooter: 'Admin setup panel' }}
+              text={`${d.setupMessage || 'Configure your giveaway, then send it to the selected channel.'}\n\n**Prize:** ${d.prize || 'Example Prize'}\n**Duration:** ${duration}\n**Winners:** ${d.winnerCount || 1}\n**Channel:** ${d.channelId ? `<#${d.channelId}>` : 'Current channel'}\n**Enter button:** ${emoji}`}
+            />
+            <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {setupButtons.map((label) => (
+                  <button key={label} type="button" style={{ background: label === (d.sendButtonLabel || 'Send Giveaway') ? '#248046' : label === (d.abortButtonLabel || 'Abort') ? '#DA373C' : '#5865F2', border: '1px solid rgba(255,255,255,0.12)', color: '#FFF', borderRadius: 8, padding: '9px 12px', fontSize: 12, fontWeight: 700 }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {durationButtons.map((label) => (
+                  <button key={label} type="button" style={{ background: '#4E5058', border: '1px solid rgba(255,255,255,0.12)', color: '#FFF', borderRadius: 8, padding: '9px 14px', fontSize: 12, fontWeight: 700 }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div style={{ background: '#2B2D31', border: '1px solid #3F4147', color: '#B5BAC1', borderRadius: 6, padding: '10px 12px', fontSize: 13, overflowWrap: 'anywhere' }}>
+                # {d.channelSelectPlaceholder || 'Select giveaway channel'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style={{ color: '#B5BAC1', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', margin: '0 0 6px 44px' }}>
+          User participation preview
+        </div>
+        <div className="dc-msg">
+          {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} /> : null}
+          <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#B45309' }}>{emoji}</div>
+          <div className="dc-msg-body">
+            <div className="dc-msg-hdr">
+              <span className="dc-bot-name">{botName}</span>
+              <span className="dc-bot-badge">BOT</span>
+              <span className="dc-timestamp">Today at {time}</span>
+            </div>
+            <div style={{ color: '#F59E0B', fontSize: 17, fontWeight: 800, marginBottom: 8, overflowWrap: 'anywhere' }}>
+              {d.panelTitle || `${emoji} GIVEAWAY ${emoji}`}
+            </div>
+            <div style={{ borderLeft: `5px solid ${d.embedColor || '#B45309'}`, background: '#2B2D31', borderRadius: 6, padding: '16px 18px', width: '100%', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+              <div style={{ color: '#F2F3F5', fontSize: 18, fontWeight: 800, marginBottom: 14, overflowWrap: 'anywhere' }}>{d.prize || 'Example Prize'}</div>
+              <div style={{ color: '#DCDDDE', fontSize: 14, lineHeight: 1.45, overflowWrap: 'anywhere' }}>
+                Click <span style={{ color: '#F59E0B' }}>{emoji}</span> to enter!<br />
+                <strong style={{ textDecoration: 'underline' }}>Duration: {duration}</strong> <span>(Ends {relativeEnd})</span><br />
+                {hostedBy}
+              </div>
+              <div style={{ color: '#DCDDDE', fontSize: 12, fontWeight: 700, marginTop: 16, overflowWrap: 'anywhere' }}>
+                {footer}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+              <button type="button" style={{ background: '#248046', color: '#fff', border: '1px solid rgba(255,255,255,.12)', borderRadius: 5, padding: '10px 24px', minWidth: 96, fontSize: 14, fontWeight: 800 }}>
+                {enterLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscordPreviewGiveawayStop({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const vars = { count: 3, server: 'My Server', channel: 'giveaways', error: 'Missing permission' };
+  const apply = (template, fallback) => String(template || fallback).replace(/\{(\w+)\}/g, (m, k) => Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m);
+  const title = apply(d.titleTemplate, 'Giveaways Stopped');
+  const text = apply(d.descriptionTemplate, 'Stopped **{count}** active giveaway(s) across all channels.');
+  const plain = apply(d.plainTextTemplate, 'Stopped {count} active giveaway(s) across all channels.');
 
   return (
     <div className="dc-wrap">
@@ -1466,53 +1566,28 @@ function DiscordPreviewGiveawayCreate({ node }) {
             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
           />
         ) : null}
-        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#B45309' }}>{emoji}</div>
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#DC2626' }}>!</div>
         <div className="dc-msg-body">
           <div className="dc-msg-hdr">
             <span className="dc-bot-name">{botName}</span>
             <span className="dc-bot-badge">BOT</span>
             <span className="dc-timestamp">Today at {time}</span>
           </div>
-
-          <div style={{ color: '#F59E0B', fontSize: 17, fontWeight: 800, marginBottom: 8, overflowWrap: 'anywhere' }}>
-            {d.panelTitle || `${emoji} GIVEAWAY ${emoji}`}
-          </div>
-          <div style={{ borderLeft: `5px solid ${d.embedColor || '#B45309'}`, background: '#2B2D31', borderRadius: 6, padding: '16px 18px', width: '100%', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
-            <div style={{ color: '#F2F3F5', fontSize: 18, fontWeight: 800, marginBottom: 14, overflowWrap: 'anywhere' }}>{d.prize || 'Example Prize'}</div>
-            <div style={{ color: '#DCDDDE', fontSize: 14, lineHeight: 1.45, overflowWrap: 'anywhere' }}>
-              Click <span style={{ color: '#F59E0B' }}>{emoji}</span> to enter!<br />
-              <strong style={{ textDecoration: 'underline' }}>Duration: {duration}</strong> <span>(Ends {relativeEnd})</span><br />
-              {hostedBy}
-            </div>
-            <div style={{ color: '#DCDDDE', fontSize: 12, fontWeight: 700, marginTop: 16, overflowWrap: 'anywhere' }}>
-              {footer}
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
-            <button type="button" style={{ background: '#248046', color: '#fff', border: '1px solid rgba(255,255,255,.12)', borderRadius: 5, padding: '10px 24px', minWidth: 96, fontSize: 14, fontWeight: 800 }}>
-              {enterLabel}
-            </button>
-          </div>
-
-          <div style={{ marginTop: 16, color: '#B5BAC1', fontSize: 12, fontWeight: 700 }}>Admin setup preview</div>
-          <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['Prize', 'Winners', 'Custom Duration', 'Send Giveaway', 'Abort'].map((label) => (
-                <button key={label} type="button" style={{ background: label === 'Send Giveaway' ? '#248046' : label === 'Abort' ? '#DA373C' : '#5865F2', border: '1px solid rgba(255,255,255,0.12)', color: '#FFF', borderRadius: 8, padding: '9px 12px', fontSize: 12, fontWeight: 700 }}>
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {durationButtons.map((label) => (
-                <button key={label} type="button" style={{ background: '#4E5058', border: '1px solid rgba(255,255,255,0.12)', color: '#FFF', borderRadius: 8, padding: '9px 14px', fontSize: 12, fontWeight: 700 }}>
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div style={{ background: '#2B2D31', border: '1px solid #3F4147', color: '#B5BAC1', borderRadius: 6, padding: '10px 12px', fontSize: 13 }}>
-              # Select giveaway channel
-            </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedColor: d.embedColor || '#DC2626',
+                embedTitle: title,
+                embedFooter: 'Giveaway moderation',
+              }}
+              text={text}
+            />
+          )}
+          <div style={{ color: '#80848e', fontSize: 11, marginTop: 8 }}>
+            Stops giveaways from every channel in the current server.
           </div>
         </div>
       </div>
@@ -2485,6 +2560,69 @@ function nukePreviewText(template, data, extra = {}) {
   );
 }
 
+function restartPreviewText(template, data, extra = {}) {
+  const vars = {
+    botName: 'Bot',
+    botTag: 'Bot#0000',
+    user: 'Akashsuu',
+    mention: '@Akashsuu',
+    server: 'My Server',
+    channel: 'general',
+    error: 'Restart failed',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewRestart({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const title = restartPreviewText(d.titleTemplate || 'Restarting Bot', d, { botName });
+  const text = restartPreviewText(d.descriptionTemplate || '{botName} is restarting now. I will reconnect in a moment.', d, { botName });
+  const plain = restartPreviewText(d.plainTextTemplate || '{botName} is restarting now.', d, { botName });
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#F97316' }}>R</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedColor: d.embedColor || '#F97316',
+                embedTitle: title,
+                embedFooter: `Restart delay: ${d.delayMs ?? 1200}ms`,
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DiscordPreviewNuke({ node }) {
   const { botInfo } = useProject();
   const now = new Date();
@@ -3300,7 +3438,7 @@ function NPanel({ selectedNode, setNodes }) {
 
   if (!selectedNode) {
     return (
-      <div className="w-72 min-w-[288px] bg-zinc-950/40 backdrop-blur-3xl border-l border-zinc-800/50 flex flex-col overflow-hidden text-xs text-zinc-400 absolute right-0 top-12 bottom-0 z-50 shadow-2xl">
+      <div className="w-72 min-w-[288px] bg-zinc-950/40 backdrop-blur-3xl border-l border-zinc-800/50 flex flex-col overflow-y-auto bl-scroll-invisible text-xs text-zinc-400 absolute right-0 top-12 bottom-0 z-50 shadow-2xl">
         <div className="flex items-center justify-center flex-1 text-center p-6 leading-relaxed">
           Select a node<br />to see properties
         </div>
@@ -3331,8 +3469,10 @@ function NPanel({ selectedNode, setNodes }) {
   const isPlayingPreview = selectedNode.type === 'info_playing';
   const isBotInfoPreview = selectedNode.type === 'info_botinfo';
   const isWelcomePreview = selectedNode.type === 'admin_welcome';
+  const isRestartPreview = selectedNode.type === 'admin_restart';
   const isMusicPlayPreview = selectedNode.type === 'music_play';
   const isGiveawayCreatePreview = selectedNode.type === 'giveaway_create';
+  const isGiveawayStopPreview = selectedNode.type === 'giveaway_stop';
   const isMinecraftProfilePreview = selectedNode.type === 'game_minecraft_profile';
   const isRobloxProfilePreview = selectedNode.type === 'game_roblox_profile';
   const isFortniteProfilePreview = selectedNode.type === 'game_fortnite_profile';
@@ -3350,7 +3490,7 @@ function NPanel({ selectedNode, setNodes }) {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 300, opacity: 0 }}
       transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
-      className={`${isTicketPanel ? 'w-[420px] min-w-[420px]' : 'w-80 min-w-[320px]'} bg-zinc-900/60 backdrop-blur-2xl border border-zinc-800 rounded-2xl flex flex-col overflow-hidden text-xs absolute right-4 top-4 bottom-4 z-50 shadow-2xl shadow-black/50`}
+      className={`${isTicketPanel ? 'w-[420px] min-w-[420px]' : 'w-80 min-w-[320px]'} bg-zinc-900/60 backdrop-blur-2xl border border-zinc-800 rounded-2xl flex flex-col overflow-y-auto bl-scroll-invisible text-xs absolute right-4 top-4 bottom-4 z-50 shadow-2xl shadow-black/50`}
     >
       {/* Node section */}
       <div className="bl-npanel-section">
@@ -3596,10 +3736,14 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewBotInfo node={selectedNode} />
               ) : isWelcomePreview ? (
                 <DiscordPreviewWelcome node={selectedNode} />
+              ) : isRestartPreview ? (
+                <DiscordPreviewRestart node={selectedNode} />
               ) : isMusicPlayPreview ? (
                 <DiscordPreviewMusicPlay node={selectedNode} />
               ) : isGiveawayCreatePreview ? (
                 <DiscordPreviewGiveawayCreate node={selectedNode} />
+              ) : isGiveawayStopPreview ? (
+                <DiscordPreviewGiveawayStop node={selectedNode} />
               ) : isMinecraftProfilePreview ? (
                 <DiscordPreviewMinecraftProfile node={selectedNode} />
               ) : isRobloxProfilePreview ? (
