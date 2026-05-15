@@ -394,7 +394,9 @@ function DiscordPreview({ node }) {
 
   let embedTitleOverride = null;
 
-  if (node.type === 'custom_command')    rawText = d.reply  || '';
+  if (node.type === 'custom_command') {
+    rawText = d.apiEnabled ? (d.apiReply || d.reply || '{apiResult}') : (d.reply || '');
+  }
   else if (node.type === 'send_message') rawText = d.text   || '';
   else {
     if (Array.isArray(d.pages) && d.pages.length > 0) {
@@ -429,7 +431,18 @@ function DiscordPreview({ node }) {
   // Pass page-specific demo values into demoSub
   const extraTokens = isPageMenu
     ? { page: String(safePgIdx + 1), totalPages: String(totalPages) }
-    : { author: 'akashsuu', target: 'arzu_ly', gif: 'https://nekos.best/dance.gif', anime: 'Kyoukai no Kanata' };
+    : {
+        author: 'akashsuu',
+        target: 'arzu_ly',
+        gif: 'https://nekos.best/dance.gif',
+        anime: 'Kyoukai no Kanata',
+        apiResult: 'Example API result',
+        result: 'Example API result',
+        apiStatus: '200',
+        apiStatusText: 'OK',
+        apiOk: 'true',
+        apiJson: '{"message":"Example API result"}',
+      };
 
   const text = demoSub(rawText, { ...d, ...extraTokens });
   const embedText = demoSub(rawEmbedText || rawText, { ...d, ...extraTokens });
@@ -1391,6 +1404,115 @@ function DiscordPreviewEmbedBuilder({ node }) {
                 })}
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function giveawayPreviewDuration(raw) {
+  const value = String(raw || '1d').trim().toLowerCase();
+  const match = value.match(/^(\d+)\s*(s|m|h|d|sec|secs|min|mins|hr|hrs|day|days)$/);
+  if (!match) return '1 day';
+  const amount = Number(match[1]) || 1;
+  const unit = match[2][0];
+  const label = unit === 's' ? 'second' : unit === 'm' ? 'minute' : unit === 'h' ? 'hour' : 'day';
+  return `${amount} ${label}${amount === 1 ? '' : 's'}`;
+}
+
+function giveawayPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    prize: data.prize || 'Example Prize',
+    duration: giveawayPreviewDuration(data.duration || '1d'),
+    host: '@Akashsuu',
+    winnerCount: data.winnerCount || 1,
+    giveawayId: '1200499620288143510',
+    endTime: 'Tomorrow at 9:57 AM',
+    winners: '@Akashsuu',
+    channel: data.channelId ? `<#${data.channelId}>` : '#giveaways',
+    count: 0,
+    emoji: data.enterEmoji || '🎉',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function DiscordPreviewGiveawayCreate({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Cinnamon';
+  const emoji = d.enterEmoji || '🎉';
+  const duration = giveawayPreviewDuration(d.duration || '1d');
+  const durationButtons = String(d.durationButtons || '1h,6h,1d,3d,7d').split(',').map((x) => x.trim()).filter(Boolean).slice(0, 5);
+  const footer = giveawayPreviewText(d.footerTemplate || '{winnerCount} winner • ID: {giveawayId} • Ends • {endTime}', d);
+  const hostedBy = giveawayPreviewText(d.hostedByTemplate || 'Hosted by: {host}', d);
+  const enterLabel = giveawayPreviewText(d.enterButtonLabel || '{emoji} {count}', d);
+  const relativeEnd = String(d.duration || '1d').trim().toLowerCase() === '1h' ? 'in an hour' : String(d.duration || '1d').trim().toLowerCase() === '1d' ? 'in a day' : `in ${duration}`;
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#B45309' }}>{emoji}</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+
+          <div style={{ color: '#F59E0B', fontSize: 17, fontWeight: 800, marginBottom: 8, overflowWrap: 'anywhere' }}>
+            {d.panelTitle || `${emoji} GIVEAWAY ${emoji}`}
+          </div>
+          <div style={{ borderLeft: `5px solid ${d.embedColor || '#B45309'}`, background: '#2B2D31', borderRadius: 6, padding: '16px 18px', width: '100%', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+            <div style={{ color: '#F2F3F5', fontSize: 18, fontWeight: 800, marginBottom: 14, overflowWrap: 'anywhere' }}>{d.prize || 'Example Prize'}</div>
+            <div style={{ color: '#DCDDDE', fontSize: 14, lineHeight: 1.45, overflowWrap: 'anywhere' }}>
+              Click <span style={{ color: '#F59E0B' }}>{emoji}</span> to enter!<br />
+              <strong style={{ textDecoration: 'underline' }}>Duration: {duration}</strong> <span>(Ends {relativeEnd})</span><br />
+              {hostedBy}
+            </div>
+            <div style={{ color: '#DCDDDE', fontSize: 12, fontWeight: 700, marginTop: 16, overflowWrap: 'anywhere' }}>
+              {footer}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+            <button type="button" style={{ background: '#248046', color: '#fff', border: '1px solid rgba(255,255,255,.12)', borderRadius: 5, padding: '10px 24px', minWidth: 96, fontSize: 14, fontWeight: 800 }}>
+              {enterLabel}
+            </button>
+          </div>
+
+          <div style={{ marginTop: 16, color: '#B5BAC1', fontSize: 12, fontWeight: 700 }}>Admin setup preview</div>
+          <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {['Prize', 'Winners', 'Custom Duration', 'Send Giveaway', 'Abort'].map((label) => (
+                <button key={label} type="button" style={{ background: label === 'Send Giveaway' ? '#248046' : label === 'Abort' ? '#DA373C' : '#5865F2', border: '1px solid rgba(255,255,255,0.12)', color: '#FFF', borderRadius: 8, padding: '9px 12px', fontSize: 12, fontWeight: 700 }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {durationButtons.map((label) => (
+                <button key={label} type="button" style={{ background: '#4E5058', border: '1px solid rgba(255,255,255,0.12)', color: '#FFF', borderRadius: 8, padding: '9px 14px', fontSize: 12, fontWeight: 700 }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div style={{ background: '#2B2D31', border: '1px solid #3F4147', color: '#B5BAC1', borderRadius: 6, padding: '10px 12px', fontSize: 13 }}>
+              # Select giveaway channel
+            </div>
           </div>
         </div>
       </div>
@@ -3210,6 +3332,7 @@ function NPanel({ selectedNode, setNodes }) {
   const isBotInfoPreview = selectedNode.type === 'info_botinfo';
   const isWelcomePreview = selectedNode.type === 'admin_welcome';
   const isMusicPlayPreview = selectedNode.type === 'music_play';
+  const isGiveawayCreatePreview = selectedNode.type === 'giveaway_create';
   const isMinecraftProfilePreview = selectedNode.type === 'game_minecraft_profile';
   const isRobloxProfilePreview = selectedNode.type === 'game_roblox_profile';
   const isFortniteProfilePreview = selectedNode.type === 'game_fortnite_profile';
@@ -3327,9 +3450,63 @@ function NPanel({ selectedNode, setNodes }) {
                   <input className="bl-field-input" value={d.command || ''} onChange={(e) => update('command', e.target.value)} spellCheck={false} />
                 </div>
                 <div className="bl-prop-row">
-                  <span className="bl-prop-label">Reply</span>
+                  <span className="bl-prop-label">{d.apiEnabled ? 'Fallback' : 'Reply'}</span>
                   <input className="bl-field-input" value={d.reply || ''} onChange={(e) => update('reply', e.target.value)} spellCheck={false} />
                 </div>
+                <div className="bl-prop-row">
+                  <span className="bl-prop-label">API</span>
+                  <label className="bl-embed-toggle" style={{ justifyContent: 'flex-start' }}>
+                    <input type="checkbox" checked={!!d.apiEnabled} onChange={(e) => update('apiEnabled', e.target.checked)} />
+                    On
+                  </label>
+                </div>
+                {d.apiEnabled && (
+                  <>
+                    <div className="bl-prop-row">
+                      <span className="bl-prop-label">Method</span>
+                      <select className="bl-field-select" value={d.apiMethod || 'GET'} onChange={(e) => update('apiMethod', e.target.value)}>
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="PATCH">PATCH</option>
+                        <option value="DELETE">DELETE</option>
+                      </select>
+                    </div>
+                    <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
+                      <span className="bl-prop-label" style={{ textAlign: 'left' }}>API URL</span>
+                      <textarea className="bl-field-input" style={{ resize: 'vertical', minHeight: 48 }} value={d.apiUrl || ''} onChange={(e) => update('apiUrl', e.target.value)} placeholder="https://api.example.com/search?q={args}" spellCheck={false} />
+                    </div>
+                    <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
+                      <span className="bl-prop-label" style={{ textAlign: 'left' }}>Headers</span>
+                      <textarea className="bl-field-input" style={{ resize: 'vertical', minHeight: 54 }} value={d.apiHeaders || ''} onChange={(e) => update('apiHeaders', e.target.value)} placeholder={'Accept: application/json\nAuthorization: Bearer TOKEN'} spellCheck={false} />
+                    </div>
+                    {!['GET', 'HEAD'].includes(d.apiMethod || 'GET') && (
+                      <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
+                        <span className="bl-prop-label" style={{ textAlign: 'left' }}>Body</span>
+                        <textarea className="bl-field-input" style={{ resize: 'vertical', minHeight: 68 }} value={d.apiBody || ''} onChange={(e) => update('apiBody', e.target.value)} placeholder={'{"prompt":"{args}"}'} spellCheck={false} />
+                      </div>
+                    )}
+                    <div className="bl-prop-row">
+                      <span className="bl-prop-label">Result Path</span>
+                      <input className="bl-field-input" value={d.apiResultPath || ''} onChange={(e) => update('apiResultPath', e.target.value)} placeholder="data.0.name" spellCheck={false} />
+                    </div>
+                    <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
+                      <span className="bl-prop-label" style={{ textAlign: 'left' }}>API Reply</span>
+                      <textarea className="bl-field-input" style={{ resize: 'vertical', minHeight: 58 }} value={d.apiReply || ''} onChange={(e) => update('apiReply', e.target.value)} placeholder="{apiResult}" spellCheck={false} />
+                    </div>
+                    <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
+                      <span className="bl-prop-label" style={{ textAlign: 'left' }}>Error Reply</span>
+                      <input className="bl-field-input" value={d.apiErrorMessage || ''} onChange={(e) => update('apiErrorMessage', e.target.value)} placeholder="API error: {apiError}" spellCheck={false} />
+                    </div>
+                    <div className="bl-prop-row">
+                      <span className="bl-prop-label">Timeout</span>
+                      <input className="bl-field-input" type="number" min="1000" step="1000" value={d.apiTimeout || 15000} onChange={(e) => update('apiTimeout', Number(e.target.value || 15000))} />
+                    </div>
+                    <div style={{ color: '#888', fontSize: 10, lineHeight: 1.5 }}>
+                      API variables: {'{apiResult}'} {'{apiStatus}'} {'{apiStatusText}'} {'{apiOk}'} {'{apiJson}'} {'{apiError}'} {'{args}'} {'{arg0}'}
+                    </div>
+                  </>
+                )}
                 <EmbedFields d={d} update={update} />
               </>
             )}
@@ -3421,6 +3598,8 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewWelcome node={selectedNode} />
               ) : isMusicPlayPreview ? (
                 <DiscordPreviewMusicPlay node={selectedNode} />
+              ) : isGiveawayCreatePreview ? (
+                <DiscordPreviewGiveawayCreate node={selectedNode} />
               ) : isMinecraftProfilePreview ? (
                 <DiscordPreviewMinecraftProfile node={selectedNode} />
               ) : isRobloxProfilePreview ? (

@@ -101,6 +101,16 @@ export const DEMO_VALUES = {
   expression: '2-5x0',
   result: '2',
   aliases: 'calc, math, solve',
+  apiResult: 'Example API result',
+  apiStatus: '200',
+  apiStatusText: 'OK',
+  apiOk: 'true',
+  apiJson: '{"message":"Example API result"}',
+  apiError: 'No error',
+  arg0: 'first',
+  arg1: 'second',
+  arg2: 'third',
+  message: '!command hello world',
 
   // Minecraft
   edition: 'Java',

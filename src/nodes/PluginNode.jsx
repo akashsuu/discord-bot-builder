@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from 'react';
+﻿import React, { useCallback, useState } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
-// ── Demo variable substitution ─────────────────────────────────────────────────
+// â”€â”€ Demo variable substitution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Replaces every {token} with a realistic preview value.
 // Accepts `extra` for page-specific tokens ({page}, {totalPages}).
 function pluginPreview(template, data, extra) {
@@ -37,7 +37,7 @@ function pluginPreview(template, data, extra) {
     .replace(/\{time\}/g,          '12:00:00');
 }
 
-// ── Keys hidden from plain-input renderer ──────────────────────────────────────
+// â”€â”€ Keys hidden from plain-input renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const EMBED_KEYS = new Set([
   'embedEnabled', 'embedColor', 'embedTitle', 'embedFooter', 'embedTimestamp',
   'logoUrl', 'logoName', 'imageUrl', 'imagePosition',
@@ -166,6 +166,18 @@ const MUSIC_PLAY_KEYS = new Set([
   'playlistsButtonLabel', 'browseButtonLabel', 'settingsButtonLabel',
 ]);
 
+const GIVEAWAY_CREATE_KEYS = new Set([
+  'aliases', 'panelTitle', 'setupMessage', 'prize', 'duration', 'winnerCount', 'channelId',
+  'enterEmoji', 'enterButtonLabel', 'durationButtons', 'winnerLabel', 'footerTemplate',
+  'hostedByTemplate', 'endedTitle', 'endedDescription', 'noEntriesText',
+  'permissionMessage', 'sentMessage', 'abortedMessage',
+]);
+
+const GIVEAWAY_STOP_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+  'noneMessage', 'permissionMessage', 'errorMessage',
+]);
+
 const MINECRAFT_PROFILE_KEYS = new Set([
   'aliases', 'defaultEdition', 'titleTemplate', 'descriptionTemplate',
   'notFoundMessage', 'errorMessage', 'skinLinkLabel',
@@ -251,7 +263,7 @@ function getTicketPanelOptions(data) {
   );
 }
 
-// ── Small section heading ──────────────────────────────────────────────────────
+// â”€â”€ Small section heading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function SectionHead({ color = '#888', children }) {
   return (
     <div style={{ color, fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', padding: '2px 0 3px', userSelect: 'none' }}>
@@ -260,7 +272,7 @@ function SectionHead({ color = '#888', children }) {
   );
 }
 
-// ── Inline Discord message preview ────────────────────────────────────────────
+// â”€â”€ Inline Discord message preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function DiscordPreviewInline({ pages, pageIdx, data }) {
   const pgs    = Array.isArray(pages) ? pages : [];
   const page   = pgs[pageIdx] || pgs[0] || { title: '', content: '' };
@@ -281,7 +293,7 @@ function DiscordPreviewInline({ pages, pageIdx, data }) {
           width: 26, height: 26, borderRadius: '50%',
           background: color, display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontSize: 13, flexShrink: 0,
-        }}>⚡</div>
+        }}>âš¡</div>
         <span style={{ color: '#FFF', fontWeight: 700, fontSize: 12 }}>YourBot</span>
         <span style={{
           background: '#5865F2', color: '#FFF', fontSize: 9,
@@ -328,14 +340,14 @@ function DiscordPreviewInline({ pages, pageIdx, data }) {
   );
 }
 
-// ── Server Info inline Discord preview ───────────────────────────────────────
+// â”€â”€ Server Info inline Discord preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SI_DEMO = {
   server: 'My Server',  serverId: '123456789012345678',
   memberCount: '1,234', humanCount: '1,200', botCount: '34',
   owner: 'ServerOwner', ownerMention: '@ServerOwner', ownerId: '987654321098765432',
   boostTier: 'No Level', boostBar: 'No boosts yet', boostCount: '0',
   roles: '25', textChannels: '13', voiceChannels: '4', categories: '6',
-  verification: '🔒 Low',
+  verification: 'ðŸ”’ Low',
   createdAt: 'January 1, 2023',
   createdTimestamp: 'January 1, 2023 (2 years ago)',
   user: 'Akashsuu', command: 'serverinfo',
@@ -353,24 +365,24 @@ function DiscordPreviewServerInfo({ data }) {
   const color = data.embedColor || '#5865F2';
 
   const sections = [
-    data.ownerTemplate        || '👑 Owner\n{ownerMention} ({owner})',
-    data.serverIdTemplate     || '🆔 Server ID\n{serverId}',
-    data.createdTemplate      || '📅 Created\n{createdAt} ({createdTimestamp})',
-    data.membersTemplate      || '👥 Members\n{memberCount} total\n👤 Humans: {humanCount}\n🤖 Bots: {botCount}',
-    data.channelsTemplate     || '💬 Channels\n💬 Text: {textChannels}\n🔊 Voice: {voiceChannels}\n📂 Categories: {categories}',
-    data.rolesTemplate        || '🎭 Roles\n{roles} roles',
-    data.boostTemplate        || '🚀 Boost — {boostTier}\n{boostBar}\n{boostCount} boosts',
-    data.verificationTemplate || '🔒 Verification\n{verification}',
+    data.ownerTemplate        || 'ðŸ‘‘ Owner\n{ownerMention} ({owner})',
+    data.serverIdTemplate     || 'ðŸ†” Server ID\n{serverId}',
+    data.createdTemplate      || 'ðŸ“… Created\n{createdAt} ({createdTimestamp})',
+    data.membersTemplate      || 'ðŸ‘¥ Members\n{memberCount} total\nðŸ‘¤ Humans: {humanCount}\nðŸ¤– Bots: {botCount}',
+    data.channelsTemplate     || 'ðŸ’¬ Channels\nðŸ’¬ Text: {textChannels}\nðŸ”Š Voice: {voiceChannels}\nðŸ“‚ Categories: {categories}',
+    data.rolesTemplate        || 'ðŸŽ­ Roles\n{roles} roles',
+    data.boostTemplate        || 'ðŸš€ Boost â€” {boostTier}\n{boostBar}\n{boostCount} boosts',
+    data.verificationTemplate || 'ðŸ”’ Verification\n{verification}',
   ].map((t) => siApply(t)).join('\n\n');
 
-  const title  = siApply(data.embedTitle  || '🏠 {server}');
+  const title  = siApply(data.embedTitle  || 'ðŸ  {server}');
   const footer = siApply(data.embedFooter || 'Server ID: {serverId}');
 
   return (
     <div style={{ background: '#36393F', borderRadius: 5, padding: '7px 8px', fontSize: 11, marginTop: 6 }}>
       {/* Bot row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
-        <div style={{ width: 26, height: 26, borderRadius: '50%', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, flexShrink: 0 }}>🏠</div>
+        <div style={{ width: 26, height: 26, borderRadius: '50%', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, flexShrink: 0 }}>ðŸ </div>
         <span style={{ color: '#FFF', fontWeight: 700, fontSize: 12 }}>YourBot</span>
         <span style={{ background: '#5865F2', color: '#FFF', fontSize: 9, padding: '1px 4px', borderRadius: 3, fontWeight: 700 }}>BOT</span>
         <span style={{ color: '#72767D', fontSize: 10, marginLeft: 'auto' }}>Today at 12:00</span>
@@ -390,7 +402,7 @@ export default function PluginNode({ id, type, data, selected }) {
   const collapsed       = !!data.collapsed;
   const [previewPg, setPreviewPg] = useState(0);
 
-  // ── Top-level updater ─────────────────────────────────────────────────────
+  // â”€â”€ Top-level updater â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const update = useCallback((key, val) => {
     setNodes((ns) => ns.map((n) =>
       n.id === id ? { ...n, data: { ...n.data, [key]: val } } : n
@@ -409,7 +421,7 @@ export default function PluginNode({ id, type, data, selected }) {
     ));
   }, [id, setNodes]);
 
-  // ── Dropdown updater ──────────────────────────────────────────────────────
+  // â”€â”€ Dropdown updater â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const updateDropdown = useCallback((key, val) => {
     setNodes((ns) => ns.map((n) => {
       if (n.id !== id) return n;
@@ -418,7 +430,7 @@ export default function PluginNode({ id, type, data, selected }) {
     }));
   }, [id, setNodes]);
 
-  // ── Buttons updater ───────────────────────────────────────────────────────
+  // â”€â”€ Buttons updater â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const updateButtons = useCallback((key, val) => {
     setNodes((ns) => ns.map((n) => {
       if (n.id !== id) return n;
@@ -427,14 +439,14 @@ export default function PluginNode({ id, type, data, selected }) {
     }));
   }, [id, setNodes]);
 
-  // ── Pages: single immutable updater ─────────────────────────────────────
+  // â”€â”€ Pages: single immutable updater â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const updatePages = useCallback((pages) => {
     update('pages', pages);
   }, [update]);
 
-  // ── Derived values ────────────────────────────────────────────────────────
+  // â”€â”€ Derived values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(GIVEAWAY_CREATE_KEYS.has(k) && type === 'giveaway_create') && !(GIVEAWAY_STOP_KEYS.has(k) && type === 'giveaway_stop') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -464,8 +476,8 @@ export default function PluginNode({ id, type, data, selected }) {
   const isTicketStatusNode = type === 'ticket_lock' || type === 'ticket_unlock';
   const ticketStatusMessageKey = type === 'ticket_lock' ? 'lockMessage' : 'unlockMessage';
   const ticketStatusDefaultMessage = type === 'ticket_lock'
-    ? '🔐 **Ticket Locked** — The ticket owner can no longer send messages.'
-    : '🔓 **Ticket Unlocked** — The ticket owner can send messages again.';
+    ? 'ðŸ” **Ticket Locked** â€” The ticket owner can no longer send messages.'
+    : 'ðŸ”“ **Ticket Unlocked** â€” The ticket owner can send messages again.';
 
   const saveTicketOptions = useCallback((options) => {
     const safe = options.length ? options : [{ category: 'support', label: 'Support' }];
@@ -506,12 +518,12 @@ export default function PluginNode({ id, type, data, selected }) {
       className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`}
       style={{ minWidth: 260 }}
     >
-      {/* ── Header ─────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="bl-node-hdr" style={{ background: PLUGIN_HEADER_PURPLE }}>
         <button className="bl-collapse-btn" onClick={toggle} title={collapsed ? 'Expand' : 'Minimize'}>
-          {collapsed ? '▶' : '▼'}
+          {collapsed ? 'â–¶' : 'â–¼'}
         </button>
-        <span className="bl-node-hdr-icon">{data._icon || '🔌'}</span>
+        <span className="bl-node-hdr-icon">{data._icon || 'ðŸ”Œ'}</span>
         <span className="bl-node-hdr-title">{data._label || 'Plugin Node'}</span>
         {collapsed && (
           <>
@@ -523,7 +535,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
       {!collapsed && (
         <div className="bl-node-body nodrag nowheel">
-          {/* ── Input socket ─────────────────────────────────────────────── */}
+          {/* â”€â”€ Input socket â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           {data._hasInput && (
             <div className="bl-row bl-row-in">
               <Handle type="target" position={Position.Left} id="input" className="handle-gray" />
@@ -531,7 +543,7 @@ export default function PluginNode({ id, type, data, selected }) {
             </div>
           )}
 
-          {/* ── Standard text inputs (e.g. command, reason) ──────────────── */}
+          {/* â”€â”€ Standard text inputs (e.g. command, reason) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           {commandFields.length > 0 && (
             <>
               <div className="bl-node-divider" />
@@ -593,9 +605,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#7EB8F7' }}>{'{user} {mention} {reason}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#A8D08D' }}>{'{afkUser} {afkMention} {since}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{server} {channel}'}</span>
               </span>
             </>
@@ -670,9 +682,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#7EB8F7' }}>{'{targetName} {targetMention} {avatarUrl}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#A8D08D' }}>{'{user} {mention}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{server} {channel}'}</span>
               </span>
             </>
@@ -750,9 +762,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#F472B6' }}>{'{member} {memberMention} {boostCount}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{server} {channel} {status}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{user} {mention}'}</span>
               </span>
             </>
@@ -797,9 +809,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#F472B6' }}>{'{boostCount} {boosts} {boostTier} {boostTierLabel}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{server} {serverId}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{user} {mention} {channel}'}</span>
               </span>
             </>
@@ -845,9 +857,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#22C55E' }}>{'{channelName} {channelMention} {channelId} {channelType}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{category} {topic} {slowmode} {nsfw}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#F472B6' }}>{'{permissionsSummary} {canView} {canSend}'}</span>
               </span>
             </>
@@ -936,6 +948,83 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 Buttons open Discord modals. Send posts the current embed to the channel.
+              </span>
+            </>
+          )}
+
+          {type === 'giveaway_create' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#B45309">Giveaway Setup</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="gcreate,gw"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'panelTitle', label: 'Giveaway Title', fallback: '🎉 GIVEAWAY 🎉', rows: 2 },
+                { key: 'setupMessage', label: 'Admin Setup Text', fallback: 'Configure your giveaway, then send it to the selected channel.', rows: 3 },
+                { key: 'prize', label: 'Default Prize', fallback: 'Example Prize', rows: 2 },
+                { key: 'duration', label: 'Default Duration', fallback: '1d', rows: 1 },
+                { key: 'channelId', label: 'Default Channel ID', fallback: 'Leave blank to use current channel', rows: 1 },
+                { key: 'durationButtons', label: 'Duration Buttons', fallback: '1h,6h,1d,3d,7d', rows: 2 },
+                { key: 'enterEmoji', label: 'Entry Emoji', fallback: '🎉', rows: 1 },
+                { key: 'enterButtonLabel', label: 'Entry Button Text', fallback: '{emoji} {count}', rows: 1 },
+                { key: 'hostedByTemplate', label: 'Hosted By Text', fallback: 'Hosted by: {host}', rows: 2 },
+                { key: 'footerTemplate', label: 'Footer Text', fallback: '{winnerCount} winner • ID: {giveawayId} • Ends • {endTime}', rows: 2 },
+                { key: 'endedTitle', label: 'Ended Title', fallback: '🎉 GIVEAWAY ENDED 🎉', rows: 2 },
+                { key: 'endedDescription', label: 'Ended Description', fallback: '**{prize}**\nWinner(s): {winners}', rows: 3 },
+                { key: 'permissionMessage', label: 'Permission Error', fallback: 'You need Manage Server permission to create giveaways.', rows: 2 },
+                { key: 'sentMessage', label: 'Sent Message', fallback: 'Giveaway sent to {channel}.', rows: 2 },
+                { key: 'abortedMessage', label: 'Abort Message', fallback: 'Giveaway setup cancelled.', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? ''}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    placeholder={fallback}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Winner Count</span>
+                <input
+                  className="bl-node-input"
+                  type="number"
+                  min="1"
+                  value={data.winnerCount ?? 1}
+                  onChange={(e) => update('winnerCount', Number(e.target.value) || 1)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#B45309'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#B45309'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                Admins use the Discord setup panel to change prize, duration, winners, and target channel.
+                {' '}
+                <span style={{ color: '#F59E0B' }}>{'{prize} {duration} {host} {winnerCount} {giveawayId} {endTime} {count}'}</span>
               </span>
             </>
           )}
@@ -1032,9 +1121,9 @@ export default function PluginNode({ id, type, data, selected }) {
               </div>
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#7EB8F7' }}>{'{botName} {botId} {inviteUrl}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#A8D08D' }}>{'{user} {mention}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{server} {channel}'}</span>
               </span>
             </>
@@ -1079,9 +1168,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#22C55E' }}>{'{memberCount} {members} {humanCount} {botCount}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{server} {serverId}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{user} {mention} {channel}'}</span>
               </span>
             </>
@@ -1154,9 +1243,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#7EB8F7' }}>{'{server} {serverId} {iconUrl}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#A8D08D' }}>{'{user} {mention}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{channel}'}</span>
               </span>
             </>
@@ -1201,9 +1290,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#8B5CF6' }}>{'{botName} {serverCount} {userCount} {channelCount}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{ping} {uptime} {memoryUsed} {memoryTotal}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{nodeVersion} {discordVersion} {platform}'}</span>
               </span>
             </>
@@ -1264,9 +1353,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#F59E0B' }}>{'{type} {name} {emoji} {url} {result}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{server} {channel}'}</span>
-                {' · '}
+                {' Â· '}
                 <span style={{ color: '#888' }}>{'{user} {mention} {error}'}</span>
               </span>
             </>
@@ -1312,9 +1401,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#3B82F6' }}>{'{targetName} {targetTag} {targetId} {targetMention}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{createdAt} {joinedAt} {roleCount} {topRole} {status}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#888' }}>{'{server} {user} {mention}'}</span>
               </span>
             </>
@@ -1370,9 +1459,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#14B8A6' }}>{'{oldPrefix} {newPrefix} {prefix} {command}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{server} {channel}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#888' }}>{'{user} {mention}'}</span>
               </span>
             </>
@@ -1402,7 +1491,7 @@ export default function PluginNode({ id, type, data, selected }) {
                 { key: 'statusLabel', label: 'Status Label', fallback: 'Status', rows: 1 },
                 { key: 'readyText', label: 'Ready Text', fallback: 'Ready', rows: 1 },
                 { key: 'errorText', label: 'Error Text', fallback: 'Error', rows: 1 },
-                { key: 'footerTemplate', label: 'Footer', fallback: 'Aliases: {aliases} • Today at {time}', rows: 2 },
+                { key: 'footerTemplate', label: 'Footer', fallback: 'Aliases: {aliases} â€¢ Today at {time}', rows: 2 },
                 { key: 'onlyUserMessage', label: 'Only User Text', fallback: 'Only {user} can use this calculator.', rows: 2 },
                 { key: 'timeoutMessage', label: 'Timeout Text', fallback: 'Calculator session expired.', rows: 2 },
               ].map(({ key, label, fallback, rows }) => (
@@ -1422,9 +1511,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#5865F2' }}>{'{expression} {result} {status}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{command} {aliases} {time}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#888' }}>{'{user} {server} {channel}'}</span>
               </span>
             </>
@@ -1584,9 +1673,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#22C55E' }}>{'{activityName} {activityType} {producerName} {status}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{imageUrl} {animatedAvatarUrl} {animatedBannerUrl} {profileUpdate}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#888' }}>{'{user} {server}'}</span>
               </span>
             </>
@@ -1749,9 +1838,9 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#DC2626' }}>{'{command} {confirmationKeyword} {error}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#7EB8F7' }}>{'{channel} {channelMention} {channelId}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#888' }}>{'{user} {mention} {server}'}</span>
               </span>
             </>
@@ -1819,7 +1908,7 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#5865F2' }}>{'{title} {author} {duration} {posterUrl}'}</span>
-                {' Â· '}
+                {' Ã‚Â· '}
                 <span style={{ color: '#888' }}>{'{command} {query} {user} {error}'}</span>
               </span>
             </>
@@ -1855,7 +1944,7 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                 <span style={{ color: '#22C55E' }}>{'{mc_name} {mc_uuid} {edition} {name_history}'}</span>
-                {' Ã‚Â· '}
+                {' Ãƒâ€šÃ‚Â· '}
                 <span style={{ color: '#888' }}>{'{query} {user_tag} {skin_link} {error}'}</span>
               </span>
             </>
@@ -1883,7 +1972,7 @@ export default function PluginNode({ id, type, data, selected }) {
               ))}
               <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
                   <span style={{ color: '#E11D48' }}>{'{roblox_name} {roblox_id} {display_name} {friends} {followers}'}</span>
-                {' Ã‚Â· '}
+                {' Ãƒâ€šÃ‚Â· '}
                 <span style={{ color: '#888' }}>{'{profile_link} {description} {created_at} {error}'}</span>
               </span>
             </>
@@ -2404,7 +2493,7 @@ export default function PluginNode({ id, type, data, selected }) {
             </div>
           ))}
 
-          {/* ── Output message template (for non-page plugins) ───────────── */}
+          {/* â”€â”€ Output message template (for non-page plugins) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           {hasOutput && type !== 'util_serverinfo' && (
             <>
               <div className="bl-node-divider" />
@@ -2422,10 +2511,10 @@ export default function PluginNode({ id, type, data, selected }) {
                   rows={3}
                 />
                 <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
-                  <span style={{ color: '#7EB8F7' }}>{'{user}  {tag}  {mention}'}</span>{'  · '}
-                  <span style={{ color: '#E07070' }}>{'{target}  {targetName}'}</span>{'  · '}
-                  <span style={{ color: '#A8D08D' }}>{'{reason}  {command}  {args}'}</span>{'  · '}
-                  <span style={{ color: '#C8A0F0' }}>{'{server}  {channel}'}</span>{'  · '}
+                  <span style={{ color: '#7EB8F7' }}>{'{user}  {tag}  {mention}'}</span>{'  Â· '}
+                  <span style={{ color: '#E07070' }}>{'{target}  {targetName}'}</span>{'  Â· '}
+                  <span style={{ color: '#A8D08D' }}>{'{reason}  {command}  {args}'}</span>{'  Â· '}
+                  <span style={{ color: '#C8A0F0' }}>{'{server}  {channel}'}</span>{'  Â· '}
                   <span style={{ color: '#888' }}>{'{date}  {time}'}</span>
                 </span>
               </div>
@@ -2438,27 +2527,27 @@ export default function PluginNode({ id, type, data, selected }) {
             </>
           )}
 
-          {/* ══════════════════════════════════════════════════════════════
-              SERVER INFO — editable embed section templates
-          ══════════════════════════════════════════════════════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+              SERVER INFO â€” editable embed section templates
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {type === 'util_serverinfo' && (() => {
             const SI_FIELDS = [
-              { key: 'embedTitle',          label: '🏠 Embed Title',    hint: '{server}' },
-              { key: 'ownerTemplate',       label: '👑 Owner',          hint: '{ownerMention} {owner} {ownerId}' },
-              { key: 'serverIdTemplate',    label: '🆔 Server ID',      hint: '{serverId}' },
-              { key: 'createdTemplate',     label: '📅 Created',        hint: '{createdAt} {createdTimestamp}' },
-              { key: 'membersTemplate',     label: '👥 Members',        hint: '{memberCount} {humanCount} {botCount}' },
-              { key: 'channelsTemplate',    label: '💬 Channels',       hint: '{textChannels} {voiceChannels} {categories}' },
-              { key: 'rolesTemplate',       label: '🎭 Roles',          hint: '{roles}' },
-              { key: 'boostTemplate',       label: '🚀 Boost',          hint: '{boostTier} {boostBar} {boostCount}' },
-              { key: 'verificationTemplate',label: '🔒 Verification',   hint: '{verification}' },
-              { key: 'embedFooter',         label: '📝 Footer',         hint: '{serverId} {server} {user}' },
+              { key: 'embedTitle',          label: 'ðŸ  Embed Title',    hint: '{server}' },
+              { key: 'ownerTemplate',       label: 'ðŸ‘‘ Owner',          hint: '{ownerMention} {owner} {ownerId}' },
+              { key: 'serverIdTemplate',    label: 'ðŸ†” Server ID',      hint: '{serverId}' },
+              { key: 'createdTemplate',     label: 'ðŸ“… Created',        hint: '{createdAt} {createdTimestamp}' },
+              { key: 'membersTemplate',     label: 'ðŸ‘¥ Members',        hint: '{memberCount} {humanCount} {botCount}' },
+              { key: 'channelsTemplate',    label: 'ðŸ’¬ Channels',       hint: '{textChannels} {voiceChannels} {categories}' },
+              { key: 'rolesTemplate',       label: 'ðŸŽ­ Roles',          hint: '{roles}' },
+              { key: 'boostTemplate',       label: 'ðŸš€ Boost',          hint: '{boostTier} {boostBar} {boostCount}' },
+              { key: 'verificationTemplate',label: 'ðŸ”’ Verification',   hint: '{verification}' },
+              { key: 'embedFooter',         label: 'ðŸ“ Footer',         hint: '{serverId} {server} {user}' },
             ];
             return (
               <>
                 <div className="bl-node-divider" style={{ borderColor: '#1A3A5A' }} />
                 <div className="bl-field">
-                  <SectionHead color="#7EB8F7">🏠 Server Info Sections</SectionHead>
+                  <SectionHead color="#7EB8F7">ðŸ  Server Info Sections</SectionHead>
                 </div>
                 <div className="nowheel" style={{ maxHeight: 480, overflowY: 'auto' }}>
                   {SI_FIELDS.map(({ key, label, hint }) => (
@@ -2483,16 +2572,16 @@ export default function PluginNode({ id, type, data, selected }) {
                 </div>
                 <div style={{ color: '#3A5A7A', fontSize: 10, padding: '2px 0 4px', lineHeight: 1.6 }}>
                   <span style={{ color: '#7EB8F7' }}>{'{server} {serverId} {memberCount}'}</span>
-                  {' · '}
+                  {' Â· '}
                   <span style={{ color: '#A8D08D' }}>{'{owner} {ownerMention} {ownerId}'}</span>
-                  {' · '}
+                  {' Â· '}
                   <span style={{ color: '#C8A0F0' }}>{'{roles} {verification} {createdAt}'}</span>
                 </div>
 
-                {/* ── Live Discord preview ── */}
+                {/* â”€â”€ Live Discord preview â”€â”€ */}
                 <div className="bl-node-divider" style={{ borderColor: '#1A3A5A' }} />
                 <div className="bl-field">
-                  <SectionHead color="#72767D">👁 Discord Preview</SectionHead>
+                  <SectionHead color="#72767D">ðŸ‘ Discord Preview</SectionHead>
                 </div>
                 <DiscordPreviewServerInfo data={data} />
               </>
@@ -2501,7 +2590,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
 
 
-          {/* ── DM target ────────────────────────────────────────────────── */}
+          {/* â”€â”€ DM target â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           {'dmEnabled' in data && (
             <>
               <div className="bl-node-divider" />
@@ -2530,9 +2619,9 @@ export default function PluginNode({ id, type, data, selected }) {
             </>
           )}
 
-          {/* ══════════════════════════════════════════════════════════════
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
               PAGES EDITOR + INLINE DISCORD PREVIEW
-          ══════════════════════════════════════════════════════════════ */}
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {hasPages && (
             <>
               <div className="bl-node-divider" style={{ borderColor: '#2A2A4A' }} />
@@ -2624,7 +2713,7 @@ export default function PluginNode({ id, type, data, selected }) {
                             padding: '2px 8px', borderRadius: 3, cursor: i === 0 ? 'default' : 'pointer'
                           }}
                         >
-                          ▲
+                          â–²
                         </button>
 
                         <button
@@ -2642,7 +2731,7 @@ export default function PluginNode({ id, type, data, selected }) {
                             padding: '2px 8px', borderRadius: 3, cursor: i === pages.length - 1 ? 'default' : 'pointer'
                           }}
                         >
-                          ▼
+                          â–¼
                         </button>
 
                         <button
@@ -2658,7 +2747,7 @@ export default function PluginNode({ id, type, data, selected }) {
                             padding: '2px 8px', borderRadius: 3, cursor: 'pointer', marginLeft: 'auto'
                           }}
                         >
-                          ❌
+                          âŒ
                         </button>
 
                       </div>
@@ -2689,14 +2778,14 @@ export default function PluginNode({ id, type, data, selected }) {
                   padding: '5px 0', fontSize: 11, marginBottom: 6,
                 }}
               >
-                ➕ Add Page
+                âž• Add Page
               </button>
 
-              {/* ── Inline Discord preview ──────────────────────────────── */}
+              {/* â”€â”€ Inline Discord preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
               {pgs.length > 0 && (
                 <>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 5 }}>
-                    <span style={{ color: '#555', fontSize: 10, flexShrink: 0 }}>👁 Preview</span>
+                    <span style={{ color: '#555', fontSize: 10, flexShrink: 0 }}>ðŸ‘ Preview</span>
                     <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', flex: 1 }}>
                       {pgs.map((p, i) => (
                         <button
@@ -2723,9 +2812,9 @@ export default function PluginNode({ id, type, data, selected }) {
             </>
           )}
 
-          {/* ══════════════════════════════════════════════════════════════
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
               DROPDOWN MENU
-          ══════════════════════════════════════════════════════════════ */}
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {hasDropdown && (
             <>
               <div className="bl-node-divider" style={{ borderColor: '#2A3A2A' }} />
@@ -2737,7 +2826,7 @@ export default function PluginNode({ id, type, data, selected }) {
                     onChange={(e) => updateDropdown('enabled', e.target.checked)}
                     onMouseDown={(e) => e.stopPropagation()}
                   />
-                  <SectionHead color="#6AAA4A">▼ Dropdown Menu</SectionHead>
+                  <SectionHead color="#6AAA4A">â–¼ Dropdown Menu</SectionHead>
                 </label>
               </div>
 
@@ -2752,7 +2841,7 @@ export default function PluginNode({ id, type, data, selected }) {
                       onMouseDown={(e) => e.stopPropagation()}
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}
-                      placeholder="Select a page…"
+                      placeholder="Select a pageâ€¦"
                       spellCheck={false}
                     />
                   </div>
@@ -2773,12 +2862,12 @@ export default function PluginNode({ id, type, data, selected }) {
                     <div style={{ background: '#1A1A2A', border: '1px solid #2A2A3A', borderRadius: 4, padding: '4px 6px', marginTop: 2 }}>
                       {pgs.slice(0, 5).map((p, i) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '2px 0', fontSize: 10 }}>
-                          <span style={{ color: '#555' }}>▸</span>
+                          <span style={{ color: '#555' }}>â–¸</span>
                           <span style={{ color: '#DCDDDE' }}>{p.title || `Page ${i + 1}`}</span>
                         </div>
                       ))}
                       {pgs.length > 5 && (
-                        <div style={{ color: '#555', fontSize: 10, paddingTop: 2 }}>+{pgs.length - 5} more…</div>
+                        <div style={{ color: '#555', fontSize: 10, paddingTop: 2 }}>+{pgs.length - 5} moreâ€¦</div>
                       )}
                     </div>
                   )}
@@ -2787,9 +2876,9 @@ export default function PluginNode({ id, type, data, selected }) {
             </>
           )}
 
-          {/* ══════════════════════════════════════════════════════════════
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
               BUTTON ROW
-          ══════════════════════════════════════════════════════════════ */}
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {hasButtons && (
             <>
               <div className="bl-node-divider" style={{ borderColor: '#2A2A3A' }} />
@@ -2801,7 +2890,7 @@ export default function PluginNode({ id, type, data, selected }) {
                     onChange={(e) => updateButtons('enabled', e.target.checked)}
                     onMouseDown={(e) => e.stopPropagation()}
                   />
-                  <SectionHead color="#7EB8F7">⬛ Button Row</SectionHead>
+                  <SectionHead color="#7EB8F7">â¬› Button Row</SectionHead>
                 </label>
               </div>
 
@@ -2823,9 +2912,9 @@ export default function PluginNode({ id, type, data, selected }) {
                   {bt.navigation !== false && (
                     <div style={{ display: 'flex', gap: 4, padding: '3px 0 2px' }}>
                       {[
-                        { lbl: '⬅ Prev', bg: '#2A2A3A', border: '#3A3A4A', col: '#DCDDDE' },
-                        { lbl: 'Next ➡', bg: '#1A2A4A', border: '#2A3A5A', col: '#7EB8F7' },
-                        { lbl: '❌ Close', bg: '#3A1A1A', border: '#5A2A2A', col: '#FF7070' },
+                        { lbl: 'â¬… Prev', bg: '#2A2A3A', border: '#3A3A4A', col: '#DCDDDE' },
+                        { lbl: 'Next âž¡', bg: '#1A2A4A', border: '#2A3A5A', col: '#7EB8F7' },
+                        { lbl: 'âŒ Close', bg: '#3A1A1A', border: '#5A2A2A', col: '#FF7070' },
                       ].map(({ lbl, bg, border, col }) => (
                         <span
                           key={lbl}
@@ -2843,9 +2932,9 @@ export default function PluginNode({ id, type, data, selected }) {
             </>
           )}
 
-          {/* ══════════════════════════════════════════════════════════════
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
               EMBED SECTION
-          ══════════════════════════════════════════════════════════════ */}
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <div className="bl-node-divider" />
           <div className="bl-field">
             <label className="bl-embed-toggle">
@@ -2878,18 +2967,18 @@ export default function PluginNode({ id, type, data, selected }) {
                   onMouseDown={(e) => e.stopPropagation()}
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
-                  placeholder="Footer text… {page} of {totalPages}"
+                  placeholder="Footer textâ€¦ {page} of {totalPages}"
                   spellCheck={false}
                 />
               </div>
 
               <div className="bl-node-divider" style={{ borderColor: '#2A3A4A' }} />
               <div className="bl-field">
-                <span className="bl-field-lbl" style={{ color: '#4A8ACA' }}>▲ Logo (top-left)</span>
+                <span className="bl-field-lbl" style={{ color: '#4A8ACA' }}>â–² Logo (top-left)</span>
               </div>
               <div className="bl-field">
                 <span className="bl-field-lbl">Logo URL</span>
-                <input className="bl-node-input" value={data.logoUrl || ''} onChange={(e) => update('logoUrl', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="https://…icon.png" spellCheck={false} />
+                <input className="bl-node-input" value={data.logoUrl || ''} onChange={(e) => update('logoUrl', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="https://â€¦icon.png" spellCheck={false} />
               </div>
               <div className="bl-field">
                 <span className="bl-field-lbl">Logo Name</span>
@@ -2898,16 +2987,16 @@ export default function PluginNode({ id, type, data, selected }) {
 
               <div className="bl-node-divider" style={{ borderColor: '#2A3A4A' }} />
               <div className="bl-field">
-                <span className="bl-field-lbl" style={{ color: '#4A8ACA' }}>▬ Image (bottom)</span>
+                <span className="bl-field-lbl" style={{ color: '#4A8ACA' }}>â–¬ Image (bottom)</span>
               </div>
               <div className="bl-field">
                 <span className="bl-field-lbl">Image URL</span>
-                <input className="bl-node-input" value={data.imageUrl || ''} onChange={(e) => update('imageUrl', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="https://…image.png" spellCheck={false} />
+                <input className="bl-node-input" value={data.imageUrl || ''} onChange={(e) => update('imageUrl', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="https://â€¦image.png" spellCheck={false} />
               </div>
             </>
           )}
 
-          {/* ── Pass-through output socket ────────────────────────────── */}
+          {/* â”€â”€ Pass-through output socket â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           {data._hasOutput && (
             <>
               <div className="bl-node-divider" />

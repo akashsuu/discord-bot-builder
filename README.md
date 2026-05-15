@@ -1,9 +1,9 @@
-# ⚡ Discord Bot Builder
+# Kiodium
 
-**Visual node-based Discord bot creator — no code required.**
+**Visual node-based Discord bot creator.**
 Build, run, and export Discord bots by connecting nodes in a nodes-style editor.
 
-> © Akashsuu Bot Builder — All rights reserved
+> � Kiodium. All rights reserved.
 
 ---
 
@@ -40,7 +40,7 @@ Build, run, and export Discord bots by connecting nodes in a nodes-style editor.
 ### Install
 
 ```bash
-cd discord-bot-builder
+cd kiodium
 npm install
 ```
 
@@ -69,7 +69,7 @@ npm start
 ## Project Structure
 
 ```
-discord-bot-builder/
+kiodium/
 ├── main.js                     Electron main process + IPC handlers
 ├── preload.js                  Secure contextBridge API surface
 ├── webpack.config.js
@@ -345,4 +345,4 @@ node bot.js
 
 ## License
 
-© Akashsuu Bot Builder — All rights reserved.
+� Kiodium. All rights reserved.

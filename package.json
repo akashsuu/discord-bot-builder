@@ -1,7 +1,7 @@
 {
-  "name": "discord-bot-builder",
+  "name": "kiodium",
   "version": "1.0.0",
-  "description": "Visual Discord Bot Builder by Akashsuu",
+  "description": "Kiodium visual Discord bot builder",
   "main": "main.js",
   "scripts": {
     "build": "webpack --mode development",

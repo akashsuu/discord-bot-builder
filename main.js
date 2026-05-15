@@ -14,14 +14,14 @@ function createWindow() {
     height: 900,
     minWidth: 1024,
     minHeight: 700,
-    icon: path.join(__dirname, 'akashsuu.ico'),
+    icon: path.join(__dirname, 'kiodium.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
     backgroundColor: '#09090b',
-    title: 'Discord Bot Builder — Akashsuu',
+    title: 'Kiodium',
     show: false,
     frame: false,
     titleBarStyle: 'hidden',
@@ -34,7 +34,7 @@ function createWindow() {
       `data:text/html;charset=utf-8,${encodeURIComponent(
         `<body style="margin:0;background:#09090b;color:#f4f4f5;font-family:Segoe UI,sans-serif;display:grid;place-items:center;height:100vh">
           <main style="max-width:640px;padding:32px;text-align:center">
-            <h1 style="font-size:22px;margin:0 0 12px">Discord Bot Builder could not start</h1>
+            <h1 style="font-size:22px;margin:0 0 12px">Kiodium could not start</h1>
             <p style="color:#a1a1aa;line-height:1.5">${message}</p>
           </main>
         </body>`
@@ -58,6 +58,7 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
+  app.setName('Kiodium');
   botRunner    = require('./backend/botRunner');
   pluginLoader = require('./backend/pluginLoader');
 
@@ -194,4 +195,25 @@ ipcMain.handle('code:export', async (_event, { projectData }) => {
 // ─── IPC: Get Plugin Node Types ────────────────────────────────────────────
 ipcMain.handle('plugins:getNodeTypes', async () => {
   return pluginLoader.getPluginNodeTypes();
+});
+
+// Window controls
+ipcMain.handle('window:minimize', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.minimize();
+  return { success: true };
+});
+
+ipcMain.handle('window:toggleMaximize', () => {
+  if (!mainWindow || mainWindow.isDestroyed()) return { success: false };
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+    return { success: true, maximized: false };
+  }
+  mainWindow.maximize();
+  return { success: true, maximized: true };
+});
+
+ipcMain.handle('window:close', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+  return { success: true };
 });

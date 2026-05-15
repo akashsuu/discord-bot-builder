@@ -2,7 +2,7 @@
   "name": "Distube Play",
   "version": "1.0.1",
   "description": "Play music using Distube and YouTube search from a builder node.",
-  "author": "discord-bot-builder",
+  "author": "Kiodium",
   "icon": "🎵",
   "nodeConfig": {
     "label": "Distube Play",

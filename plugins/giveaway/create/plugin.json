@@ -1,0 +1,38 @@
+{
+  "name": "Giveaway Create",
+  "version": "1.0.0",
+  "description": "Create giveaways from Discord with an interactive admin setup panel.",
+  "author": "Kiodium",
+  "icon": "🎉",
+  "nodeConfig": {
+    "label": "Giveaway Create",
+    "icon": "GIVE",
+    "color": "#B45309",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "giveaway",
+      "aliases": "gcreate,gw",
+      "embedEnabled": true,
+      "embedColor": "#B45309",
+      "panelTitle": "🎉 GIVEAWAY 🎉",
+      "setupMessage": "Configure your giveaway, then send it to the selected channel.",
+      "prize": "Example Prize",
+      "duration": "1d",
+      "winnerCount": 1,
+      "channelId": "",
+      "enterEmoji": "🎉",
+      "enterButtonLabel": "{emoji} {count}",
+      "durationButtons": "1h,6h,1d,3d,7d",
+      "winnerLabel": "{winnerCount} winner",
+      "footerTemplate": "{winnerCount} winner • ID: {giveawayId} • Ends • {endTime}",
+      "hostedByTemplate": "Hosted by: {host}",
+      "endedTitle": "🎉 GIVEAWAY ENDED 🎉",
+      "endedDescription": "**{prize}**\nWinner(s): {winners}",
+      "noEntriesText": "No valid entries.",
+      "permissionMessage": "You need Manage Server permission to create giveaways.",
+      "sentMessage": "Giveaway sent to {channel}.",
+      "abortedMessage": "Giveaway setup cancelled."
+    }
+  }
+}

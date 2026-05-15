@@ -16,6 +16,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Plugins
   getPluginNodeTypes: () => ipcRenderer.invoke('plugins:getNodeTypes'),
 
+  // Window
+  minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
+  toggleMaximizeWindow: () => ipcRenderer.invoke('window:toggleMaximize'),
+  closeWindow: () => ipcRenderer.invoke('window:close'),
+
   // Events from main → renderer
   onBotLog:    (cb) => ipcRenderer.on('bot:log',    (_event, log)    => cb(log)),
   onBotStatus: (cb) => ipcRenderer.on('bot:status', (_event, status) => cb(status)),

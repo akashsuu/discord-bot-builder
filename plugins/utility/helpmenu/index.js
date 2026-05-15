@@ -1,7 +1,7 @@
-'use strict';
+﻿'use strict';
 
 // =============================================================================
-//  HELP MENU  —  Full dropdown + button + pages example plugin
+//  HELP MENU  â€”  Full dropdown + button + pages example plugin
 //
 //  This plugin is the complete reference implementation for the
 //  dropdown / button / multi-page system.
@@ -9,10 +9,10 @@
 //  Flow:
 //    1.  User sends the trigger command (default: !help)
 //    2.  Bot sends a paginated embed:
-//          • Dropdown  — jump to any category / page
-//          • ⬅ Prev    — go to previous page
-//          • Next ➡    — go to next page
-//          • ✖ Close   — delete the message
+//          â€¢ Dropdown  â€” jump to any category / page
+//          â€¢ â¬… Prev    â€” go to previous page
+//          â€¢ Next âž¡    â€” go to next page
+//          â€¢ âœ– Close   â€” delete the message
 //    3.  Every interaction updates the message in-place via interaction.update()
 //    4.  Session auto-expires after 15 min (cleaned up by interactionHandler)
 //
@@ -23,7 +23,7 @@
 
 const path = require('path');
 
-// ── Engine helpers (shared across all plugins) ────────────────────────────────
+// â”€â”€ Engine helpers (shared across all plugins) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const { applyTemplate, buildVars }  = require(path.join(__dirname, '../../../backend/engine/templateEngine'));
 const {
   generateSessionId,
@@ -32,13 +32,13 @@ const {
   buildComponents,
 }                                   = require(path.join(__dirname, '../../../backend/engine/interactionHandler'));
 
-// ── Util ──────────────────────────────────────────────────────────────────────
+// â”€â”€ Util â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function hexToInt(hex) {
   const n = parseInt(String(hex || '#5865F2').replace('#', ''), 16);
   return isNaN(n) ? 0x5865F2 : n;
 }
 
-// Sanitise a single page entry — guarantees required fields are always strings.
+// Sanitise a single page entry â€” guarantees required fields are always strings.
 function normalisePage(p, i) {
   return {
     id:          String(p.id          ?? `page${i + 1}`),
@@ -53,7 +53,7 @@ function normalisePage(p, i) {
 function normalisePages(raw) {
   if (!Array.isArray(raw) || raw.length === 0) {
     return [{
-      id: 'default', title: '📋 Help', description: '',
+      id: 'default', title: 'ðŸ“‹ Help', description: '',
       content: 'No pages configured. Add pages in the node editor.',
       imageUrl: null, thumbnail: null,
     }];
@@ -73,18 +73,18 @@ module.exports = {
 
   nodes: {
 
-    // ── Node definition ───────────────────────────────────────────────────────
+    // â”€â”€ Node definition â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     util_helpmenu: {
       label:       'Help Menu',
-      icon:        '📋',
+      icon:        'ðŸ“‹',
       color:       '#1A3A5A',
       description: 'Sends a paginated help embed. Configure pages[], dropdown, and buttons in node.data.',
 
-      // ── Port declarations (used by the GUI to draw connectors) ─────────────
+      // â”€â”€ Port declarations (used by the GUI to draw connectors) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       inputs:  [{ id: 'in',  label: 'Trigger',  type: 'flow' }],
       outputs: [{ id: 'out', label: 'Continue', type: 'flow' }],
 
-      // ── Config schema (scalar defaults for the GUI property panel) ─────────
+      // â”€â”€ Config schema (scalar defaults for the GUI property panel) â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // Complex objects (pages, dropdown, buttons) come from plugin.json defaults.
       configSchema: {
         command:     { type: 'string',  default: 'help',     required: true  },
@@ -92,20 +92,20 @@ module.exports = {
         embedColor:  { type: 'string',  default: '#5865F2',  required: false },
         embedFooter: {
           type:    'string',
-          default: 'Page {page} of {totalPages}  ·  {server}  ·  Requested by {user}',
+          default: 'Page {page} of {totalPages}  Â·  {server}  Â·  Requested by {user}',
           required: false,
         },
       },
 
-      // ════════════════════════════════════════════════════════════════════════
-      //  execute()  —  called once when the command is sent by a Discord user
-      // ════════════════════════════════════════════════════════════════════════
+      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      //  execute()  â€”  called once when the command is sent by a Discord user
+      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
       async execute(node, message, ctx) {
         // Guard: ignore bots and DMs
         if (!message || message.author.bot) return false;
         if (!message.guild)                 return false;
 
-        // ── 1. Command match ─────────────────────────────────────────────────
+        // â”€â”€ 1. Command match â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const prefix  = ctx?.prefix || '!';
         const rawCmd  = (node.data?.command || 'help').trim();
         // Prepend prefix if node.data.command doesn't already include it
@@ -118,14 +118,14 @@ module.exports = {
         const remainder = content.slice(cmd.length);
         if (remainder && !/^\s/.test(remainder)) return false;
 
-        // ── 2. Resolve pages ─────────────────────────────────────────────────
+        // â”€â”€ 2. Resolve pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const pages      = normalisePages(node.data?.pages);
         const totalPages = pages.length;
         const startPage  = 0;
 
-        // ── 3. Build variable map for the initial render ─────────────────────
+        // â”€â”€ 3. Build variable map for the initial render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         //    buildVars() reads from message + ctx and returns every template
-        //    variable ({user}, {server}, {date}, {page}, {flow.command}, …)
+        //    variable ({user}, {server}, {date}, {page}, {flow.command}, â€¦)
         const vars = {
           ...buildVars(message, ctx),
           page:       String(startPage + 1),
@@ -140,44 +140,44 @@ module.exports = {
           },
         };
 
-        // ── 4. Generate session ID ────────────────────────────────────────────
+        // â”€â”€ 4. Generate session ID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         //    The session ID is baked into every component customId BEFORE the
-        //    message is sent.  This avoids a double API call (send → get id →
+        //    message is sent.  This avoids a double API call (send â†’ get id â†’
         //    edit) and ensures the interaction handler can look up state in O(1).
         const sessionId = generateSessionId();
 
-        // ── 5. Merge nodeData with runtime fields needed by buildComponents() ─
+        // â”€â”€ 5. Merge nodeData with runtime fields needed by buildComponents() â”€
         const nodeData = {
           ...node.data,
           _nodeId:    node.id,
           _sessionId: sessionId,
         };
 
-        // ── 6. Build the Discord message payload ──────────────────────────────
-        //    buildEmbed()      → { title, description, color, footer, … }
-        //    buildComponents() → ActionRow[] with dropdown + buttons
+        // â”€â”€ 6. Build the Discord message payload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        //    buildEmbed()      â†’ { title, description, color, footer, â€¦ }
+        //    buildComponents() â†’ ActionRow[] with dropdown + buttons
         const components = buildComponents(nodeData, startPage, totalPages, sessionId);
         const payload    = { components };
 
         if (nodeData.embedEnabled !== false) {
-          // Embed mode — rich card with colour bar
+          // Embed mode â€” rich card with colour bar
           payload.embeds = [buildEmbed(nodeData, pages[startPage], vars)];
         } else {
-          // Plain text mode — just the page content with variables applied
-          payload.content = applyTemplate(pages[startPage].content || '', vars) || '​';
+          // Plain text mode â€” just the page content with variables applied
+          payload.content = applyTemplate(pages[startPage].content || '', vars) || 'â€‹';
         }
 
-        // ── 7. Send ───────────────────────────────────────────────────────────
+        // â”€â”€ 7. Send â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         let sent;
         try {
           sent = await message.channel.send(payload);
         } catch (err) {
-          await message.reply(`❌ Could not send help menu: ${err.message}`).catch(() => {});
+          await message.reply(`âŒ Could not send help menu: ${err.message}`).catch(() => {});
           return false;
         }
 
-        // ── 8. Register session ───────────────────────────────────────────────
-        //    The interaction handler (botRunner → interactionCreate event)
+        // â”€â”€ 8. Register session â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        //    The interaction handler (botRunner â†’ interactionCreate event)
         //    picks this up when a user clicks a button or selects a dropdown
         //    option.  It updates the message in-place via interaction.update().
         registerSession(sessionId, {
@@ -194,9 +194,9 @@ module.exports = {
         return true; // continue graph traversal to connected output nodes
       },
 
-      // ════════════════════════════════════════════════════════════════════════
-      //  generateCode()  —  produces a standalone snippet for the Export feature
-      // ════════════════════════════════════════════════════════════════════════
+      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      //  generateCode()  â€”  produces a standalone snippet for the Export feature
+      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
       generateCode(node, prefix = '') {
         const rawCmd = (node.data?.command || 'help').replace(/"/g, '\\"');
         const cmd    = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
@@ -209,10 +209,10 @@ module.exports = {
         // instead of the engine's global interactionCreate handler, so it works
         // as a completely self-contained standalone bot.js.
         return `
-// ══════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  Help Menu: !${rawCmd}
-//  Generated by Discord Bot Builder
-// ══════════════════════════════════════════════════════════════════
+//  Generated by Kiodium
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
   const _rem = message.content.slice("${cmd}".length);
   if (_rem && !/^\\s/.test(_rem)) return;
@@ -222,15 +222,15 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
   } = require("discord.js");
   const { randomBytes } = require("crypto");
 
-  // ── Pages ───────────────────────────────────────────────────────
+  // â”€â”€ Pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const _pages = ${pages};
 
-  // ── Session ─────────────────────────────────────────────────────
+  // â”€â”€ Session â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let   _page  = 0;
   const _sid   = randomBytes(8).toString("hex");
   const _total = _pages.length;
 
-  // ── Variable replacer ────────────────────────────────────────────
+  // â”€â”€ Variable replacer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const _v = (pg, pi) => ({
     user:        message.author?.username  || "Unknown",
     mention:     \`<@\${message.author?.id}>\`,
@@ -261,7 +261,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
     return out;
   };
 
-  // ── Build payload ────────────────────────────────────────────────
+  // â”€â”€ Build payload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const _build = (pi) => {
     const pg   = _pages[pi] || _pages[0];
     const vars = _v(pg, pi);
@@ -270,7 +270,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
     // Dropdown row
     const _dd = new StringSelectMenuBuilder()
       .setCustomId(\`pbm:helpmenu:select:\${_sid}\`)
-      .setPlaceholder("📂  Jump to a category…")
+      .setPlaceholder("ðŸ“‚  Jump to a categoryâ€¦")
       .addOptions(_pages.map((p, i) => ({
         label:   p.title.slice(0, 100),
         value:   String(i),
@@ -282,17 +282,17 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
     rows.push(new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId(\`pbm:helpmenu:prev:\${_sid}\`)
-        .setLabel("⬅  Previous")
+        .setLabel("â¬…  Previous")
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(pi <= 0),
       new ButtonBuilder()
         .setCustomId(\`pbm:helpmenu:next:\${_sid}\`)
-        .setLabel("Next  ➡")
+        .setLabel("Next  âž¡")
         .setStyle(ButtonStyle.Primary)
         .setDisabled(pi >= _total - 1),
       new ButtonBuilder()
         .setCustomId(\`pbm:helpmenu:close:\${_sid}\`)
-        .setLabel("✖  Close")
+        .setLabel("âœ–  Close")
         .setStyle(ButtonStyle.Danger),
     ));
 
@@ -307,10 +307,10 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
     };
   };
 
-  // ── Send initial message ─────────────────────────────────────────
+  // â”€â”€ Send initial message â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const _msg = await message.channel.send(_build(_page));
 
-  // ── Interaction collector (self-contained, no global handler) ────
+  // â”€â”€ Interaction collector (self-contained, no global handler) â”€â”€â”€â”€
   const _col = _msg.createMessageComponentCollector({ time: 15 * 60 * 1000 });
 
   _col.on("collect", async (i) => {

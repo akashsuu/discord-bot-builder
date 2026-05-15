@@ -164,6 +164,35 @@ Hello {mention}, welcome to {server}! You are member #{member_count}.
 | `{result}` | Calculator result. | 2 |
 | `{aliases}` | Command aliases. | calc, math, solve |
 
+## Custom Command API
+
+Use these when API Request is turned on inside a Custom Command node.
+
+| Variable | Details | Example |
+| --- | --- | --- |
+| `{apiResult}` | Extracted API result using the Result Path field. | Example API result |
+| `{result}` | Alias for `{apiResult}` in API replies. | Example API result |
+| `{apiStatus}` | HTTP status code returned by the API. | 200 |
+| `{apiStatusText}` | HTTP status text returned by the API. | OK |
+| `{apiOk}` | Whether the API response was successful. | true |
+| `{apiJson}` | Full API response as JSON/text. | {"message":"Example API result"} |
+| `{apiError}` | Error message when the API request fails. | No error |
+| `{message}` | Full Discord message content. | !command hello world |
+| `{arg0}` | First command argument. | first |
+| `{arg1}` | Second command argument. | second |
+| `{arg2}` | Third command argument. | third |
+
+Example API command:
+
+```text
+Command: !weather
+API: On
+Method: GET
+API URL: https://api.example.com/weather?q={args}
+Result Path: current.temp_c
+API Reply: Weather for {args}: {apiResult} C
+```
+
 ## Utility Plugins
 
 | Variable | Details | Example |

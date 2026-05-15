@@ -204,7 +204,7 @@ module.exports = {
   meta: {
     name: 'Distube Play',
     version: '1.0.1',
-    author: 'discord-bot-builder',
+    author: 'Kiodium',
     description: 'Play music from YouTube using Distube voice playback.',
     engineVersion: '>=1.0.0',
   },

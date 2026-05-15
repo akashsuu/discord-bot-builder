@@ -253,7 +253,7 @@ class LavalinkRuntime {
         headers: {
           Authorization: this.password,
           'User-Id': this.client.user?.id || '',
-          'Client-Name': 'discord-bot-builder/1.0.0',
+          'Client-Name': 'kiodium/1.0.0',
         },
       });
       this.ws = ws;
