@@ -44,7 +44,7 @@ function registerSession(sessionId, entry) {
  sessions.set(sessionId, entry);
 }
 
-function getSession(sessionId) { return sessions.get(sessionId) - null; }
+function getSession(sessionId) { return sessions.get(sessionId) ?? null; }
 function deleteSession(sessionId) {
  const s = sessions.get(sessionId);
  if (s) clearTimeout(s._timer);

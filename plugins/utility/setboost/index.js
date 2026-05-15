@@ -59,8 +59,8 @@ function varsFor(message, settings) {
  serverId: message.guild?.id || '',
  channel: channel?.name ? `#${channel.name}` : '#boosts',
  channelId: channel?.id || '',
- boostCount: String(message.guild?.premiumSubscriptionCount - 1),
- boostTier: String(message.guild?.premiumTier - 0),
+ boostCount: String(message.guild?.premiumSubscriptionCount ?? 1),
+ boostTier: String(message.guild?.premiumTier ?? 0),
  status: settings.enabled ? 'ON' : 'OFF',
  };
 }

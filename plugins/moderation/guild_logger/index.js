@@ -14,7 +14,7 @@ function buildVars(guild, eventType) {
  event: eventType || 'unknown',
  guild: guild?.name || 'Unknown',
  guildId: guild?.id || '0',
- memberCount: String(guild?.memberCount - 0),
+ memberCount: String(guild?.memberCount ?? 0),
  ownerId: guild?.ownerId || '0',
  date: now.toISOString().slice(0, 10),
  time: now.toTimeString().slice(0, 8),
@@ -130,7 +130,7 @@ module.exports = {
  event: _gl_event,
  guild: _gl_guild?.name || "Unknown",
  guildId: _gl_guild?.id || "0",
- memberCount: String(_gl_guild?.memberCount - 0),
+ memberCount: String(_gl_guild?.memberCount ?? 0),
  ownerId: _gl_guild?.ownerId || "0"
  };
  const _gl_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _gl_vars[k] - m);

@@ -4143,7 +4143,7 @@ function NPanel({ selectedNode, setNodes }) {
  <span className="bl-prop-label">Event</span>
  <select
  className="bl-field-select"
- value={d.event || (EVENT_NODE_OPTIONS[selectedNode.type][0]?.value - '')}
+ value={d.event || (EVENT_NODE_OPTIONS[selectedNode.type][0]?.value ?? '')}
  onChange={(e) => update('event', e.target.value)}
  >
  {EVENT_NODE_OPTIONS[selectedNode.type].map((opt) => (
@@ -4405,12 +4405,17 @@ function EditorInner() {
  }));
  }, [pluginMeta, setNodes]);
 
- // Build combined nodeTypes: builtins + one PluginNode component per plugin type
+ // Build combined nodeTypes: builtins + one PluginNode component per plugin type.
+ // Existing projects can contain plugin nodes before metadata finishes loading,
+ // so map unknown saved node types to PluginNode to avoid React Flow's default white box.
  const nodeTypes = useMemo(() => {
  const extra = {};
  for (const p of pluginMeta) extra[p.type] = PluginNode;
+ for (const n of nodes) {
+ if (n?.type && !builtinNodeTypes[n.type]) extra[n.type] = PluginNode;
+ }
  return { ...builtinNodeTypes, ...extra };
- }, [pluginMeta]);
+ }, [pluginMeta, nodes]);
 
  const { project: rfProject } = useReactFlow();
  const wrapperRef = useRef(null);
@@ -4489,7 +4494,7 @@ function EditorInner() {
  const pm = pluginMeta.find((p) => p.type === type) || {};
  data = {
  _label: pm.label || type,
- _icon: pm.icon || '🔌',
+ _icon: pm.icon || 'Plugin',
  _color: pm.color || '#2A2A3A',
  _hasInput: pm.hasInput !== false,
  _hasOutput: pm.hasOutput !== false,
@@ -4574,7 +4579,7 @@ function EditorInner() {
  />
  <Panel position="top-right">
  <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full px-4 py-1.5 text-[10px] font-medium text-zinc-400 shadow-xl select-none">
- {nodes.length} nodes · {edges.length} edges · RMB = add
+ {nodes.length} nodes - {edges.length} edges - RMB = add
  </div>
  </Panel>
  </ReactFlow>

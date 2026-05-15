@@ -70,7 +70,7 @@ function varsFor(message) {
  const channels = client.channels?.cache;
  const memory = process.memoryUsage();
  const botUser = client.user || {};
- const ping = Math.round(client.ws?.ping - 0);
+ const ping = Math.round(client.ws?.ping ?? 0);
 
  return {
  user: message.author?.username || 'Unknown',
@@ -82,9 +82,9 @@ function varsFor(message) {
  botId: botUser.id || '',
  server: message.guild?.name || 'Server',
  serverId: message.guild?.id || '',
- serverCount: fmt(guilds?.size - 0),
- userCount: fmt(users?.size - 0),
- channelCount: fmt(channels?.size - 0),
+ serverCount: fmt(guilds?.size ?? 0),
+ userCount: fmt(users?.size ?? 0),
+ channelCount: fmt(channels?.size ?? 0),
  ping: String(ping),
  uptime: formatUptime(client.uptime),
  memoryUsed: formatBytes(memory.heapUsed),

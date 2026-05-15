@@ -101,7 +101,7 @@ function buildVars(message, ctx) {
  // ── SERVER ──────────────────────────────────────────────────────────────
  server: m?.guild?.name || 'Unknown Server',
  serverId: m?.guild?.id || '0',
- memberCount: String(m?.guild?.memberCount - 0),
+ memberCount: String(m?.guild?.memberCount ?? 0),
 
  // ── CHANNEL ─────────────────────────────────────────────────────────────
  channel: m?.channel?.name || 'unknown',

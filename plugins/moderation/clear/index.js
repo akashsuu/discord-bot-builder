@@ -119,8 +119,8 @@ module.exports = {
  return false;
  }
 
- const defaultAmount = Math.min(Math.max(Number(node.data?.defaultAmount - 10), 1), 100);
- const maxAmount = Math.min(Math.max(Number(node.data?.maxAmount - 100), 1), 100);
+ const defaultAmount = Math.min(Math.max(Number(node.data?.defaultAmount ?? 10), 1), 100);
+ const maxAmount = Math.min(Math.max(Number(node.data?.maxAmount ?? 100), 1), 100);
  const requestedAmount = parsed.amount - defaultAmount;
  const amount = Math.min(Math.max(requestedAmount, 1), maxAmount);
 
@@ -150,8 +150,8 @@ module.exports = {
  generateCode(node, prefix = '') {
  const rawCmd = (node.data?.command || 'clear').replace(/"/g, '\\"');
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- const defaultAmount = Math.min(Math.max(Number(node.data?.defaultAmount - 10), 1), 100);
- const maxAmount = Math.min(Math.max(Number(node.data?.maxAmount - 100), 1), 100);
+ const defaultAmount = Math.min(Math.max(Number(node.data?.defaultAmount ?? 10), 1), 100);
+ const maxAmount = Math.min(Math.max(Number(node.data?.maxAmount ?? 100), 1), 100);
  const output = (node.data?.output || 'Deleted **{deleted}** message(s) in {channelMention}.')
  .replace(/\\/g, '\\\\')
  .replace(/`/g, '\\`');

@@ -32,7 +32,7 @@ function buildVars(member, assignedRoles, failedRoles) {
  roleIds: assignedRoles.map((role) => role.id).join(', ') || 'None',
  failedRoleIds: failedRoles.join(', ') || 'None',
  server: member.guild?.name || 'Unknown',
- memberCount: String(member.guild?.memberCount - 0),
+ memberCount: String(member.guild?.memberCount ?? 0),
  date: now.toISOString().slice(0, 10),
  time: now.toTimeString().slice(0, 8),
  };
@@ -182,7 +182,7 @@ module.exports = {
  roleIds: _ar_assigned.map((role) => role.id).join(", ") || "None",
  failedRoleIds: _ar_failed.join(", ") || "None",
  server: member.guild?.name,
- memberCount: String(member.guild?.memberCount - 0),
+ memberCount: String(member.guild?.memberCount ?? 0),
  date: _ar_now.toISOString().slice(0, 10),
  time: _ar_now.toTimeString().slice(0, 8),
  };

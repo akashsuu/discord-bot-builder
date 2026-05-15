@@ -41,7 +41,7 @@ async function loadPlugin(pluginDir, client) {
  }
 
  // Support both ES-module-style { default: ... } and CommonJS direct export
- const plugin = pluginModule?.default - pluginModule;
+ const plugin = pluginModule?.default ?? pluginModule;
 
  // ── Read plugin.json for UI metadata (optional — legacy plugins have it) ──
  // WHY: plugin.json carries label, icon, color, hasInput/Output, and full
@@ -105,7 +105,7 @@ async function loadPlugin(pluginDir, client) {
  }
 
  // ── Config initialisation ─────────────────────────────────────────────────
- const globalDefaults = plugin.config?.defaults - {};
+ const globalDefaults = plugin.config?.defaults ?? {};
  const nodeDefaults = {};
  for (const [nodeType, nodeDef] of Object.entries(plugin.nodes)) {
  if (nodeDef.configSchema) {
@@ -143,7 +143,7 @@ async function loadPlugin(pluginDir, client) {
  registry.register(pluginId, {
  meta: effectiveMeta,
  nodes: plugin.nodes,
- onUnload: plugin.onUnload - null,
+ onUnload: plugin.onUnload ?? null,
  category: category === 'plugins' ? null : category,
  safeAPI,
  uiMeta, // full plugin.json content — used by getNodeMetaList()
@@ -246,7 +246,7 @@ async function validateExternalPlugin(pluginDir) {
  try {
  delete require.cache[require.resolve(indexPath)];
  const mod = require(indexPath);
- plugin = mod?.default - mod;
+ plugin = mod?.default ?? mod;
  } catch (err) {
  return { valid: false, errors: [`require() failed: ${err.message}`] };
  }

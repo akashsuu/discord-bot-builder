@@ -370,7 +370,7 @@ function buildTemplateLiteral(text) {
  .replace(/\{channel\}|\{channelName\}|\{channel_name\}/g, '${message.channel?.name || "unknown"}')
  .replace(/\{channelId\}|\{channel_id\}/g, '${message.channel?.id || ""}')
  .replace(/\{channelMention\}|\{channel_mention\}/g, '${message.channel?.id ? `<#${message.channel.id}>` : ""}')
- .replace(/\{memberCount\}|\{member_count\}/g, '${message.guild?.memberCount - 0}')
+ .replace(/\{memberCount\}|\{member_count\}/g, '${message.guild?.memberCount ?? 0}')
  .replace(/\{target\}/g, '${_target?.user?.tag || "Unknown"}')
  .replace(/\{targetName\}|\{target_name\}/g, '${_target?.user?.username || "Unknown"}')
  .replace(/\{targetId\}|\{target_id\}/g, '${_target?.user?.id || "0"}')

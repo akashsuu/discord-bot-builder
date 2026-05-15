@@ -39,8 +39,8 @@ class PluginRegistry {
  this._nodes.set(nodeType, {
  pluginId,
  definition,
- safeAPI: entry.safeAPI - null,
- category: entry.category - null,
+ safeAPI: entry.safeAPI ?? null,
+ category: entry.category ?? null,
  });
  }
  }
@@ -57,8 +57,8 @@ class PluginRegistry {
 
  // ── Read operations ─────────────────────────────────────────────────────────
 
- getNode(nodeType) { return this._nodes.get(nodeType) - null; }
- getPlugin(pluginId) { return this._plugins.get(pluginId) - null; }
+ getNode(nodeType) { return this._nodes.get(nodeType) ?? null; }
+ getPlugin(pluginId) { return this._plugins.get(pluginId) ?? null; }
  hasNode(nodeType) { return this._nodes.has(nodeType); }
  hasPlugin(id) { return this._plugins.has(id); }
 

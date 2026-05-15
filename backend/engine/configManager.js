@@ -28,11 +28,11 @@ class ConfigManager {
  // ── Getters (return copies — callers cannot mutate internal state) ──────────
 
  getGlobal(pluginId) {
- return { ...(this._store.get(pluginId)?.global - {}) };
+ return { ...(this._store.get(pluginId)?.global ?? {}) };
  }
 
  getNode(pluginId, nodeType) {
- return { ...(this._store.get(pluginId)?.nodes?.[nodeType] - {}) };
+ return { ...(this._store.get(pluginId)?.nodes?.[nodeType] ?? {}) };
  }
 
  // ── Setters ─────────────────────────────────────────────────────────────────
@@ -46,7 +46,7 @@ class ConfigManager {
  setNode(pluginId, nodeType, patch) {
  const cfg = this._store.get(pluginId);
  if (!cfg) throw new Error(`No config entry for plugin "${pluginId}"`);
- cfg.nodes[nodeType] = { ...(cfg.nodes[nodeType] - {}), ...patch };
+ cfg.nodes[nodeType] = { ...(cfg.nodes[nodeType] ?? {}), ...patch };
  }
 
  cleanup(pluginId) {

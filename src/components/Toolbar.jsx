@@ -122,7 +122,7 @@ export default function Toolbar({ nodes, edges }) {
 
 function PrefixModal({ onClose }) {
  const { projectData, projectPath, updateProject } = useProject();
- const [prefix, setPrefix] = useState(projectData?.prefix - '!');
+ const [prefix, setPrefix] = useState(projectData?.prefix ?? '!');
  const [saving, setSaving] = useState(false);
 
  const handleSave = async () => {

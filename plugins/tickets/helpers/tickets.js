@@ -125,10 +125,10 @@ function recoverTicketFromChannel(channel) {
 function getTicket(channelId) {
  if (channelId && typeof channelId === 'object') {
  const tickets = loadTickets();
- return tickets[channelId.id] - recoverTicketFromChannel(channelId);
+ return tickets[channelId.id] ?? recoverTicketFromChannel(channelId);
  }
  const tickets = loadTickets();
- return tickets[channelId] - null;
+ return tickets[channelId] ?? null;
 }
 
 // ── Get a ticket by owner ID in a guild (for duplicate check) ─────────────────
@@ -139,7 +139,7 @@ function getTicketByOwner(guildId, ownerId, category = null) {
  t.ownerId === ownerId &&
  !t.closed &&
  (category === null || t.category === category)
- ) - null;
+ ) ?? null;
 }
 
 function addTicketMessage(channelId, message) {

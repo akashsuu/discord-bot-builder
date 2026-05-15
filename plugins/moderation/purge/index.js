@@ -91,7 +91,7 @@ module.exports = {
  return false;
  }
 
- const maxCycles = Math.min(Math.max(Number(node.data?.maxCycles - 30), 1), 200);
+ const maxCycles = Math.min(Math.max(Number(node.data?.maxCycles ?? 30), 1), 200);
  let totalDeleted = 0;
 
  for (let i = 0; i < maxCycles; i += 1) {
@@ -127,7 +127,7 @@ module.exports = {
  generateCode(node, prefix = '') {
  const rawCmd = (node.data?.command || 'purge').replace(/"/g, '\\"');
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- const maxCycles = Math.min(Math.max(Number(node.data?.maxCycles - 30), 1), 200);
+ const maxCycles = Math.min(Math.max(Number(node.data?.maxCycles ?? 30), 1), 200);
  const output = (node.data?.output || 'Purge completed by {mention} in {channelMention}. Deleted: {deleted}.')
  .replace(/\\/g, '\\\\')
  .replace(/`/g, '\\`');

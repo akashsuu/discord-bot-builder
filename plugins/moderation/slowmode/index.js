@@ -85,7 +85,7 @@ module.exports = {
  return false;
  }
 
- const fallback = Math.min(Math.max(Number(node.data?.defaultSeconds - 10), 0), 21600);
+ const fallback = Math.min(Math.max(Number(node.data?.defaultSeconds ?? 10), 0), 21600);
  const parsed = /^\d+$/.test(secondsToken || '') ? Number(secondsToken) : fallback;
  const seconds = Math.min(Math.max(parsed, 0), 21600);
 
@@ -114,7 +114,7 @@ module.exports = {
  generateCode(node, prefix = '') {
  const rawCmd = (node.data?.command || 'slowmode').replace(/"/g, '\\"');
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- const fallback = Math.min(Math.max(Number(node.data?.defaultSeconds - 10), 0), 21600);
+ const fallback = Math.min(Math.max(Number(node.data?.defaultSeconds ?? 10), 0), 21600);
  const output = (node.data?.output || '{mention} set slowmode in {channelMention} to **{seconds}s**.')
  .replace(/\\/g, '\\\\')
  .replace(/`/g, '\\`');

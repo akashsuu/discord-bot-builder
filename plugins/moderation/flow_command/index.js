@@ -50,7 +50,7 @@ module.exports = {
  if (!matched) return false;
 
  // ── 3. Cooldown enforcement ──────────────────────────────────────────
- const cooldownSec = Number(node.data?.cooldown - 0);
+ const cooldownSec = Number(node.data?.cooldown ?? 0);
  if (cooldownSec > 0 && ctx.cooldowns instanceof Map) {
  const key = `${message.guild.id}:${message.author.id}:${rawCmd}`;
  const last = ctx.cooldowns.get(key) || 0;
@@ -102,7 +102,7 @@ module.exports = {
  generateCode(node, prefix = '') {
  const rawCmd = (node.data?.command || 'kick').replace(/"/g, '\\"');
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- const cooldown = Number(node.data?.cooldown - 0);
+ const cooldown = Number(node.data?.cooldown ?? 0);
  return `
 // ── Flow Command: ${cmd} ${'─'.repeat(Math.max(0, 40 - cmd.length))}
 if (!message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) return;

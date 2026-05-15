@@ -85,7 +85,7 @@ module.exports = {
  return false;
  }
 
- const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays - 0), 0), 7);
+ const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays ?? 0), 0), 7);
  const afterCmd = message.content.slice(cmd.length).trim();
  const reason = afterCmd.replace(/<@!?\d+>/g, '').replace(/\s+/g, ' ').trim()
  || node.data?.reason
@@ -131,7 +131,7 @@ module.exports = {
  const rawCmd = (node.data?.command || 'massban').replace(/"/g, '\\"');
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  const reason = (node.data?.reason || 'No reason provided').replace(/"/g, '\\"');
- const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays - 0), 0), 7);
+ const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays ?? 0), 0), 7);
  const output = (node.data?.output || 'Mass ban by {mention}. Banned: {bannedCount}, Failed: {failedCount}. Reason: {reason}\\nTargets: {targets}')
  .replace(/\\/g, '\\\\')
  .replace(/`/g, '\\`');

@@ -63,7 +63,7 @@ function buildConfirmRow(channelId) {
 // ── Execute the actual close ──────────────────────────────────────────────────
 async function executeClose(interaction, channel, ticket, data) {
  const color = parseInt((data?.embedColor || '#ED4245').replace('#', ''), 16);
- const timer = Math.max(1, Number(data?.closeTimer - 5));
+ const timer = Math.max(1, Number(data?.closeTimer ?? 5));
  const closerTag = interaction.user?.tag || interaction.author?.tag || 'Unknown';
 
  // ── Generate transcript ────────────────────────────────────────────────────
@@ -259,7 +259,7 @@ module.exports = {
  },
 
  generateCode(node) {
- const timer = Number(node.data?.closeTimer - 5);
+ const timer = Number(node.data?.closeTimer ?? 5);
  return `
 // ── Ticket Close ──────────────────────────────────────────────────────────────
 // Handles: !close command + ticket:close:* button interactions

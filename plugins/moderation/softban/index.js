@@ -85,7 +85,7 @@ module.exports = {
  return false;
  }
 
- const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays - 1), 0), 7);
+ const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays ?? 1), 0), 7);
  const afterCmd = message.content.slice(cmd.length).trim();
  const reason = afterCmd.replace(/<@!?\d+>/g, '').replace(/\s+/g, ' ').trim()
  || node.data?.reason
@@ -118,7 +118,7 @@ module.exports = {
  const rawCmd = (node.data?.command || 'softban').replace(/"/g, '\\"');
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  const reason = (node.data?.reason || 'No reason provided').replace(/"/g, '\\"');
- const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays - 1), 0), 7);
+ const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays ?? 1), 0), 7);
  const output = (node.data?.output || '{targetMention} has been softbanned by {mention}.\\nReason: {reason}')
  .replace(/\\/g, '\\\\')
  .replace(/`/g, '\\`');

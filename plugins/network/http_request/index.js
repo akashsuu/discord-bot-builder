@@ -91,7 +91,7 @@ module.exports = {
  const rawHeaders= node.data?.headers || '{}';
  const rawBody = node.data?.body || '';
  const outputVar = (node.data?.output || 'apiResponse').trim();
- const timeoutMs = Number(node.data?.timeout - 10000);
+ const timeoutMs = Number(node.data?.timeout ?? 10000);
  const errorMsg = node.data?.errorMessage || '';
 
  if (!rawUrl.trim()) return false;
@@ -137,7 +137,7 @@ module.exports = {
  const rawHeaders= (node.data?.headers || '{}').replace(/`/g, '\\`');
  const rawBody = (node.data?.body || '').replace(/`/g, '\\`');
  const outputVar = (node.data?.output || 'apiResponse').replace(/\W/g, '_');
- const timeout = Number(node.data?.timeout - 10000);
+ const timeout = Number(node.data?.timeout ?? 10000);
  const noBody = ['GET', 'HEAD'].includes(method);
 
  return `

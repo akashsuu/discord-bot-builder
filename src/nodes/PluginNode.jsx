@@ -27,10 +27,10 @@ function pluginPreview(template, data, extra) {
  .replace(/\{channel\}/g, 'general')
  .replace(/\{memberCount\}/g, '1,234')
  // Page-specific (updated per page)
- .replace(/\{page\}/g, e.page - '1')
- .replace(/\{totalPages\}/g, e.totalPages - '1')
- .replace(/\{selected\}/g, e.selected - '')
- .replace(/\{button\}/g, e.button - '')
+ .replace(/\{page\}/g, e.page ?? '1')
+ .replace(/\{totalPages\}/g, e.totalPages ?? '1')
+ .replace(/\{selected\}/g, e.selected ?? '')
+ .replace(/\{button\}/g, e.button ?? '')
  // Utility
  .replace(/\{latency\}/g, '42')
  .replace(/\{date\}/g, '2026-05-05')
@@ -316,10 +316,10 @@ function getTicketPanelOptions(data) {
  const labels = splitCsvLoose(data.categoryLabels || '');
  const length = Math.max(categories.length, labels.length, 1);
  return Array.from({ length }, (_, index) => {
- const category = categories[index] - (index === 0 && labels.length === 0 ? 'support' : '');
+ const category = categories[index] ?? (index === 0 && labels.length === 0 ? 'support' : '');
  return {
  category,
- label: labels[index] - titleCase(category),
+ label: labels[index] ?? titleCase(category),
  };
  }).filter((option, index, list) =>
  list.length === 1 || option.category !== '' || option.label !== ''
@@ -545,8 +545,8 @@ export default function PluginNode({ id, type, data, selected }) {
  const saveTicketOptions = useCallback((options) => {
  const safe = options.length ? options : [{ category: 'support', label: 'Support' }];
  updateMany({
- categories: safe.map((option) => option.category - 'support').join(','),
- categoryLabels: safe.map((option) => option.label - titleCase(option.category)).join(','),
+ categories: safe.map((option) => option.category ?? 'support').join(','),
+ categoryLabels: safe.map((option) => option.label ?? titleCase(option.category)).join(','),
  });
  }, [updateMany]);
 
@@ -615,7 +615,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">Command</span>
  <input
- className="bl-node-input"
+ className="bl-node-input nodrag nowheel"
  value={val || ''}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
@@ -637,7 +637,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Default Reason</span>
  <input
- className="bl-node-input"
+ className="bl-node-input nodrag nowheel"
  value={data.defaultReason || ''}
  onChange={(e) => update('defaultReason', e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
@@ -656,7 +656,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -683,7 +683,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Aliases</span>
  <input
- className="bl-node-input"
+ className="bl-node-input nodrag nowheel"
  value={data.aliases || ''}
  onChange={(e) => update('aliases', e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
@@ -704,7 +704,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -732,7 +732,7 @@ export default function PluginNode({ id, type, data, selected }) {
  {label}
  </label>
  <input
- className="bl-node-input"
+ className="bl-node-input nodrag nowheel"
  value={data[labelKey] || ''}
  onChange={(e) => update(labelKey, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
@@ -791,7 +791,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -860,7 +860,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -908,7 +908,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -962,7 +962,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1059,7 +1059,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - ''}
+ value={data[key] ?? ''}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1076,7 +1076,7 @@ export default function PluginNode({ id, type, data, selected }) {
  className="bl-node-input"
  type="number"
  min="1"
- value={data.winnerCount - 1}
+ value={data.winnerCount ?? 1}
  onChange={(e) => update('winnerCount', Number(e.target.value) || 1)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1127,7 +1127,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - ''}
+ value={data[key] ?? ''}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1183,7 +1183,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - ''}
+ value={data[key] ?? ''}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1280,7 +1280,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1327,7 +1327,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1402,7 +1402,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1465,7 +1465,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1513,7 +1513,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1571,7 +1571,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1623,7 +1623,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1785,7 +1785,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1836,7 +1836,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -1901,7 +1901,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -1942,7 +1942,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - ''}
+ value={data[key] ?? ''}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1959,7 +1959,7 @@ export default function PluginNode({ id, type, data, selected }) {
  className="bl-node-input"
  type="number"
  min="250"
- value={data.delayMs - 1200}
+ value={data.delayMs ?? 1200}
  onChange={(e) => update('delayMs', Number(e.target.value) || 1200)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -1997,12 +1997,12 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={fallback} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={fallback} rows={rows} spellCheck={false} />
  </div>
  ))}
  <div className="bl-field">
  <span className="bl-field-lbl">Shutdown Delay MS</span>
- <input className="bl-node-input" type="number" min="250" value={data.delayMs - 1200} onChange={(e) => update('delayMs', Number(e.target.value) || 1200)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} />
+ <input className="bl-node-input" type="number" min="250" value={data.delayMs ?? 1200} onChange={(e) => update('delayMs', Number(e.target.value) || 1200)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} />
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Embed Color</span>
@@ -2055,7 +2055,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -2106,7 +2106,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -2172,7 +2172,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -2241,7 +2241,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -2298,7 +2298,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -2355,7 +2355,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">{label}</span>
  <textarea
  className="bl-node-textarea"
- value={data[key] - fallback}
+ value={data[key] ?? fallback}
  onChange={(e) => update(key, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -2411,7 +2411,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <div className="bl-field">
@@ -2439,7 +2439,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Punishment</span>
- <select className="bl-node-input" value={data.punishment || 'remove_roles'} onChange={(e) => update('punishment', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+ <select className="bl-node-input nodrag nowheel" value={data.punishment || 'remove_roles'} onChange={(e) => update('punishment', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
  <option value="remove_roles">Remove Roles</option>
  <option value="kick">Kick</option>
  <option value="ban">Ban</option>
@@ -2484,7 +2484,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <div className="bl-node-divider" />
@@ -2568,7 +2568,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <SectionHead color="#60A5FA">Button Labels</SectionHead>
@@ -2602,7 +2602,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Default Edition</span>
- <select className="bl-node-input" value={data.defaultEdition || 'auto'} onChange={(e) => update('defaultEdition', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+ <select className="bl-node-input nodrag nowheel" value={data.defaultEdition || 'auto'} onChange={(e) => update('defaultEdition', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
  <option value="auto">Auto</option>
  <option value="java">Java</option>
  <option value="bedrock">Bedrock</option>
@@ -2617,7 +2617,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2645,7 +2645,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2670,7 +2670,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Account Type</span>
- <select className="bl-node-input" value={data.accountType || 'epic'} onChange={(e) => update('accountType', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+ <select className="bl-node-input nodrag nowheel" value={data.accountType || 'epic'} onChange={(e) => update('accountType', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
  <option value="epic">Epic</option>
  <option value="psn">PlayStation</option>
  <option value="xbl">Xbox</option>
@@ -2678,7 +2678,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Stats Window</span>
- <select className="bl-node-input" value={data.timeWindow || 'lifetime'} onChange={(e) => update('timeWindow', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+ <select className="bl-node-input nodrag nowheel" value={data.timeWindow || 'lifetime'} onChange={(e) => update('timeWindow', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
  <option value="lifetime">Lifetime</option>
  <option value="season">Season</option>
  </select>
@@ -2693,7 +2693,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2718,7 +2718,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Region</span>
- <select className="bl-node-input" value={data.region || 'ap'} onChange={(e) => update('region', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+ <select className="bl-node-input nodrag nowheel" value={data.region || 'ap'} onChange={(e) => update('region', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
  <option value="ap">AP</option>
  <option value="na">NA</option>
  <option value="eu">EU</option>
@@ -2729,7 +2729,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Platform</span>
- <select className="bl-node-input" value={data.platform || 'pc'} onChange={(e) => update('platform', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+ <select className="bl-node-input nodrag nowheel" value={data.platform || 'pc'} onChange={(e) => update('platform', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
  <option value="pc">PC</option>
  <option value="console">Console</option>
  </select>
@@ -2745,7 +2745,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2783,7 +2783,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2808,7 +2808,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Platform</span>
- <select className="bl-node-input" value={data.platform || 'steam'} onChange={(e) => update('platform', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+ <select className="bl-node-input nodrag nowheel" value={data.platform || 'steam'} onChange={(e) => update('platform', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
  <option value="steam">Steam</option>
  <option value="kakao">Kakao</option>
  <option value="psn">PSN</option>
@@ -2818,7 +2818,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Game Mode</span>
- <select className="bl-node-input" value={data.gameMode || 'squad-fpp'} onChange={(e) => update('gameMode', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+ <select className="bl-node-input nodrag nowheel" value={data.gameMode || 'squad-fpp'} onChange={(e) => update('gameMode', e.target.value)} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
  <option value="solo">Solo</option>
  <option value="solo-fpp">Solo FPP</option>
  <option value="duo">Duo</option>
@@ -2837,7 +2837,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2880,7 +2880,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2921,7 +2921,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2954,7 +2954,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -2998,7 +2998,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ].map(({ key, label, fallback, rows }) => (
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{label}</span>
- <textarea className="bl-node-textarea" value={data[key] - fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
+ <textarea className="bl-node-textarea" value={data[key] ?? fallback} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} rows={rows} spellCheck={false} />
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
@@ -3016,7 +3016,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Panel Mode</span>
  <select
- className="bl-node-input"
+ className="bl-node-input nodrag nowheel"
  value={data.panelMode || 'buttons'}
  onChange={(e) => update('panelMode', e.target.value)}
  onPointerDown={(e) => e.stopPropagation()}
@@ -3103,7 +3103,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <span className="bl-field-lbl">Text</span>
  <textarea
  className="bl-node-textarea"
- value={data[ticketStatusMessageKey] - ticketStatusDefaultMessage}
+ value={data[ticketStatusMessageKey] ?? ticketStatusDefaultMessage}
  onChange={(e) => update(ticketStatusMessageKey, e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
@@ -3159,7 +3159,7 @@ export default function PluginNode({ id, type, data, selected }) {
  ) : (
  <input
  className="bl-node-input"
- value={val - ''}
+ value={val ?? ''}
  onChange={(e) => update(key, typeof val === 'number' ? Number(e.target.value) : e.target.value)}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}

@@ -106,7 +106,7 @@ module.exports = {
  return false;
  }
 
- const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays - 0), 0), 7);
+ const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays ?? 0), 0), 7);
 
  const afterCmd = message.content.slice(cmd.length).trim();
  const reason = afterCmd.replace(/<@!?\d+>/g, '').replace(/\s+/g, ' ').trim()
@@ -145,7 +145,7 @@ module.exports = {
  const output = (node.data?.output || '**{target}** has been banned by **{user}**.\nReason: {reason}')
  .replace(/\\/g, '\\\\')
  .replace(/`/g, '\\`');
- const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays - 0), 0), 7);
+ const deleteDays = Math.min(Math.max(Number(node.data?.deleteDays ?? 0), 0), 7);
 
  return `
 // Ban

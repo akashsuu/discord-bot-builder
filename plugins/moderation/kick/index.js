@@ -32,7 +32,7 @@ function buildVars(message, target, reason, cmd) {
  command: cmd,
  server: message.guild?.name || 'Unknown',
  channel: message.channel?.name || 'Unknown',
- memberCount: String((message.guild?.memberCount - 1) - 1), // after kick
+ memberCount: String((message.guild?.memberCount ?? 1) - 1), // after kick
  // Time
  date: now.toISOString().slice(0, 10),
  time: now.toTimeString().slice(0, 8),
@@ -186,7 +186,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  targetMention: \`<@\${_kt.user?.id}>\`,
  reason: _kr, command: "${cmd}",
  server: message.guild?.name, channel: message.channel?.name,
- memberCount: String((message.guild?.memberCount - 1) - 1),
+ memberCount: String((message.guild?.memberCount ?? 1) - 1),
  date: _now.toISOString().slice(0,10), time: _now.toTimeString().slice(0,8),
  };
  const _kt_apply = (t) => t.replace(/\\{(\\w+)\\}/g, (m, k) => _kv[k] - m);

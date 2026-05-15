@@ -110,8 +110,8 @@ module.exports = {
  return false;
  }
 
- const maxMessages = Math.max(2, Number(node.data?.maxMessages - 5));
- const intervalSeconds = Math.max(2, Number(node.data?.intervalSeconds - 8));
+ const maxMessages = Math.max(2, Number(node.data?.maxMessages ?? 5));
+ const intervalSeconds = Math.max(2, Number(node.data?.intervalSeconds ?? 8));
  const count = getRecentMessageCount(message, intervalSeconds * 1000);
 
  if (count <= maxMessages) return false;
@@ -120,7 +120,7 @@ module.exports = {
  await message.delete().catch(() => {});
  }
 
- const timeoutSeconds = Math.max(0, Number(node.data?.timeoutSeconds - 0));
+ const timeoutSeconds = Math.max(0, Number(node.data?.timeoutSeconds ?? 0));
  if (timeoutSeconds > 0) {
  const botCanTimeout = message.guild.members.me?.permissions.has(PermissionFlagsBits.ModerateMembers);
  const memberCanBeTimedOut = Boolean(message.member?.moderatable);
@@ -150,9 +150,9 @@ module.exports = {
  },
 
  generateCode(node) {
- const maxMessages = Math.max(2, Number(node.data?.maxMessages - 5));
- const intervalSeconds = Math.max(2, Number(node.data?.intervalSeconds - 8));
- const timeoutSeconds = Math.max(0, Number(node.data?.timeoutSeconds - 0));
+ const maxMessages = Math.max(2, Number(node.data?.maxMessages ?? 5));
+ const intervalSeconds = Math.max(2, Number(node.data?.intervalSeconds ?? 8));
+ const timeoutSeconds = Math.max(0, Number(node.data?.timeoutSeconds ?? 0));
  const output = (node.data?.output || '{mention}, slow down. Spam is not allowed here.')
  .replace(/\\/g, '\\\\')
  .replace(/`/g, '\\`');
