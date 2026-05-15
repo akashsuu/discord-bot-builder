@@ -169,6 +169,10 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
     await start(restartData, restartPlugins, restartLog, restartInfo);
     return true;
   };
+  globalThis.__kiodiumShutdownBot = async () => {
+    await stop();
+    return true;
+  };
 
   if (!token?.trim()) {
     throw new Error('Bot token is missing. Add it via the Token button.');
@@ -280,6 +284,7 @@ async function stop() {
   // Reset interaction handler so it re-attaches cleanly on next start
   detach();
   if (globalThis.__kiodiumRestartBot && !lastProjectData) delete globalThis.__kiodiumRestartBot;
+  delete globalThis.__kiodiumShutdownBot;
   log.info('Bot stopped.');
 }
 

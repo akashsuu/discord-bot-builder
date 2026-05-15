@@ -2560,6 +2560,131 @@ function nukePreviewText(template, data, extra = {}) {
   );
 }
 
+function voiceKickPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    target: 'Support#0000',
+    targetName: 'Support',
+    targetId: '987654321098765432',
+    targetMention: '@Support',
+    voiceChannel: 'General Voice',
+    voiceChannelId: '111222333444555666',
+    server: 'My Server',
+    channel: 'general',
+    command: `!${data.command || 'voicekick'}`,
+    reason: data.reason || 'No reason provided',
+    error: 'Missing permissions',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function voiceBanPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    target: 'Support#0000',
+    targetName: 'Support',
+    targetId: '987654321098765432',
+    targetMention: '@Support',
+    voiceChannel: 'General Voice',
+    voiceChannelId: '111222333444555666',
+    server: 'My Server',
+    channel: 'general',
+    command: `!${data.command || 'voiceban'}`,
+    reason: data.reason || 'No reason provided',
+    error: 'Missing permissions',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function voiceUnbanPreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    target: 'Support#0000',
+    targetName: 'Support',
+    targetId: '987654321098765432',
+    targetMention: '@Support',
+    voiceChannel: 'General Voice',
+    voiceChannelId: data.channelId || '111222333444555666',
+    server: 'My Server',
+    channel: 'general',
+    command: `!${data.command || 'voiceunban'}`,
+    reason: data.reason || 'No reason provided',
+    error: 'Missing permissions',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function voiceMutePreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    target: 'Support#0000',
+    targetName: 'Support',
+    targetId: '987654321098765432',
+    targetMention: '@Support',
+    voiceChannel: 'General Voice',
+    voiceChannelId: '111222333444555666',
+    server: 'My Server',
+    channel: 'general',
+    command: `!${data.command || 'voicemute'}`,
+    reason: data.reason || 'No reason provided',
+    error: 'Missing permissions',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
+function voiceUnmutePreviewText(template, data, extra = {}) {
+  const vars = {
+    ...data,
+    user: 'Akashsuu',
+    tag: 'Akashsuu#0000',
+    id: '123456789012345678',
+    mention: '@Akashsuu',
+    target: 'Support#0000',
+    targetName: 'Support',
+    targetId: '987654321098765432',
+    targetMention: '@Support',
+    voiceChannel: 'General Voice',
+    voiceChannelId: '111222333444555666',
+    server: 'My Server',
+    channel: 'general',
+    command: `!${data.command || 'voiceunmute'}`,
+    reason: data.reason || 'No reason provided',
+    error: 'Missing permissions',
+    ...extra,
+  };
+  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
+  );
+}
+
 function restartPreviewText(template, data, extra = {}) {
   const vars = {
     botName: 'Bot',
@@ -2623,6 +2748,43 @@ function DiscordPreviewRestart({ node }) {
   );
 }
 
+function DiscordPreviewShutdown({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const title = restartPreviewText(d.titleTemplate || 'Shutting Down Bot', d, { botName });
+  const text = restartPreviewText(d.descriptionTemplate || '{botName} is shutting down now.', d, { botName });
+  const plain = restartPreviewText(d.plainTextTemplate || '{botName} is shutting down now.', d, { botName });
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#EF4444' }}>S</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{plain}</div>
+          ) : (
+            <DiscordEmbed
+              data={{ ...d, embedColor: d.embedColor || '#EF4444', embedTitle: title, embedFooter: `Shutdown delay: ${d.delayMs ?? 1200}ms` }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DiscordPreviewNuke({ node }) {
   const { botInfo } = useProject();
   const now = new Date();
@@ -2659,6 +2821,246 @@ function DiscordPreviewNuke({ node }) {
                 ...d,
                 embedTitle: nukePreviewText(d.embedTitle || 'Channel Nuked', d),
                 embedFooter: nukePreviewText(d.embedFooter || 'Nuke requested by {user}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscordPreviewVoiceKick({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const text = voiceKickPreviewText(
+    d.successMessage || '{targetMention} was kicked from voice by {mention}.\nReason: {reason}',
+    d
+  );
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#0EA5E9' }}>VK</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{text}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedColor: d.embedColor || '#0EA5E9',
+                embedTitle: d.embedTitle || 'Voice Kick',
+                embedFooter: voiceKickPreviewText(d.embedFooter || 'Voice channel: {voiceChannel}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscordPreviewVoiceBan({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const text = voiceBanPreviewText(
+    d.successMessage || '{targetMention} was banned from **{voiceChannel}** by {mention}.\nReason: {reason}',
+    d
+  );
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#8B5CF6' }}>VB</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{text}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedColor: d.embedColor || '#8B5CF6',
+                embedTitle: d.embedTitle || 'Voice Ban',
+                embedFooter: voiceBanPreviewText(d.embedFooter || 'Connect denied in {voiceChannel}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscordPreviewVoiceUnban({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const text = voiceUnbanPreviewText(
+    d.successMessage || '{targetMention} was unbanned from **{voiceChannel}** by {mention}.\nReason: {reason}',
+    d
+  );
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#22C55E' }}>VU</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{text}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedColor: d.embedColor || '#22C55E',
+                embedTitle: d.embedTitle || 'Voice Unban',
+                embedFooter: voiceUnbanPreviewText(d.embedFooter || 'Connect restored in {voiceChannel}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscordPreviewVoiceMute({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const text = voiceMutePreviewText(
+    d.successMessage || '{targetMention} was voice muted in **{voiceChannel}** by {mention}.\nReason: {reason}',
+    d
+  );
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#F97316' }}>VM</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{text}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedColor: d.embedColor || '#F97316',
+                embedTitle: d.embedTitle || 'Voice Mute',
+                embedFooter: voiceMutePreviewText(d.embedFooter || 'Server muted in {voiceChannel}', d),
+              }}
+              text={text}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscordPreviewVoiceUnmute({ node }) {
+  const { botInfo } = useProject();
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = node?.data || {};
+  const botName = botInfo?.username || 'Bot';
+  const text = voiceUnmutePreviewText(
+    d.successMessage || '{targetMention} was voice unmuted in **{voiceChannel}** by {mention}.\nReason: {reason}',
+    d
+  );
+
+  return (
+    <div className="dc-wrap">
+      <div className="dc-msg">
+        {botInfo?.avatarURL ? (
+          <img
+            src={botInfo.avatarURL}
+            className="dc-avatar-img"
+            alt={botName}
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+        ) : null}
+        <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#14B8A6' }}>VU</div>
+        <div className="dc-msg-body">
+          <div className="dc-msg-hdr">
+            <span className="dc-bot-name">{botName}</span>
+            <span className="dc-bot-badge">BOT</span>
+            <span className="dc-timestamp">Today at {time}</span>
+          </div>
+          {d.embedEnabled === false ? (
+            <div className="dc-plain">{text}</div>
+          ) : (
+            <DiscordEmbed
+              data={{
+                ...d,
+                embedColor: d.embedColor || '#14B8A6',
+                embedTitle: d.embedTitle || 'Voice Unmute',
+                embedFooter: voiceUnmutePreviewText(d.embedFooter || 'Server unmuted in {voiceChannel}', d),
               }}
               text={text}
             />
@@ -3470,6 +3872,12 @@ function NPanel({ selectedNode, setNodes }) {
   const isBotInfoPreview = selectedNode.type === 'info_botinfo';
   const isWelcomePreview = selectedNode.type === 'admin_welcome';
   const isRestartPreview = selectedNode.type === 'admin_restart';
+  const isShutdownPreview = selectedNode.type === 'admin_shutdown';
+  const isVoiceKickPreview = selectedNode.type === 'moderation_voicekick';
+  const isVoiceBanPreview = selectedNode.type === 'moderation_voiceban';
+  const isVoiceUnbanPreview = selectedNode.type === 'moderation_voiceunban';
+  const isVoiceMutePreview = selectedNode.type === 'moderation_voicemute';
+  const isVoiceUnmutePreview = selectedNode.type === 'moderation_voiceunmute';
   const isMusicPlayPreview = selectedNode.type === 'music_play';
   const isGiveawayCreatePreview = selectedNode.type === 'giveaway_create';
   const isGiveawayStopPreview = selectedNode.type === 'giveaway_stop';
@@ -3738,6 +4146,18 @@ function NPanel({ selectedNode, setNodes }) {
                 <DiscordPreviewWelcome node={selectedNode} />
               ) : isRestartPreview ? (
                 <DiscordPreviewRestart node={selectedNode} />
+              ) : isShutdownPreview ? (
+                <DiscordPreviewShutdown node={selectedNode} />
+              ) : isVoiceKickPreview ? (
+                <DiscordPreviewVoiceKick node={selectedNode} />
+              ) : isVoiceBanPreview ? (
+                <DiscordPreviewVoiceBan node={selectedNode} />
+              ) : isVoiceUnbanPreview ? (
+                <DiscordPreviewVoiceUnban node={selectedNode} />
+              ) : isVoiceMutePreview ? (
+                <DiscordPreviewVoiceMute node={selectedNode} />
+              ) : isVoiceUnmutePreview ? (
+                <DiscordPreviewVoiceUnmute node={selectedNode} />
               ) : isMusicPlayPreview ? (
                 <DiscordPreviewMusicPlay node={selectedNode} />
               ) : isGiveawayCreatePreview ? (

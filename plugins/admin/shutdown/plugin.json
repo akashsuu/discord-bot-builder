@@ -1,0 +1,27 @@
+{
+  "name": "Shutdown",
+  "version": "1.0.0",
+  "description": "Shutdown the running bot from Discord with an admin prefix command.",
+  "author": "Kiodium",
+  "icon": "PWR",
+  "nodeConfig": {
+    "label": "Shutdown",
+    "icon": "PWR",
+    "color": "#EF4444",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "shutdown",
+      "aliases": "stopbot,off",
+      "embedEnabled": true,
+      "embedColor": "#EF4444",
+      "titleTemplate": "Shutting Down Bot",
+      "descriptionTemplate": "{botName} is shutting down now.",
+      "plainTextTemplate": "{botName} is shutting down now.",
+      "permissionMessage": "You need Manage Server permission to shutdown the bot.",
+      "unavailableMessage": "Shutdown is not available in this runtime.",
+      "errorMessage": "Could not shutdown bot: {error}",
+      "delayMs": 1200
+    }
+  }
+}

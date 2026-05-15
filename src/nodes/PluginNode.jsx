@@ -156,9 +156,43 @@ const RESTART_KEYS = new Set([
   'successMessage', 'permissionMessage', 'unavailableMessage', 'errorMessage', 'delayMs',
 ]);
 
+const SHUTDOWN_KEYS = new Set([
+  'aliases', 'titleTemplate', 'descriptionTemplate', 'plainTextTemplate',
+  'permissionMessage', 'unavailableMessage', 'errorMessage', 'delayMs',
+]);
+
 const NUKE_KEYS = new Set([
   'confirmationRequired', 'confirmationKeyword', 'reason', 'successMessage',
   'confirmMessage', 'permissionMessage', 'unsupportedMessage', 'errorMessage',
+]);
+
+const VOICEKICK_KEYS = new Set([
+  'aliases', 'reason', 'successMessage', 'usageMessage', 'permissionMessage',
+  'botPermissionMessage', 'notInVoiceMessage', 'selfMessage', 'errorMessage',
+]);
+
+const VOICEBAN_KEYS = new Set([
+  'aliases', 'reason', 'disconnectAfterBan', 'successMessage', 'usageMessage',
+  'permissionMessage', 'botPermissionMessage', 'movePermissionMessage',
+  'notInVoiceMessage', 'selfMessage', 'errorMessage',
+]);
+
+const VOICEUNBAN_KEYS = new Set([
+  'aliases', 'channelId', 'reason', 'successMessage', 'usageMessage',
+  'permissionMessage', 'botPermissionMessage', 'channelMessage',
+  'selfMessage', 'errorMessage',
+]);
+
+const VOICEMUTE_KEYS = new Set([
+  'aliases', 'reason', 'successMessage', 'usageMessage', 'permissionMessage',
+  'botPermissionMessage', 'notInVoiceMessage', 'alreadyMutedMessage',
+  'selfMessage', 'errorMessage',
+]);
+
+const VOICEUNMUTE_KEYS = new Set([
+  'aliases', 'reason', 'successMessage', 'usageMessage', 'permissionMessage',
+  'botPermissionMessage', 'notInVoiceMessage', 'notMutedMessage',
+  'selfMessage', 'errorMessage',
 ]);
 
 const MUSIC_PLAY_KEYS = new Set([
@@ -453,7 +487,7 @@ export default function PluginNode({ id, type, data, selected }) {
 
   // â”€â”€ Derived values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const inputFields = Object.entries(data).filter(
-    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(RESTART_KEYS.has(k) && type === 'admin_restart') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(GIVEAWAY_CREATE_KEYS.has(k) && type === 'giveaway_create') && !(GIVEAWAY_STOP_KEYS.has(k) && type === 'giveaway_stop') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
+    ([k]) => !k.startsWith('_') && k !== 'collapsed' && k !== 'output' && !EMBED_KEYS.has(k) && !TICKET_PANEL_KEYS.has(k) && !(TICKET_STATUS_KEYS.has(k) && ['ticket_lock', 'ticket_unlock'].includes(type)) && !(AFK_KEYS.has(k) && type === 'util_afk') && !(AVATAR_KEYS.has(k) && type === 'util_avatar') && !(SETBOOST_KEYS.has(k) && type === 'util_setboost') && !(BOOSTCOUNT_KEYS.has(k) && type === 'util_boostcount') && !(CHANNELINFO_KEYS.has(k) && type === 'util_channelinfo') && !(EMBEDBUILDER_KEYS.has(k) && type === 'util_embedbuilder') && !(INVITE_KEYS.has(k) && type === 'util_invite') && !(MEMBERCOUNT_KEYS.has(k) && type === 'util_membercount') && !(SERVERICON_KEYS.has(k) && type === 'util_servericon') && !(STATS_KEYS.has(k) && type === 'util_stats') && !(STEAL_KEYS.has(k) && type === 'util_steal') && !(USERINFO_KEYS.has(k) && type === 'util_userinfo') && !(PREFIX_KEYS.has(k) && type === 'util_prefix') && !(CALCULATOR_KEYS.has(k) && type === 'util_calculator') && !(PLAYING_KEYS.has(k) && type === 'info_playing') && !(BOTINFO_KEYS.has(k) && type === 'info_botinfo') && !(WELCOME_KEYS.has(k) && type === 'admin_welcome') && !(RESTART_KEYS.has(k) && type === 'admin_restart') && !(SHUTDOWN_KEYS.has(k) && type === 'admin_shutdown') && !(NUKE_KEYS.has(k) && type === 'moderation_nuke') && !(VOICEKICK_KEYS.has(k) && type === 'moderation_voicekick') && !(VOICEBAN_KEYS.has(k) && type === 'moderation_voiceban') && !(VOICEUNBAN_KEYS.has(k) && type === 'moderation_voiceunban') && !(VOICEMUTE_KEYS.has(k) && type === 'moderation_voicemute') && !(VOICEUNMUTE_KEYS.has(k) && type === 'moderation_voiceunmute') && !(MUSIC_PLAY_KEYS.has(k) && type === 'music_play') && !(GIVEAWAY_CREATE_KEYS.has(k) && type === 'giveaway_create') && !(GIVEAWAY_STOP_KEYS.has(k) && type === 'giveaway_stop') && !(MINECRAFT_PROFILE_KEYS.has(k) && type === 'game_minecraft_profile') && !(ROBLOX_PROFILE_KEYS.has(k) && type === 'game_roblox_profile') && !(FORTNITE_PROFILE_KEYS.has(k) && type === 'game_fortnite_profile') && !(VALORANT_PROFILE_KEYS.has(k) && type === 'game_valorant_profile') && !(COUNTER_STRIKE_PROFILE_KEYS.has(k) && type === 'game_counter_strike_profile') && !(PUBG_PROFILE_KEYS.has(k) && type === 'game_pubg_profile') && !(GENSHIN_PROFILE_KEYS.has(k) && type === 'game_genshin_profile') && !(PHASMOPHOBIA_PROFILE_KEYS.has(k) && type === 'game_phasmophobia_profile') && !(STEAM_PROFILE_KEYS.has(k) && type === 'game_steam_profile') && !(EPICGAMES_PROFILE_KEYS.has(k) && type === 'game_epicgames_profile') && k !== 'pages' && k !== 'dropdown' && k !== 'buttons'
   );
   const commandFields = inputFields.filter(([key]) => key === 'command');
   const configFields = inputFields.filter(([key]) => key !== 'command');
@@ -1923,6 +1957,44 @@ export default function PluginNode({ id, type, data, selected }) {
             </>
           )}
 
+          {type === 'admin_shutdown' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#EF4444">Shutdown Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="stopbot,off" spellCheck={false} />
+              </div>
+              {[
+                { key: 'titleTemplate', label: 'Embed Title', fallback: 'Shutting Down Bot', rows: 2 },
+                { key: 'descriptionTemplate', label: 'Embed Description', fallback: '{botName} is shutting down now.', rows: 3 },
+                { key: 'plainTextTemplate', label: 'Plain Text', fallback: '{botName} is shutting down now.', rows: 2 },
+                { key: 'permissionMessage', label: 'Permission Error', fallback: 'You need Manage Server permission to shutdown the bot.', rows: 2 },
+                { key: 'unavailableMessage', label: 'Unavailable Text', fallback: 'Shutdown is not available in this runtime.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Text', fallback: 'Could not shutdown bot: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea className="bl-node-textarea" value={data[key] ?? ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={fallback} rows={rows} spellCheck={false} />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Shutdown Delay MS</span>
+                <input className="bl-node-input" type="number" min="250" value={data.delayMs ?? 1200} onChange={(e) => update('delayMs', Number(e.target.value) || 1200)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#EF4444'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#EF4444'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                Variables: <span style={{ color: '#F87171' }}>{'{botName} {botTag} {user} {mention} {server} {channel} {error}'}</span>
+              </span>
+            </>
+          )}
+
           {type === 'moderation_nuke' && (
             <>
               <div className="bl-node-divider" />
@@ -1977,6 +2049,311 @@ export default function PluginNode({ id, type, data, selected }) {
                 <span style={{ color: '#7EB8F7' }}>{'{channel} {channelMention} {channelId}'}</span>
                 {' Ã‚Â· '}
                 <span style={{ color: '#888' }}>{'{user} {mention} {server}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'moderation_voicekick' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#0EA5E9">Voice Kick Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="vckick,vkick,disconnect"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'reason', label: 'Default Reason', fallback: 'No reason provided', rows: 2 },
+                { key: 'successMessage', label: 'Success Message', fallback: '{targetMention} was kicked from voice by {mention}.\nReason: {reason}', rows: 3 },
+                { key: 'usageMessage', label: 'Usage Message', fallback: 'Usage: `{command} @user [reason]`', rows: 2 },
+                { key: 'permissionMessage', label: 'User Permission Error', fallback: 'You need Move Members permission to voice kick users.', rows: 2 },
+                { key: 'botPermissionMessage', label: 'Bot Permission Error', fallback: 'I need Move Members permission to voice kick users.', rows: 2 },
+                { key: 'notInVoiceMessage', label: 'Not In Voice Message', fallback: '{targetMention} is not connected to a voice channel.', rows: 2 },
+                { key: 'selfMessage', label: 'Self Kick Message', fallback: 'You cannot voice kick yourself.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Failed to voice kick: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#0EA5E9'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#0EA5E9'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#0EA5E9' }}>{'{targetMention} {target} {targetId} {voiceChannel} {voiceChannelId}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{reason} {command} {user} {mention} {server} {channel} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'moderation_voiceban' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#8B5CF6">Voice Ban Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="vcban,vban"
+                  spellCheck={false}
+                />
+              </div>
+              <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+                <input
+                  type="checkbox"
+                  checked={data.disconnectAfterBan !== false}
+                  onChange={(e) => update('disconnectAfterBan', e.target.checked)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+                Disconnect after ban
+              </label>
+              {[
+                { key: 'reason', label: 'Default Reason', fallback: 'No reason provided', rows: 2 },
+                { key: 'successMessage', label: 'Success Message', fallback: '{targetMention} was banned from **{voiceChannel}** by {mention}.\nReason: {reason}', rows: 3 },
+                { key: 'usageMessage', label: 'Usage Message', fallback: 'Usage: `{command} @user [reason]`', rows: 2 },
+                { key: 'permissionMessage', label: 'User Permission Error', fallback: 'You need Manage Channels permission to voice ban users.', rows: 2 },
+                { key: 'botPermissionMessage', label: 'Bot Permission Error', fallback: 'I need Manage Channels permission to voice ban users.', rows: 2 },
+                { key: 'movePermissionMessage', label: 'Move Permission Error', fallback: 'I need Move Members permission to disconnect the user after banning them.', rows: 2 },
+                { key: 'notInVoiceMessage', label: 'Not In Voice Message', fallback: '{targetMention} is not connected to a voice channel.', rows: 2 },
+                { key: 'selfMessage', label: 'Self Ban Message', fallback: 'You cannot voice ban yourself.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Failed to voice ban: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#8B5CF6'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#8B5CF6'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#A78BFA' }}>{'{targetMention} {target} {targetId} {voiceChannel} {voiceChannelId}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{reason} {command} {user} {mention} {server} {channel} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'moderation_voiceunban' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#22C55E">Voice Unban Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="vcunban,vunban"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Voice Channel ID</span>
+                <input
+                  className="bl-node-input"
+                  value={data.channelId || ''}
+                  onChange={(e) => update('channelId', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="Optional channel id"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'reason', label: 'Default Reason', fallback: 'No reason provided', rows: 2 },
+                { key: 'successMessage', label: 'Success Message', fallback: '{targetMention} was unbanned from **{voiceChannel}** by {mention}.\nReason: {reason}', rows: 3 },
+                { key: 'usageMessage', label: 'Usage Message', fallback: 'Usage: `{command} @user [voiceChannelId] [reason]`', rows: 2 },
+                { key: 'permissionMessage', label: 'User Permission Error', fallback: 'You need Manage Channels permission to voice unban users.', rows: 2 },
+                { key: 'botPermissionMessage', label: 'Bot Permission Error', fallback: 'I need Manage Channels permission to voice unban users.', rows: 2 },
+                { key: 'channelMessage', label: 'Missing Channel Message', fallback: 'I could not find the voice channel. Add a Voice Channel ID in the node or command.', rows: 2 },
+                { key: 'selfMessage', label: 'Self Unban Message', fallback: 'You cannot voice unban yourself.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Failed to voice unban: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#22C55E'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#22C55E'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#22C55E' }}>{'{targetMention} {target} {targetId} {voiceChannel} {voiceChannelId}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{reason} {command} {user} {mention} {server} {channel} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'moderation_voicemute' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#F97316">Voice Mute Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="vcmute,vmute"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'reason', label: 'Default Reason', fallback: 'No reason provided', rows: 2 },
+                { key: 'successMessage', label: 'Success Message', fallback: '{targetMention} was voice muted in **{voiceChannel}** by {mention}.\nReason: {reason}', rows: 3 },
+                { key: 'usageMessage', label: 'Usage Message', fallback: 'Usage: `{command} @user [reason]`', rows: 2 },
+                { key: 'permissionMessage', label: 'User Permission Error', fallback: 'You need Mute Members permission to voice mute users.', rows: 2 },
+                { key: 'botPermissionMessage', label: 'Bot Permission Error', fallback: 'I need Mute Members permission to voice mute users.', rows: 2 },
+                { key: 'notInVoiceMessage', label: 'Not In Voice Message', fallback: '{targetMention} is not connected to a voice channel.', rows: 2 },
+                { key: 'alreadyMutedMessage', label: 'Already Muted Message', fallback: '{targetMention} is already voice muted.', rows: 2 },
+                { key: 'selfMessage', label: 'Self Mute Message', fallback: 'You cannot voice mute yourself.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Failed to voice mute: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#F97316'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#F97316'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#F97316' }}>{'{targetMention} {target} {targetId} {voiceChannel} {voiceChannelId}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{reason} {command} {user} {mention} {server} {channel} {error}'}</span>
+              </span>
+            </>
+          )}
+
+          {type === 'moderation_voiceunmute' && (
+            <>
+              <div className="bl-node-divider" />
+              <SectionHead color="#14B8A6">Voice Unmute Text</SectionHead>
+              <div className="bl-field">
+                <span className="bl-field-lbl">Aliases</span>
+                <input
+                  className="bl-node-input"
+                  value={data.aliases || ''}
+                  onChange={(e) => update('aliases', e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="vcunmute,vunmute"
+                  spellCheck={false}
+                />
+              </div>
+              {[
+                { key: 'reason', label: 'Default Reason', fallback: 'No reason provided', rows: 2 },
+                { key: 'successMessage', label: 'Success Message', fallback: '{targetMention} was voice unmuted in **{voiceChannel}** by {mention}.\nReason: {reason}', rows: 3 },
+                { key: 'usageMessage', label: 'Usage Message', fallback: 'Usage: `{command} @user [reason]`', rows: 2 },
+                { key: 'permissionMessage', label: 'User Permission Error', fallback: 'You need Mute Members permission to voice unmute users.', rows: 2 },
+                { key: 'botPermissionMessage', label: 'Bot Permission Error', fallback: 'I need Mute Members permission to voice unmute users.', rows: 2 },
+                { key: 'notInVoiceMessage', label: 'Not In Voice Message', fallback: '{targetMention} is not connected to a voice channel.', rows: 2 },
+                { key: 'notMutedMessage', label: 'Not Muted Message', fallback: '{targetMention} is not voice muted.', rows: 2 },
+                { key: 'selfMessage', label: 'Self Unmute Message', fallback: 'You cannot voice unmute yourself.', rows: 2 },
+                { key: 'errorMessage', label: 'Error Message', fallback: 'Failed to voice unmute: {error}', rows: 2 },
+              ].map(({ key, label, fallback, rows }) => (
+                <div key={key} className="bl-field">
+                  <span className="bl-field-lbl">{label}</span>
+                  <textarea
+                    className="bl-node-textarea"
+                    value={data[key] ?? fallback}
+                    onChange={(e) => update(key, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    rows={rows}
+                    spellCheck={false}
+                  />
+                </div>
+              ))}
+              <div className="bl-field">
+                <span className="bl-field-lbl">Embed Color</span>
+                <div className="bl-color-field">
+                  <input type="color" className="bl-color-pick" value={data.embedColor || '#14B8A6'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+                  <input className="bl-node-input" value={data.embedColor || '#14B8A6'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+                </div>
+              </div>
+              <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
+                <span style={{ color: '#14B8A6' }}>{'{targetMention} {target} {targetId} {voiceChannel} {voiceChannelId}'}</span>
+                {' '}
+                <span style={{ color: '#888' }}>{'{reason} {command} {user} {mention} {server} {channel} {error}'}</span>
               </span>
             </>
           )}

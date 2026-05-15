@@ -1,0 +1,29 @@
+{
+  "name": "Voice Unmute",
+  "version": "1.0.0",
+  "description": "Server unmute a user in voice chat.",
+  "author": "Kiodium",
+  "icon": "VCU",
+  "nodeConfig": {
+    "label": "Voice Unmute",
+    "icon": "VCU",
+    "color": "#14B8A6",
+    "hasInput": true,
+    "hasOutput": true,
+    "defaults": {
+      "command": "voiceunmute",
+      "aliases": "vcunmute,vunmute",
+      "embedEnabled": true,
+      "embedColor": "#14B8A6",
+      "reason": "No reason provided",
+      "successMessage": "{targetMention} was voice unmuted in **{voiceChannel}** by {mention}.\nReason: {reason}",
+      "usageMessage": "Usage: `{command} @user [reason]`",
+      "permissionMessage": "You need Mute Members permission to voice unmute users.",
+      "botPermissionMessage": "I need Mute Members permission to voice unmute users.",
+      "notInVoiceMessage": "{targetMention} is not connected to a voice channel.",
+      "notMutedMessage": "{targetMention} is not voice muted.",
+      "selfMessage": "You cannot voice unmute yourself.",
+      "errorMessage": "Failed to voice unmute: {error}"
+    }
+  }
+}
