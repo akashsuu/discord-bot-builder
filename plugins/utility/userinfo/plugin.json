@@ -1,30 +1,30 @@
 {
-  "name": "User Info",
-  "version": "1.0.0",
-  "description": "Get detailed information about a user.",
-  "author": "Akashsuu",
-  "icon": "UI",
-  "nodeConfig": {
-    "label": "User Info",
-    "icon": "UI",
-    "color": "#3B82F6",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "userinfo",
-      "aliases": "ui,user",
-      "titleTemplate": "User Info: {targetName}",
-      "descriptionTemplate": "**User:** {targetMention}\n**Tag:** {targetTag}\n**ID:** `{targetId}`\n**Bot:** {targetBot}\n**Created:** {createdAt}\n**Joined:** {joinedAt}\n**Roles:** {roleCount}\n**Top Role:** {topRole}\n**Status:** {status}",
-      "plainTextTemplate": "{targetTag} ({targetId}) joined {server} on {joinedAt}.",
-      "notFoundMessage": "I could not find that user.",
-      "embedEnabled": true,
-      "embedColor": "#3B82F6",
-      "embedTitle": "User Info",
-      "embedFooter": "User info requested by {user}",
-      "logoUrl": "",
-      "logoName": "",
-      "imageUrl": "",
-      "imagePosition": "bottom"
-    }
-  }
+ "name": "User Info",
+ "version": "1.0.0",
+ "description": "Get detailed information about a user.",
+ "author": "Akashsuu",
+ "icon": "UI",
+ "nodeConfig": {
+ "label": "User Info",
+ "icon": "UI",
+ "color": "#3B82F6",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "userinfo",
+ "aliases": "ui,user",
+ "titleTemplate": "User Info: {targetName}",
+ "descriptionTemplate": "**User:** {targetMention}\n**Tag:** {targetTag}\n**ID:** `{targetId}`\n**Bot:** {targetBot}\n**Created:** {createdAt}\n**Joined:** {joinedAt}\n**Roles:** {roleCount}\n**Top Role:** {topRole}\n**Status:** {status}",
+ "plainTextTemplate": "{targetTag} ({targetId}) joined {server} on {joinedAt}.",
+ "notFoundMessage": "I could not find that user.",
+ "embedEnabled": true,
+ "embedColor": "#3B82F6",
+ "embedTitle": "User Info",
+ "embedFooter": "User info requested by {user}",
+ "logoUrl": "",
+ "logoName": "",
+ "imageUrl": "",
+ "imagePosition": "bottom"
+ }
+ }
 }

@@ -1,28 +1,28 @@
 {
-  "name": "Voice Kick",
-  "version": "1.0.0",
-  "description": "Kick a user from their current voice channel.",
-  "author": "Kiodium",
-  "icon": "VCK",
-  "nodeConfig": {
-    "label": "Voice Kick",
-    "icon": "VCK",
-    "color": "#0EA5E9",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "voicekick",
-      "aliases": "vckick,vkick,disconnect",
-      "embedEnabled": true,
-      "embedColor": "#0EA5E9",
-      "reason": "No reason provided",
-      "successMessage": "{targetMention} was kicked from voice by {mention}.\nReason: {reason}",
-      "usageMessage": "Usage: `{command} @user [reason]`",
-      "permissionMessage": "You need Move Members permission to voice kick users.",
-      "botPermissionMessage": "I need Move Members permission to voice kick users.",
-      "notInVoiceMessage": "{targetMention} is not connected to a voice channel.",
-      "selfMessage": "You cannot voice kick yourself.",
-      "errorMessage": "Failed to voice kick: {error}"
-    }
-  }
+ "name": "Voice Kick",
+ "version": "1.0.0",
+ "description": "Kick a user from their current voice channel.",
+ "author": "Kiodium",
+ "icon": "VCK",
+ "nodeConfig": {
+ "label": "Voice Kick",
+ "icon": "VCK",
+ "color": "#0EA5E9",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "voicekick",
+ "aliases": "vckick,vkick,disconnect",
+ "embedEnabled": true,
+ "embedColor": "#0EA5E9",
+ "reason": "No reason provided",
+ "successMessage": "{targetMention} was kicked from voice by {mention}.\nReason: {reason}",
+ "usageMessage": "Usage: `{command} @user [reason]`",
+ "permissionMessage": "You need Move Members permission to voice kick users.",
+ "botPermissionMessage": "I need Move Members permission to voice kick users.",
+ "notInVoiceMessage": "{targetMention} is not connected to a voice channel.",
+ "selfMessage": "You cannot voice kick yourself.",
+ "errorMessage": "Failed to voice kick: {error}"
+ }
+ }
 }

@@ -1,21 +1,21 @@
 {
-  "name": "Unban",
-  "version": "1.0.0",
-  "description": "Prefix command to unban a user by ID.",
-  "author": "Akashsuu",
-  "icon": "UB",
-  "nodeConfig": {
-    "label": "Unban",
-    "icon": "UB",
-    "color": "#166534",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "unban",
-      "reason": "No reason provided",
-      "output": "User **{targetId}** has been unbanned by {mention}.\nReason: {reason}",
-      "embedEnabled": false,
-      "embedColor": "#16A34A"
-    }
-  }
+ "name": "Unban",
+ "version": "1.0.0",
+ "description": "Prefix command to unban a user by ID.",
+ "author": "Akashsuu",
+ "icon": "UB",
+ "nodeConfig": {
+ "label": "Unban",
+ "icon": "UB",
+ "color": "#166534",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "unban",
+ "reason": "No reason provided",
+ "output": "User **{targetId}** has been unbanned by {mention}.\nReason: {reason}",
+ "embedEnabled": false,
+ "embedColor": "#16A34A"
+ }
+ }
 }

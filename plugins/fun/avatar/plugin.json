@@ -1,32 +1,32 @@
 {
-  "name": "Avatar",
-  "version": "1.0.0",
-  "description": "Shows a user's avatar using avatar command with mention support.",
-  "author": "Akashsuu",
-  "icon": "AVT",
-  "nodeConfig": {
-    "label": "Avatar",
-    "icon": "AVT",
-    "color": "#3B82F6",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "avatar",
-      "embedEnabled": true,
-      "embedColor": "#3B82F6",
-      "titleTemplate": "{target}'s Avatar",
-      "descriptionTemplate": "Requested by {requester}",
-      "plainTextTemplate": "{target} avatar: {avatarUrl}",
-      "noAvatarMessage": "❌ Could not find avatar for {target}."
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "avatar" },
-      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
-      { "key": "embedColor", "label": "Embed Color", "type": "color" },
-      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
-      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
-      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
-      { "key": "noAvatarMessage", "label": "No Avatar Message", "type": "text" }
-    ]
-  }
+ "name": "Avatar",
+ "version": "1.0.0",
+ "description": "Shows a user's avatar using avatar command with mention support.",
+ "author": "Akashsuu",
+ "icon": "AVT",
+ "nodeConfig": {
+ "label": "Avatar",
+ "icon": "AVT",
+ "color": "#3B82F6",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "avatar",
+ "embedEnabled": true,
+ "embedColor": "#3B82F6",
+ "titleTemplate": "{target}'s Avatar",
+ "descriptionTemplate": "Requested by {requester}",
+ "plainTextTemplate": "{target} avatar: {avatarUrl}",
+ "noAvatarMessage": "❌ Could not find avatar for {target}."
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "avatar" },
+ { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+ { "key": "embedColor", "label": "Embed Color", "type": "color" },
+ { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+ { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+ { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+ { "key": "noAvatarMessage", "label": "No Avatar Message", "type": "text" }
+ ]
+ }
 }

@@ -1,19 +1,19 @@
 {
-  "name": "Ticket Transcript",
-  "version": "1.0.0",
-  "description": "Manually generates and saves an HTML transcript for a ticket.",
-  "author": "Akashsuu",
-  "icon": "📄",
-  "nodeConfig": {
-    "label": "Ticket Transcript",
-    "icon": "📄",
-    "color": "#1F618D",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "transcript",
-      "supportRoles": "",
-      "logChannel": ""
-    }
-  }
+ "name": "Ticket Transcript",
+ "version": "1.0.0",
+ "description": "Manually generates and saves an HTML transcript for a ticket.",
+ "author": "Akashsuu",
+ "icon": "📄",
+ "nodeConfig": {
+ "label": "Ticket Transcript",
+ "icon": "📄",
+ "color": "#1F618D",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "transcript",
+ "supportRoles": "",
+ "logChannel": ""
+ }
+ }
 }

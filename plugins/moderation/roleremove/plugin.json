@@ -1,20 +1,20 @@
 {
-  "name": "Role Remove",
-  "version": "1.0.0",
-  "description": "Prefix command to remove a role from a mentioned user.",
-  "author": "Akashsuu",
-  "icon": "RR",
-  "nodeConfig": {
-    "label": "Role Remove",
-    "icon": "RR",
-    "color": "#B91C1C",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "roleremove",
-      "output": "{mention} removed role {roleMention} from {targetMention}.",
-      "embedEnabled": false,
-      "embedColor": "#DC2626"
-    }
-  }
+ "name": "Role Remove",
+ "version": "1.0.0",
+ "description": "Prefix command to remove a role from a mentioned user.",
+ "author": "Akashsuu",
+ "icon": "RR",
+ "nodeConfig": {
+ "label": "Role Remove",
+ "icon": "RR",
+ "color": "#B91C1C",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "roleremove",
+ "output": "{mention} removed role {roleMention} from {targetMention}.",
+ "embedEnabled": false,
+ "embedColor": "#DC2626"
+ }
+ }
 }

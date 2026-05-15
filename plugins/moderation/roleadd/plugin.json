@@ -1,20 +1,20 @@
 {
-  "name": "Role Add",
-  "version": "1.0.0",
-  "description": "Prefix command to add a role to a mentioned user.",
-  "author": "Akashsuu",
-  "icon": "RA",
-  "nodeConfig": {
-    "label": "Role Add",
-    "icon": "RA",
-    "color": "#1D4ED8",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "roleadd",
-      "output": "{mention} added role {roleMention} to {targetMention}.",
-      "embedEnabled": false,
-      "embedColor": "#2563EB"
-    }
-  }
+ "name": "Role Add",
+ "version": "1.0.0",
+ "description": "Prefix command to add a role to a mentioned user.",
+ "author": "Akashsuu",
+ "icon": "RA",
+ "nodeConfig": {
+ "label": "Role Add",
+ "icon": "RA",
+ "color": "#1D4ED8",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "roleadd",
+ "output": "{mention} added role {roleMention} to {targetMention}.",
+ "embedEnabled": false,
+ "embedColor": "#2563EB"
+ }
+ }
 }

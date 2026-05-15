@@ -1,18 +1,18 @@
 {
-  "name": "Ban Command",
-  "version": "1.0.0",
-  "description": "Bans a mentioned user from the server.",
-  "author": "Akashsuu",
-  "icon": "🔨",
-  "nodeConfig": {
-    "label": "Ban Command",
-    "icon": "🔨",
-    "color": "#3A1E1E",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "ban",
-      "reason": "No reason provided"
-    }
-  }
+ "name": "Ban Command",
+ "version": "1.0.0",
+ "description": "Bans a mentioned user from the server.",
+ "author": "Akashsuu",
+ "icon": "🔨",
+ "nodeConfig": {
+ "label": "Ban Command",
+ "icon": "🔨",
+ "color": "#3A1E1E",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "ban",
+ "reason": "No reason provided"
+ }
+ }
 }

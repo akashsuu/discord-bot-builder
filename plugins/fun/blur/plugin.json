@@ -1,38 +1,38 @@
 {
-  "name": "Blur Avatar",
-  "version": "1.0.0",
-  "description": "Blurs a mentioned user's avatar using Jimp.",
-  "author": "Akashsuu",
-  "icon": "BLR",
-  "nodeConfig": {
-    "label": "Blur Avatar",
-    "icon": "BLR",
-    "color": "#64748B",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "blur",
-      "blurAmount": 8,
-      "embedEnabled": true,
-      "embedColor": "#64748B",
-      "titleTemplate": "{target}'s Blurred Avatar",
-      "descriptionTemplate": "Requested by {requester}",
-      "plainTextTemplate": "{target} avatar blurred by {requester}",
-      "noTargetMessage": "❌ You need to mention someone. Usage: `{command} @user`",
-      "missingModuleMessage": "❌ jimp module is not installed.",
-      "errorMessage": "❌ Failed to blur avatar. Try again later."
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "blur" },
-      { "key": "blurAmount", "label": "Blur Amount", "type": "number" },
-      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
-      { "key": "embedColor", "label": "Embed Color", "type": "color" },
-      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
-      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
-      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
-      { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
-      { "key": "missingModuleMessage", "label": "Missing Module Message", "type": "text" },
-      { "key": "errorMessage", "label": "Error Message", "type": "text" }
-    ]
-  }
+ "name": "Blur Avatar",
+ "version": "1.0.0",
+ "description": "Blurs a mentioned user's avatar using Jimp.",
+ "author": "Akashsuu",
+ "icon": "BLR",
+ "nodeConfig": {
+ "label": "Blur Avatar",
+ "icon": "BLR",
+ "color": "#64748B",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "blur",
+ "blurAmount": 8,
+ "embedEnabled": true,
+ "embedColor": "#64748B",
+ "titleTemplate": "{target}'s Blurred Avatar",
+ "descriptionTemplate": "Requested by {requester}",
+ "plainTextTemplate": "{target} avatar blurred by {requester}",
+ "noTargetMessage": "❌ You need to mention someone. Usage: `{command} @user`",
+ "missingModuleMessage": "❌ jimp module is not installed.",
+ "errorMessage": "❌ Failed to blur avatar. Try again later."
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "blur" },
+ { "key": "blurAmount", "label": "Blur Amount", "type": "number" },
+ { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+ { "key": "embedColor", "label": "Embed Color", "type": "color" },
+ { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+ { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+ { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+ { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
+ { "key": "missingModuleMessage", "label": "Missing Module Message", "type": "text" },
+ { "key": "errorMessage", "label": "Error Message", "type": "text" }
+ ]
+ }
 }

@@ -1,18 +1,18 @@
 {
-  "1502822770197794827": {
-    "ticketId": "ticket-0001",
-    "channelId": "1502822770197794827",
-    "guildId": "1321692492378148874",
-    "ownerId": "806113872620421140",
-    "category": "support",
-    "createdAt": "2026-05-10T00:01:09.939Z",
-    "claimedBy": null,
-    "priority": "normal",
-    "locked": true,
-    "closed": false,
-    "closedAt": null,
-    "transcriptPath": "C:\\Users\\akash\\Desktop\\discord-bot-builder\\plugins\\tickets\\transcripts\\ticket-0001.html",
-    "messages": [],
-    "replyMode": "normal"
-  }
+ "1502822770197794827": {
+ "ticketId": "ticket-0001",
+ "channelId": "1502822770197794827",
+ "guildId": "1321692492378148874",
+ "ownerId": "806113872620421140",
+ "category": "support",
+ "createdAt": "2026-05-10T00:01:09.939Z",
+ "claimedBy": null,
+ "priority": "normal",
+ "locked": true,
+ "closed": false,
+ "closedAt": null,
+ "transcriptPath": "C:\\Users\\akash\\Desktop\\discord-bot-builder\\plugins\\tickets\\transcripts\\ticket-0001.html",
+ "messages": [],
+ "replyMode": "normal"
+ }
 }

@@ -1,22 +1,22 @@
 {
-  "name": "Flow Kick",
-  "version": "1.0.0",
-  "description": "Kick action node. Reads target from ctx.flow.targetMember (set by Flow Command). Supports template output with {user}, {target}, {reason}, {command}.",
-  "author": "Akashsuu",
-  "icon": "👢",
-  "nodeConfig": {
-    "label": "Kick Action",
-    "icon": "👢",
-    "color": "#4A1E2A",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "reason": "No reason provided",
-      "output": "👢 **{target}** has been kicked by **{user}**.\n📋 Reason: {reason}",
-      "usageMessage": "❌ Usage: `{command} @user [reason]`",
-      "errorMessage": "❌ I cannot kick that user (role too high?).",
-      "embedEnabled": false,
-      "embedColor": "#C0392B"
-    }
-  }
+ "name": "Flow Kick",
+ "version": "1.0.0",
+ "description": "Kick action node. Reads target from ctx.flow.targetMember (set by Flow Command). Supports template output with {user}, {target}, {reason}, {command}.",
+ "author": "Akashsuu",
+ "icon": "👢",
+ "nodeConfig": {
+ "label": "Kick Action",
+ "icon": "👢",
+ "color": "#4A1E2A",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "reason": "No reason provided",
+ "output": "👢 **{target}** has been kicked by **{user}**.\n📋 Reason: {reason}",
+ "usageMessage": "❌ Usage: `{command} @user [reason]`",
+ "errorMessage": "❌ I cannot kick that user (role too high?).",
+ "embedEnabled": false,
+ "embedColor": "#C0392B"
+ }
+ }
 }

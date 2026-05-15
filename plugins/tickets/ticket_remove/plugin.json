@@ -1,19 +1,19 @@
 {
-  "name": "Ticket Remove User",
-  "version": "1.0.0",
-  "description": "Removes a user from an existing ticket channel.",
-  "author": "Akashsuu",
-  "icon": "➖",
-  "nodeConfig": {
-    "label": "Ticket Remove User",
-    "icon": "➖",
-    "color": "#7B241C",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "supportRoles": "",
-      "logChannel": "",
-      "embedColor": "#ED4245"
-    }
-  }
+ "name": "Ticket Remove User",
+ "version": "1.0.0",
+ "description": "Removes a user from an existing ticket channel.",
+ "author": "Akashsuu",
+ "icon": "➖",
+ "nodeConfig": {
+ "label": "Ticket Remove User",
+ "icon": "➖",
+ "color": "#7B241C",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "supportRoles": "",
+ "logChannel": "",
+ "embedColor": "#ED4245"
+ }
+ }
 }

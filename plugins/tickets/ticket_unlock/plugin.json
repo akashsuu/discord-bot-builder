@@ -1,20 +1,20 @@
 {
-  "name": "Ticket Unlock",
-  "version": "1.0.0",
-  "description": "Unlocks a ticket so the owner can send messages again.",
-  "author": "Akashsuu",
-  "icon": "🔓",
-  "nodeConfig": {
-    "label": "Ticket Unlock",
-    "icon": "🔓",
-    "color": "#148F77",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "unlock",
-      "unlockMessage": "🔓 **Ticket Unlocked** — The ticket owner can send messages again.",
-      "supportRoles": "",
-      "logChannel": ""
-    }
-  }
+ "name": "Ticket Unlock",
+ "version": "1.0.0",
+ "description": "Unlocks a ticket so the owner can send messages again.",
+ "author": "Akashsuu",
+ "icon": "🔓",
+ "nodeConfig": {
+ "label": "Ticket Unlock",
+ "icon": "🔓",
+ "color": "#148F77",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "unlock",
+ "unlockMessage": "🔓 **Ticket Unlocked** — The ticket owner can send messages again.",
+ "supportRoles": "",
+ "logChannel": ""
+ }
+ }
 }

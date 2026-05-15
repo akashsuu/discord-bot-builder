@@ -1,18 +1,18 @@
 {
-  "name": "Ping Command",
-  "version": "1.0.0",
-  "description": "Responds to !ping with Pong! and latency",
-  "author": "Akashsuu",
-  "icon": "🏓",
-  "nodeConfig": {
-    "label": "Ping Command",
-    "icon": "🏓",
-    "color": "#1E3A4A",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "ping",
-      "output": "🏓 Pong! Latency: {latency}ms"
-    }
-  }
+ "name": "Ping Command",
+ "version": "1.0.0",
+ "description": "Responds to !ping with Pong! and latency",
+ "author": "Akashsuu",
+ "icon": "🏓",
+ "nodeConfig": {
+ "label": "Ping Command",
+ "icon": "🏓",
+ "color": "#1E3A4A",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "ping",
+ "output": "🏓 Pong! Latency: {latency}ms"
+ }
+ }
 }

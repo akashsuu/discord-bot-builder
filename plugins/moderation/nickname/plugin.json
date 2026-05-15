@@ -1,22 +1,22 @@
 {
-  "name": "Nickname",
-  "version": "1.0.0",
-  "description": "Prefix command to set or reset a user's nickname.",
-  "author": "Akashsuu",
-  "icon": "NICK",
-  "nodeConfig": {
-    "label": "Nickname",
-    "icon": "NICK",
-    "color": "#0F766E",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "nickname",
-      "allowReset": true,
-      "output": "{mention} changed nickname of {targetMention} to **{nickname}**.",
-      "resetOutput": "{mention} reset nickname of {targetMention}.",
-      "embedEnabled": false,
-      "embedColor": "#0D9488"
-    }
-  }
+ "name": "Nickname",
+ "version": "1.0.0",
+ "description": "Prefix command to set or reset a user's nickname.",
+ "author": "Akashsuu",
+ "icon": "NICK",
+ "nodeConfig": {
+ "label": "Nickname",
+ "icon": "NICK",
+ "color": "#0F766E",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "nickname",
+ "allowReset": true,
+ "output": "{mention} changed nickname of {targetMention} to **{nickname}**.",
+ "resetOutput": "{mention} reset nickname of {targetMention}.",
+ "embedEnabled": false,
+ "embedColor": "#0D9488"
+ }
+ }
 }

@@ -1,36 +1,36 @@
 {
-  "name": "Anime Pat",
-  "version": "1.0.0",
-  "description": "Fetches an anime pat GIF from nekos.best and sends a rich embed showing who is patting whom.",
-  "author": "Akashsuu",
-  "icon": "PAT",
-  "nodeConfig": {
-    "label": "Anime Pat",
-    "icon": "PAT",
-    "color": "#22C55E",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "pat",
-      "apiUrl": "https://nekos.best/api/v2/pat",
-      "embedEnabled": true,
-      "embedColor": "#22C55E",
-      "titleTemplate": "{author} patted {target}!",
-      "descriptionTemplate": "**{author}** is patting **{target}**!",
-      "plainTextTemplate": "**{author}** is patting **{target}**! {gif}",
-      "noTargetMessage": "❌ You need to mention someone to pat! Usage: `{command} @user`",
-      "errorMessage": "❌ Could not fetch a pat GIF. Try again later."
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "pat" },
-      { "key": "apiUrl", "label": "GIF API URL", "type": "text", "placeholder": "https://nekos.best/api/v2/pat" },
-      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
-      { "key": "embedColor", "label": "Embed Color", "type": "color" },
-      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
-      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
-      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
-      { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
-      { "key": "errorMessage", "label": "Error Message", "type": "text" }
-    ]
-  }
+ "name": "Anime Pat",
+ "version": "1.0.0",
+ "description": "Fetches an anime pat GIF from nekos.best and sends a rich embed showing who is patting whom.",
+ "author": "Akashsuu",
+ "icon": "PAT",
+ "nodeConfig": {
+ "label": "Anime Pat",
+ "icon": "PAT",
+ "color": "#22C55E",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "pat",
+ "apiUrl": "https://nekos.best/api/v2/pat",
+ "embedEnabled": true,
+ "embedColor": "#22C55E",
+ "titleTemplate": "{author} patted {target}!",
+ "descriptionTemplate": "**{author}** is patting **{target}**!",
+ "plainTextTemplate": "**{author}** is patting **{target}**! {gif}",
+ "noTargetMessage": "❌ You need to mention someone to pat! Usage: `{command} @user`",
+ "errorMessage": "❌ Could not fetch a pat GIF. Try again later."
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "pat" },
+ { "key": "apiUrl", "label": "GIF API URL", "type": "text", "placeholder": "https://nekos.best/api/v2/pat" },
+ { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+ { "key": "embedColor", "label": "Embed Color", "type": "color" },
+ { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+ { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+ { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+ { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
+ { "key": "errorMessage", "label": "Error Message", "type": "text" }
+ ]
+ }
 }

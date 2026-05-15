@@ -1,30 +1,30 @@
 {
-  "name": "Server Info",
-  "version": "1.0.0",
-  "description": "Shows detailed server information: members, channels, roles, boosts, verification level, and more. Supports rich embed and plain-text output.",
-  "author": "Akashsuu",
-  "icon": "🏠",
-  "nodeConfig": {
-    "label": "Server Info",
-    "icon": "🏠",
-    "color": "#1A4A7A",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "serverinfo",
-      "output": "📊 **{server}** `{serverId}` · 👥 {memberCount} members · 👑 Owner: {owner} · 🚀 Boost Level {boostLevel}",
-      "embedEnabled": true,
-      "embedColor": "#5865F2",
-      "embedTitle": "🏠 {server}",
-      "embedFooter": "Server ID: {serverId}",
-      "ownerTemplate": "👑 Owner\n{ownerMention} ({owner})",
-      "serverIdTemplate": "🆔 Server ID\n{serverId}",
-      "createdTemplate": "📅 Created\n{createdAt} ({createdTimestamp})",
-      "membersTemplate": "👥 Members\n{memberCount} total\n👤 Humans: {humanCount}\n🤖 Bots: {botCount}",
-      "channelsTemplate": "💬 Channels\n💬 Text: {textChannels}\n🔊 Voice: {voiceChannels}\n📂 Categories: {categories}",
-      "rolesTemplate": "🎭 Roles\n{roles} roles",
-      "boostTemplate": "🚀 Boost — {boostTier}\n{boostBar}\n{boostCount} boosts",
-      "verificationTemplate": "🔒 Verification\n{verification}"
-    }
-  }
+ "name": "Server Info",
+ "version": "1.0.0",
+ "description": "Shows detailed server information: members, channels, roles, boosts, verification level, and more. Supports rich embed and plain-text output.",
+ "author": "Akashsuu",
+ "icon": "🏠",
+ "nodeConfig": {
+ "label": "Server Info",
+ "icon": "🏠",
+ "color": "#1A4A7A",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "serverinfo",
+ "output": "📊 **{server}** `{serverId}` · 👥 {memberCount} members · 👑 Owner: {owner} · 🚀 Boost Level {boostLevel}",
+ "embedEnabled": true,
+ "embedColor": "#5865F2",
+ "embedTitle": "🏠 {server}",
+ "embedFooter": "Server ID: {serverId}",
+ "ownerTemplate": "👑 Owner\n{ownerMention} ({owner})",
+ "serverIdTemplate": "🆔 Server ID\n{serverId}",
+ "createdTemplate": "📅 Created\n{createdAt} ({createdTimestamp})",
+ "membersTemplate": "👥 Members\n{memberCount} total\n👤 Humans: {humanCount}\n🤖 Bots: {botCount}",
+ "channelsTemplate": "💬 Channels\n💬 Text: {textChannels}\n🔊 Voice: {voiceChannels}\n📂 Categories: {categories}",
+ "rolesTemplate": "🎭 Roles\n{roles} roles",
+ "boostTemplate": "🚀 Boost — {boostTier}\n{boostBar}\n{boostCount} boosts",
+ "verificationTemplate": "🔒 Verification\n{verification}"
+ }
+ }
 }

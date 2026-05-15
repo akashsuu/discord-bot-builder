@@ -1,55 +1,55 @@
 {
-  "name": "Page Menu",
-  "version": "1.0.0",
-  "description": "Multi-page embed menu with dropdown selection, button navigation, and full variable support.",
-  "author": "Akashsuu",
-  "icon": "📖",
-  "nodeConfig": {
-    "label": "Page Menu",
-    "icon": "📖",
-    "color": "#1A4A7A",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "menu",
-      "embedEnabled": true,
-      "embedColor": "#5865F2",
-      "embedFooter": "Page {page} of {totalPages} · Requested by {user}",
-      "pages": [
-        {
-          "id": "page1",
-          "title": "📖 Help — Commands",
-          "description": "Jump to this page via dropdown",
-          "content": "**Available Commands**\n`!help` — Show this menu\n`!ping` — Check latency\n`!serverinfo` — Server details\n\nRequested by {mention}"
-        },
-        {
-          "id": "page2",
-          "title": "🛡️ Help — Moderation",
-          "description": "Moderation commands",
-          "content": "**Moderation Commands**\n`!ban @user [reason]` — Ban a member\n`!kick @user [reason]` — Kick a member\n`!mute @user [time]` — Mute a member\n\nServer: **{server}**"
-        },
-        {
-          "id": "page3",
-          "title": "⚙️ Help — Utility",
-          "description": "Utility commands",
-          "content": "**Utility Commands**\n`!serverinfo` — Server information\n`!userinfo @user` — User information\n`!menu` — This menu\n\n📅 {date} · 🕐 {time}"
-        }
-      ],
-      "dropdown": {
-        "enabled": true,
-        "placeholder": "📋 Jump to a page…",
-        "usePages": true,
-        "options": []
-      },
-      "buttons": {
-        "enabled": true,
-        "navigation": true,
-        "list": [
-          { "id": "prev",  "label": "⬅ Prev"  },
-          { "id": "next",  "label": "Next ➡"  },
-          { "id": "close", "label": "❌ Close" }
-        ]
-      }
-    }
-  }
+ "name": "Page Menu",
+ "version": "1.0.0",
+ "description": "Multi-page embed menu with dropdown selection, button navigation, and full variable support.",
+ "author": "Akashsuu",
+ "icon": "📖",
+ "nodeConfig": {
+ "label": "Page Menu",
+ "icon": "📖",
+ "color": "#1A4A7A",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "menu",
+ "embedEnabled": true,
+ "embedColor": "#5865F2",
+ "embedFooter": "Page {page} of {totalPages} · Requested by {user}",
+ "pages": [
+ {
+ "id": "page1",
+ "title": "📖 Help — Commands",
+ "description": "Jump to this page via dropdown",
+ "content": "**Available Commands**\n`!help` — Show this menu\n`!ping` — Check latency\n`!serverinfo` — Server details\n\nRequested by {mention}"
+ },
+ {
+ "id": "page2",
+ "title": "🛡️ Help — Moderation",
+ "description": "Moderation commands",
+ "content": "**Moderation Commands**\n`!ban @user [reason]` — Ban a member\n`!kick @user [reason]` — Kick a member\n`!mute @user [time]` — Mute a member\n\nServer: **{server}**"
+ },
+ {
+ "id": "page3",
+ "title": "⚙️ Help — Utility",
+ "description": "Utility commands",
+ "content": "**Utility Commands**\n`!serverinfo` — Server information\n`!userinfo @user` — User information\n`!menu` — This menu\n\n📅 {date} · 🕐 {time}"
+ }
+ ],
+ "dropdown": {
+ "enabled": true,
+ "placeholder": "📋 Jump to a page…",
+ "usePages": true,
+ "options": []
+ },
+ "buttons": {
+ "enabled": true,
+ "navigation": true,
+ "list": [
+ { "id": "prev", "label": "⬅ Prev" },
+ { "id": "next", "label": "Next ➡" },
+ { "id": "close", "label": "❌ Close" }
+ ]
+ }
+ }
+ }
 }

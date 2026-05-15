@@ -1,29 +1,29 @@
 {
-  "name": "Voice Unban",
-  "version": "1.0.0",
-  "description": "Unban a user from a voice channel.",
-  "author": "Kiodium",
-  "icon": "VCU",
-  "nodeConfig": {
-    "label": "Voice Unban",
-    "icon": "VCU",
-    "color": "#22C55E",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "voiceunban",
-      "aliases": "vcunban,vunban",
-      "embedEnabled": true,
-      "embedColor": "#22C55E",
-      "channelId": "",
-      "reason": "No reason provided",
-      "successMessage": "{targetMention} was unbanned from **{voiceChannel}** by {mention}.\nReason: {reason}",
-      "usageMessage": "Usage: `{command} @user [voiceChannelId] [reason]`",
-      "permissionMessage": "You need Manage Channels permission to voice unban users.",
-      "botPermissionMessage": "I need Manage Channels permission to voice unban users.",
-      "channelMessage": "I could not find the voice channel. Add a Voice Channel ID in the node or command.",
-      "selfMessage": "You cannot voice unban yourself.",
-      "errorMessage": "Failed to voice unban: {error}"
-    }
-  }
+ "name": "Voice Unban",
+ "version": "1.0.0",
+ "description": "Unban a user from a voice channel.",
+ "author": "Kiodium",
+ "icon": "VCU",
+ "nodeConfig": {
+ "label": "Voice Unban",
+ "icon": "VCU",
+ "color": "#22C55E",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "voiceunban",
+ "aliases": "vcunban,vunban",
+ "embedEnabled": true,
+ "embedColor": "#22C55E",
+ "channelId": "",
+ "reason": "No reason provided",
+ "successMessage": "{targetMention} was unbanned from **{voiceChannel}** by {mention}.\nReason: {reason}",
+ "usageMessage": "Usage: `{command} @user [voiceChannelId] [reason]`",
+ "permissionMessage": "You need Manage Channels permission to voice unban users.",
+ "botPermissionMessage": "I need Manage Channels permission to voice unban users.",
+ "channelMessage": "I could not find the voice channel. Add a Voice Channel ID in the node or command.",
+ "selfMessage": "You cannot voice unban yourself.",
+ "errorMessage": "Failed to voice unban: {error}"
+ }
+ }
 }

@@ -1,30 +1,30 @@
 {
-  "name": "Genshin Profile",
-  "version": "1.0.0",
-  "description": "Shows a Genshin Impact profile from UID with adventure rank, world level, abyss, achievements, and showcase count.",
-  "author": "Akashsuu",
-  "icon": "GI",
-  "nodeConfig": {
-    "label": "Genshin Profile",
-    "icon": "GI",
-    "color": "#67E8F9",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "genshin",
-      "aliases": "gprofile,genshinprofile,gi",
-      "apiBase": "https://enka.network/api/uid",
-      "userAgent": "DiscordBotBuilder/1.0 contact: owner",
-      "nameMap": "Akash=618285856\nLumine=618285856",
-      "embedColor": "#67E8F9",
-      "titleTemplate": "Genshin profile for {nickname}",
-      "descriptionTemplate": "**Traveler**\nNickname: `{nickname}`\nUID: `{uid}`\nAdventure Rank: `{level}`\nWorld Level: `{world_level}`\nSignature: {signature}\n\n**Progress**\nAchievements: `{achievements}`\nAbyss: `{abyss}`\nShowcase Characters: `{showcase_count}`\nNamecard ID: `{namecard_id}`\nProfile Icon ID: `{profile_icon_id}`\n\n**Links**\nProfile: {profile_link}",
-      "invalidUidMessage": "Use `{command} <genshin uid>` to check a Genshin profile.",
-      "nameNotMappedMessage": "No UID saved for `{query}`. Add it in the Genshin Profile node name map like `Name=UID`.",
-      "notFoundMessage": "No Genshin profile found for UID `{query}`. The UID may be wrong or unavailable.",
-      "rateLimitMessage": "Genshin profile lookup is rate limited right now. Try again later.",
-      "errorMessage": "Could not load Genshin profile: {error}",
-      "profileLinkLabel": "Open Enka"
-    }
-  }
+ "name": "Genshin Profile",
+ "version": "1.0.0",
+ "description": "Shows a Genshin Impact profile from UID with adventure rank, world level, abyss, achievements, and showcase count.",
+ "author": "Akashsuu",
+ "icon": "GI",
+ "nodeConfig": {
+ "label": "Genshin Profile",
+ "icon": "GI",
+ "color": "#67E8F9",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "genshin",
+ "aliases": "gprofile,genshinprofile,gi",
+ "apiBase": "https://enka.network/api/uid",
+ "userAgent": "DiscordBotBuilder/1.0 contact: owner",
+ "nameMap": "Akash=618285856\nLumine=618285856",
+ "embedColor": "#67E8F9",
+ "titleTemplate": "Genshin profile for {nickname}",
+ "descriptionTemplate": "**Traveler**\nNickname: `{nickname}`\nUID: `{uid}`\nAdventure Rank: `{level}`\nWorld Level: `{world_level}`\nSignature: {signature}\n\n**Progress**\nAchievements: `{achievements}`\nAbyss: `{abyss}`\nShowcase Characters: `{showcase_count}`\nNamecard ID: `{namecard_id}`\nProfile Icon ID: `{profile_icon_id}`\n\n**Links**\nProfile: {profile_link}",
+ "invalidUidMessage": "Use `{command} <genshin uid>` to check a Genshin profile.",
+ "nameNotMappedMessage": "No UID saved for `{query}`. Add it in the Genshin Profile node name map like `Name=UID`.",
+ "notFoundMessage": "No Genshin profile found for UID `{query}`. The UID may be wrong or unavailable.",
+ "rateLimitMessage": "Genshin profile lookup is rate limited right now. Try again later.",
+ "errorMessage": "Could not load Genshin profile: {error}",
+ "profileLinkLabel": "Open Enka"
+ }
+ }
 }

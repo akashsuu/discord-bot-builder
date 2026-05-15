@@ -1,74 +1,74 @@
 {
-  "name": "Anime Hug",
-  "version": "1.0.0",
-  "description": "Fetches an anime hug GIF from nekos.best and sends a rich embed showing who is hugging whom.",
-  "author": "Akashsuu",
-  "icon": "HUG",
-  "nodeConfig": {
-    "label": "Anime Hug",
-    "icon": "HUG",
-    "color": "#EC4899",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "hug",
-      "apiUrl": "https://nekos.best/api/v2/hug",
-      "embedEnabled": true,
-      "embedColor": "#EC4899",
-      "titleTemplate": "{author} hugged {target}!",
-      "descriptionTemplate": "**{author}** is hugging **{target}**!",
-      "plainTextTemplate": "**{author}** is hugging **{target}**! {gif}",
-      "noTargetMessage": "❌ You need to mention someone to hug! Usage: `{command} @user`",
-      "errorMessage": "❌ Could not fetch a hug GIF. Try again later."
-    },
-    "fields": [
-      {
-        "key": "command",
-        "label": "Command",
-        "type": "text",
-        "placeholder": "hug"
-      },
-      {
-        "key": "apiUrl",
-        "label": "GIF API URL",
-        "type": "text",
-        "placeholder": "https://nekos.best/api/v2/hug"
-      },
-      {
-        "key": "embedEnabled",
-        "label": "Enable Embed",
-        "type": "checkbox"
-      },
-      {
-        "key": "embedColor",
-        "label": "Embed Color",
-        "type": "color"
-      },
-      {
-        "key": "titleTemplate",
-        "label": "Embed Title",
-        "type": "text"
-      },
-      {
-        "key": "descriptionTemplate",
-        "label": "Embed Description",
-        "type": "text"
-      },
-      {
-        "key": "plainTextTemplate",
-        "label": "Plain Text",
-        "type": "text"
-      },
-      {
-        "key": "noTargetMessage",
-        "label": "No Target Message",
-        "type": "text"
-      },
-      {
-        "key": "errorMessage",
-        "label": "Error Message",
-        "type": "text"
-      }
-    ]
-  }
+ "name": "Anime Hug",
+ "version": "1.0.0",
+ "description": "Fetches an anime hug GIF from nekos.best and sends a rich embed showing who is hugging whom.",
+ "author": "Akashsuu",
+ "icon": "HUG",
+ "nodeConfig": {
+ "label": "Anime Hug",
+ "icon": "HUG",
+ "color": "#EC4899",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "hug",
+ "apiUrl": "https://nekos.best/api/v2/hug",
+ "embedEnabled": true,
+ "embedColor": "#EC4899",
+ "titleTemplate": "{author} hugged {target}!",
+ "descriptionTemplate": "**{author}** is hugging **{target}**!",
+ "plainTextTemplate": "**{author}** is hugging **{target}**! {gif}",
+ "noTargetMessage": "❌ You need to mention someone to hug! Usage: `{command} @user`",
+ "errorMessage": "❌ Could not fetch a hug GIF. Try again later."
+ },
+ "fields": [
+ {
+ "key": "command",
+ "label": "Command",
+ "type": "text",
+ "placeholder": "hug"
+ },
+ {
+ "key": "apiUrl",
+ "label": "GIF API URL",
+ "type": "text",
+ "placeholder": "https://nekos.best/api/v2/hug"
+ },
+ {
+ "key": "embedEnabled",
+ "label": "Enable Embed",
+ "type": "checkbox"
+ },
+ {
+ "key": "embedColor",
+ "label": "Embed Color",
+ "type": "color"
+ },
+ {
+ "key": "titleTemplate",
+ "label": "Embed Title",
+ "type": "text"
+ },
+ {
+ "key": "descriptionTemplate",
+ "label": "Embed Description",
+ "type": "text"
+ },
+ {
+ "key": "plainTextTemplate",
+ "label": "Plain Text",
+ "type": "text"
+ },
+ {
+ "key": "noTargetMessage",
+ "label": "No Target Message",
+ "type": "text"
+ },
+ {
+ "key": "errorMessage",
+ "label": "Error Message",
+ "type": "text"
+ }
+ ]
+ }
 }

@@ -1,29 +1,29 @@
 {
-  "name": "Valorant Profile",
-  "version": "1.0.0",
-  "description": "Shows a Valorant profile with account, rank, RR, peak rank, and player card.",
-  "author": "Akashsuu",
-  "icon": "VAL",
-  "nodeConfig": {
-    "label": "Valorant Profile",
-    "icon": "VAL",
-    "color": "#FF4655",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "valorant",
-      "aliases": "vprofile,valprofile,valorantprofile",
-      "apiKey": "",
-      "region": "ap",
-      "platform": "pc",
-      "embedColor": "#FF4655",
-      "titleTemplate": "Valorant profile for {valorant_name}#{valorant_tag}",
-      "descriptionTemplate": "**Account**\nName: `{valorant_name}`\nTag: `{valorant_tag}`\nRegion: `{region}`\nPlatform: `{platform}`\nLevel: `{account_level}`\n\n**Competitive**\nCurrent Rank: `{current_rank}`\nRR: `{rr}`\nELO: `{elo}`\nLast Change: `{last_change}`\nPeak Rank: `{peak_rank}`\nLeaderboard: `{leaderboard_rank}`\n\n**Links**\nProfile: {profile_link}",
-      "missingKeyMessage": "Set a HenrikDev Valorant API key in this node before using `{command}`.",
-      "invalidNameMessage": "Use `{command} Name#TAG` to check a Valorant profile.",
-      "notFoundMessage": "No Valorant profile found for `{query}`. Check the Riot ID, tag, region, or privacy settings.",
-      "errorMessage": "Could not load Valorant profile: {error}",
-      "profileLinkLabel": "Open Profile"
-    }
-  }
+ "name": "Valorant Profile",
+ "version": "1.0.0",
+ "description": "Shows a Valorant profile with account, rank, RR, peak rank, and player card.",
+ "author": "Akashsuu",
+ "icon": "VAL",
+ "nodeConfig": {
+ "label": "Valorant Profile",
+ "icon": "VAL",
+ "color": "#FF4655",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "valorant",
+ "aliases": "vprofile,valprofile,valorantprofile",
+ "apiKey": "",
+ "region": "ap",
+ "platform": "pc",
+ "embedColor": "#FF4655",
+ "titleTemplate": "Valorant profile for {valorant_name}#{valorant_tag}",
+ "descriptionTemplate": "**Account**\nName: `{valorant_name}`\nTag: `{valorant_tag}`\nRegion: `{region}`\nPlatform: `{platform}`\nLevel: `{account_level}`\n\n**Competitive**\nCurrent Rank: `{current_rank}`\nRR: `{rr}`\nELO: `{elo}`\nLast Change: `{last_change}`\nPeak Rank: `{peak_rank}`\nLeaderboard: `{leaderboard_rank}`\n\n**Links**\nProfile: {profile_link}",
+ "missingKeyMessage": "Set a HenrikDev Valorant API key in this node before using `{command}`.",
+ "invalidNameMessage": "Use `{command} Name#TAG` to check a Valorant profile.",
+ "notFoundMessage": "No Valorant profile found for `{query}`. Check the Riot ID, tag, region, or privacy settings.",
+ "errorMessage": "Could not load Valorant profile: {error}",
+ "profileLinkLabel": "Open Profile"
+ }
+ }
 }

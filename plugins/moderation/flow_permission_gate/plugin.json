@@ -1,19 +1,19 @@
 {
-  "name": "Flow Permission Gate",
-  "version": "1.0.0",
-  "description": "Guards downstream nodes. Reads ctx.allowedUsers / ctx.allowedRoles and blocks or allows the flow based on the configured permission type.",
-  "author": "Akashsuu",
-  "icon": "🔐",
-  "nodeConfig": {
-    "label": "Permission Gate",
-    "icon": "🔐",
-    "color": "#3A1E5F",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "permission": "user",
-      "denyMessage": "❌ You are not allowed to use this command.",
-      "silent": false
-    }
-  }
+ "name": "Flow Permission Gate",
+ "version": "1.0.0",
+ "description": "Guards downstream nodes. Reads ctx.allowedUsers / ctx.allowedRoles and blocks or allows the flow based on the configured permission type.",
+ "author": "Akashsuu",
+ "icon": "🔐",
+ "nodeConfig": {
+ "label": "Permission Gate",
+ "icon": "🔐",
+ "color": "#3A1E5F",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "permission": "user",
+ "denyMessage": "❌ You are not allowed to use this command.",
+ "silent": false
+ }
+ }
 }

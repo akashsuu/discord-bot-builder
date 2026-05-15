@@ -1,23 +1,23 @@
 {
-  "name": "Warn User",
-  "version": "1.0.0",
-  "description": "Prefix command to warn a mentioned user.",
-  "author": "Akashsuu",
-  "icon": "WARN",
-  "nodeConfig": {
-    "label": "Warn User",
-    "icon": "WARN",
-    "color": "#D97706",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "warn",
-      "reason": "No reason provided",
-      "dmEnabled": false,
-      "dmMessage": "You were warned in **{server}** by **{user}**.\nReason: {reason}",
-      "output": "{targetMention} has been warned by {mention}.\nReason: {reason}",
-      "embedEnabled": false,
-      "embedColor": "#F59E0B"
-    }
-  }
+ "name": "Warn User",
+ "version": "1.0.0",
+ "description": "Prefix command to warn a mentioned user.",
+ "author": "Akashsuu",
+ "icon": "WARN",
+ "nodeConfig": {
+ "label": "Warn User",
+ "icon": "WARN",
+ "color": "#D97706",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "warn",
+ "reason": "No reason provided",
+ "dmEnabled": false,
+ "dmMessage": "You were warned in **{server}** by **{user}**.\nReason: {reason}",
+ "output": "{targetMention} has been warned by {mention}.\nReason: {reason}",
+ "embedEnabled": false,
+ "embedColor": "#F59E0B"
+ }
+ }
 }

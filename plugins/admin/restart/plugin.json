@@ -1,28 +1,28 @@
 {
-  "name": "Restart",
-  "version": "1.0.0",
-  "description": "Restart the running bot from Discord with an admin prefix command.",
-  "author": "Kiodium",
-  "icon": "RST",
-  "nodeConfig": {
-    "label": "Restart",
-    "icon": "RST",
-    "color": "#F97316",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "restart",
-      "aliases": "reboot,restartbot",
-      "embedEnabled": true,
-      "embedColor": "#F97316",
-      "titleTemplate": "Restarting Bot",
-      "descriptionTemplate": "{botName} is restarting now. I will reconnect in a moment.",
-      "plainTextTemplate": "{botName} is restarting now.",
-      "successMessage": "Restart command accepted.",
-      "permissionMessage": "You need Manage Server permission to restart the bot.",
-      "unavailableMessage": "Restart is not available in this runtime.",
-      "errorMessage": "Could not restart bot: {error}",
-      "delayMs": 1200
-    }
-  }
+ "name": "Restart",
+ "version": "1.0.0",
+ "description": "Restart the running bot from Discord with an admin prefix command.",
+ "author": "Kiodium",
+ "icon": "RST",
+ "nodeConfig": {
+ "label": "Restart",
+ "icon": "RST",
+ "color": "#F97316",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "restart",
+ "aliases": "reboot,restartbot",
+ "embedEnabled": true,
+ "embedColor": "#F97316",
+ "titleTemplate": "Restarting Bot",
+ "descriptionTemplate": "{botName} is restarting now. I will reconnect in a moment.",
+ "plainTextTemplate": "{botName} is restarting now.",
+ "successMessage": "Restart command accepted.",
+ "permissionMessage": "You need Manage Server permission to restart the bot.",
+ "unavailableMessage": "Restart is not available in this runtime.",
+ "errorMessage": "Could not restart bot: {error}",
+ "delayMs": 1200
+ }
+ }
 }

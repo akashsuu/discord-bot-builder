@@ -1,61 +1,61 @@
 {
-  "name": "Help Menu",
-  "version": "1.0.0",
-  "description": "Full example: multi-page embed with dropdown category selector and Prev / Next / Close navigation buttons.",
-  "author": "Akashsuu",
-  "icon": "📋",
-  "nodeConfig": {
-    "label": "Help Menu",
-    "icon": "📋",
-    "color": "#1A3A5A",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "help",
-      "embedEnabled": true,
-      "embedColor": "#5865F2",
-      "embedFooter": "Page {page} of {totalPages}  ·  {server}  ·  Requested by {user}",
-      "pages": [
-        {
-          "id": "general",
-          "title": "📋 Help  —  General",
-          "description": "General commands",
-          "content": "**General Commands**\n`{command}` — Show this help menu\n`!ping` — Check bot latency\n`!serverinfo` — Server information\n\n👤 Requested by **{mention}**"
-        },
-        {
-          "id": "moderation",
-          "title": "🛡️ Help  —  Moderation",
-          "description": "Moderation commands",
-          "content": "**Moderation Commands**\n`!ban @user [reason]` — Permanently ban\n`!kick @user [reason]` — Kick a member\n`!mute @user [time]` — Mute a member\n`!warn @user [reason]` — Issue a warning\n\n🏠 Server: **{server}**"
-        },
-        {
-          "id": "utility",
-          "title": "⚙️ Help  —  Utility",
-          "description": "Utility commands",
-          "content": "**Utility Commands**\n`!serverinfo` — Detailed server stats\n`!userinfo @user` — User information\n`!avatar @user` — Show user avatar\n\n📅 {date}  ·  🕐 {time}"
-        },
-        {
-          "id": "fun",
-          "title": "🎉 Help  —  Fun",
-          "description": "Fun commands",
-          "content": "**Fun Commands**\n`!joke` — Tell a random joke\n`!8ball [question]` — Ask the magic 8-ball\n`!roll [sides]` — Roll a dice\n\n📣 Channel: **#{channel}**"
-        }
-      ],
-      "dropdown": {
-        "enabled": true,
-        "placeholder": "📂  Jump to a category…",
-        "usePages": true,
-        "options": []
-      },
-      "buttons": {
-        "enabled": true,
-        "navigation": true,
-        "list": [
-          { "id": "prev",  "label": "⬅  Previous" },
-          { "id": "next",  "label": "Next  ➡"    },
-          { "id": "close", "label": "✖  Close"   }
-        ]
-      }
-    }
-  }
+ "name": "Help Menu",
+ "version": "1.0.0",
+ "description": "Full example: multi-page embed with dropdown category selector and Prev / Next / Close navigation buttons.",
+ "author": "Akashsuu",
+ "icon": "📋",
+ "nodeConfig": {
+ "label": "Help Menu",
+ "icon": "📋",
+ "color": "#1A3A5A",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "help",
+ "embedEnabled": true,
+ "embedColor": "#5865F2",
+ "embedFooter": "Page {page} of {totalPages} · {server} · Requested by {user}",
+ "pages": [
+ {
+ "id": "general",
+ "title": "📋 Help — General",
+ "description": "General commands",
+ "content": "**General Commands**\n`{command}` — Show this help menu\n`!ping` — Check bot latency\n`!serverinfo` — Server information\n\n👤 Requested by **{mention}**"
+ },
+ {
+ "id": "moderation",
+ "title": "🛡️ Help — Moderation",
+ "description": "Moderation commands",
+ "content": "**Moderation Commands**\n`!ban @user [reason]` — Permanently ban\n`!kick @user [reason]` — Kick a member\n`!mute @user [time]` — Mute a member\n`!warn @user [reason]` — Issue a warning\n\n🏠 Server: **{server}**"
+ },
+ {
+ "id": "utility",
+ "title": "⚙️ Help — Utility",
+ "description": "Utility commands",
+ "content": "**Utility Commands**\n`!serverinfo` — Detailed server stats\n`!userinfo @user` — User information\n`!avatar @user` — Show user avatar\n\n📅 {date} · 🕐 {time}"
+ },
+ {
+ "id": "fun",
+ "title": "🎉 Help — Fun",
+ "description": "Fun commands",
+ "content": "**Fun Commands**\n`!joke` — Tell a random joke\n`!8ball [question]` — Ask the magic 8-ball\n`!roll [sides]` — Roll a dice\n\n📣 Channel: **#{channel}**"
+ }
+ ],
+ "dropdown": {
+ "enabled": true,
+ "placeholder": "📂 Jump to a category…",
+ "usePages": true,
+ "options": []
+ },
+ "buttons": {
+ "enabled": true,
+ "navigation": true,
+ "list": [
+ { "id": "prev", "label": "⬅ Previous" },
+ { "id": "next", "label": "Next ➡" },
+ { "id": "close", "label": "✖ Close" }
+ ]
+ }
+ }
+ }
 }

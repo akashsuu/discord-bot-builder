@@ -1,22 +1,22 @@
 {
-  "name": "Mass Ban",
-  "version": "1.0.0",
-  "description": "Bans multiple mentioned users in one command.",
-  "author": "Akashsuu",
-  "icon": "MB",
-  "nodeConfig": {
-    "label": "Mass Ban",
-    "icon": "MB",
-    "color": "#991B1B",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "massban",
-      "reason": "No reason provided",
-      "deleteDays": 0,
-      "output": "Mass ban by {mention}. Banned: {bannedCount}, Failed: {failedCount}. Reason: {reason}\nTargets: {targets}",
-      "embedEnabled": false,
-      "embedColor": "#B91C1C"
-    }
-  }
+ "name": "Mass Ban",
+ "version": "1.0.0",
+ "description": "Bans multiple mentioned users in one command.",
+ "author": "Akashsuu",
+ "icon": "MB",
+ "nodeConfig": {
+ "label": "Mass Ban",
+ "icon": "MB",
+ "color": "#991B1B",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "massban",
+ "reason": "No reason provided",
+ "deleteDays": 0,
+ "output": "Mass ban by {mention}. Banned: {bannedCount}, Failed: {failedCount}. Reason: {reason}\nTargets: {targets}",
+ "embedEnabled": false,
+ "embedColor": "#B91C1C"
+ }
+ }
 }

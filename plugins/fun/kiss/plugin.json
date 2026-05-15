@@ -1,36 +1,36 @@
 {
-  "name": "Anime Kiss",
-  "version": "1.0.0",
-  "description": "Fetches an anime kiss GIF from nekos.best and sends a rich embed showing who is kissing whom.",
-  "author": "Akashsuu",
-  "icon": "KSS",
-  "nodeConfig": {
-    "label": "Anime Kiss",
-    "icon": "KSS",
-    "color": "#F43F5E",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "kiss",
-      "apiUrl": "https://nekos.best/api/v2/kiss",
-      "embedEnabled": true,
-      "embedColor": "#F43F5E",
-      "titleTemplate": "{author} kissed {target}!",
-      "descriptionTemplate": "**{author}** is kissing **{target}**!",
-      "plainTextTemplate": "**{author}** is kissing **{target}**! {gif}",
-      "noTargetMessage": "❌ You need to mention someone to kiss! Usage: `{command} @user`",
-      "errorMessage": "❌ Could not fetch a kiss GIF. Try again later."
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "kiss" },
-      { "key": "apiUrl", "label": "GIF API URL", "type": "text", "placeholder": "https://nekos.best/api/v2/kiss" },
-      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
-      { "key": "embedColor", "label": "Embed Color", "type": "color" },
-      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
-      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
-      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
-      { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
-      { "key": "errorMessage", "label": "Error Message", "type": "text" }
-    ]
-  }
+ "name": "Anime Kiss",
+ "version": "1.0.0",
+ "description": "Fetches an anime kiss GIF from nekos.best and sends a rich embed showing who is kissing whom.",
+ "author": "Akashsuu",
+ "icon": "KSS",
+ "nodeConfig": {
+ "label": "Anime Kiss",
+ "icon": "KSS",
+ "color": "#F43F5E",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "kiss",
+ "apiUrl": "https://nekos.best/api/v2/kiss",
+ "embedEnabled": true,
+ "embedColor": "#F43F5E",
+ "titleTemplate": "{author} kissed {target}!",
+ "descriptionTemplate": "**{author}** is kissing **{target}**!",
+ "plainTextTemplate": "**{author}** is kissing **{target}**! {gif}",
+ "noTargetMessage": "❌ You need to mention someone to kiss! Usage: `{command} @user`",
+ "errorMessage": "❌ Could not fetch a kiss GIF. Try again later."
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "kiss" },
+ { "key": "apiUrl", "label": "GIF API URL", "type": "text", "placeholder": "https://nekos.best/api/v2/kiss" },
+ { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+ { "key": "embedColor", "label": "Embed Color", "type": "color" },
+ { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+ { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+ { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+ { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
+ { "key": "errorMessage", "label": "Error Message", "type": "text" }
+ ]
+ }
 }

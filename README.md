@@ -3,7 +3,7 @@
 **Visual node-based Discord bot creator.**
 Build, run, and export Discord bots by connecting nodes in a nodes-style editor.
 
-> � Kiodium. All rights reserved.
+> Kiodium. All rights reserved.
 
 ---
 
@@ -70,45 +70,45 @@ npm start
 
 ```
 kiodium/
-├── main.js                     Electron main process + IPC handlers
-├── preload.js                  Secure contextBridge API surface
+├── main.js Electron main process + IPC handlers
+├── preload.js Secure contextBridge API surface
 ├── webpack.config.js
 ├── .babelrc
 ├── package.json
 │
-├── src/                        React frontend
-│   ├── index.html
-│   ├── index.jsx
-│   ├── App.jsx
-│   ├── context/
-│   │   └── ProjectContext.jsx  Global state (screen, project, bot, logs)
-│   ├── screens/
-│   │   ├── HomeScreen.jsx      Create / Load project
-│   │   ├── CreateProjectScreen.jsx
-│   │   ├── TokenScreen.jsx     Discord bot token entry
-│   │   └── EditorScreen.jsx    React Flow canvas
-│   ├── nodes/
-│   │   ├── EventMessageNode.jsx
-│   │   ├── CustomCommandNode.jsx
-│   │   ├── SendMessageNode.jsx
-│   │   ├── ConditionBranchNode.jsx
-│   │   └── nodeTypes.js        Node registry + palette metadata
-│   ├── components/
-│   │   ├── Toolbar.jsx         Run / Stop / Save / Export / Token
-│   │   ├── NodePalette.jsx     Draggable node sidebar
-│   │   └── LogPanel.jsx        Collapsible console output
-│   └── styles/
-│       └── index.css
+├── src/ React frontend
+│ ├── index.html
+│ ├── index.jsx
+│ ├── App.jsx
+│ ├── context/
+│ │ └── ProjectContext.jsx Global state (screen, project, bot, logs)
+│ ├── screens/
+│ │ ├── HomeScreen.jsx Create / Load project
+│ │ ├── CreateProjectScreen.jsx
+│ │ ├── TokenScreen.jsx Discord bot token entry
+│ │ └── EditorScreen.jsx React Flow canvas
+│ ├── nodes/
+│ │ ├── EventMessageNode.jsx
+│ │ ├── CustomCommandNode.jsx
+│ │ ├── SendMessageNode.jsx
+│ │ ├── ConditionBranchNode.jsx
+│ │ └── nodeTypes.js Node registry + palette metadata
+│ ├── components/
+│ │ ├── Toolbar.jsx Run / Stop / Save / Export / Token
+│ │ ├── NodePalette.jsx Draggable node sidebar
+│ │ └── LogPanel.jsx Collapsible console output
+│ └── styles/
+│ └── index.css
 │
 ├── backend/
-│   ├── botRunner.js            discord.js execution engine (main process)
-│   ├── codeExporter.js         Generates bot.js from node graph
-│   └── pluginLoader.js         Loads /plugins/* at startup
+│ ├── botRunner.js discord.js execution engine (main process)
+│ ├── codeExporter.js Generates bot.js from node graph
+│ └── pluginLoader.js Loads /plugins/* at startup
 │
 └── plugins/
-    └── ping_command/           Example plugin
-        ├── plugin.json
-        └── index.js
+ └── ping_command/ Example plugin
+ ├── plugin.json
+ └── index.js
 ```
 
 ---
@@ -178,31 +178,31 @@ Projects are stored as `project.json`:
 
 ```json
 {
-  "name": "My Bot",
-  "token": "",
-  "nodes": [
-    {
-      "id": "event_message_1",
-      "type": "event_message",
-      "position": { "x": 100, "y": 200 },
-      "data": { "label": "Message Event" }
-    },
-    {
-      "id": "custom_command_1",
-      "type": "custom_command",
-      "position": { "x": 380, "y": 200 },
-      "data": { "command": "!hello", "reply": "Hello {user}!" }
-    }
-  ],
-  "edges": [
-    {
-      "id": "e1",
-      "source": "event_message_1",
-      "sourceHandle": "output",
-      "target": "custom_command_1",
-      "targetHandle": "input"
-    }
-  ]
+ "name": "My Bot",
+ "token": "",
+ "nodes": [
+ {
+ "id": "event_message_1",
+ "type": "event_message",
+ "position": { "x": 100, "y": 200 },
+ "data": { "label": "Message Event" }
+ },
+ {
+ "id": "custom_command_1",
+ "type": "custom_command",
+ "position": { "x": 380, "y": 200 },
+ "data": { "command": "!hello", "reply": "Hello {user}!" }
+ }
+ ],
+ "edges": [
+ {
+ "id": "e1",
+ "source": "event_message_1",
+ "sourceHandle": "output",
+ "target": "custom_command_1",
+ "targetHandle": "input"
+ }
+ ]
 }
 ```
 
@@ -219,19 +219,19 @@ Extend the app with new node types by dropping a folder into `/plugins/`.
 ```
 plugins/
 └── my_plugin/
-    ├── plugin.json
-    └── index.js
+ ├── plugin.json
+ └── index.js
 ```
 
 ### plugin.json
 
 ```json
 {
-  "name": "My Plugin",
-  "version": "1.0.0",
-  "description": "Does something cool",
-  "author": "You",
-  "icon": "🔌"
+ "name": "My Plugin",
+ "version": "1.0.0",
+ "description": "Does something cool",
+ "author": "You",
+ "icon": "🔌"
 }
 ```
 
@@ -239,19 +239,19 @@ plugins/
 
 ```js
 module.exports = {
-  nodes: {
-    my_node_type: {
-      async execute(node, message) {
-        // node.data contains your node's field values
-        // message is a discord.js Message object
-        // return true  → downstream nodes run
-        // return false → stop this execution path
-      },
-      generateCode(node) {
-        return `/* valid JS that uses the message variable */`;
-      }
-    }
-  }
+ nodes: {
+ my_node_type: {
+ async execute(node, message) {
+ // node.data contains your node's field values
+ // message is a discord.js Message object
+ // return true → downstream nodes run
+ // return false → stop this execution path
+ },
+ generateCode(node) {
+ return `/* valid JS that uses the message variable */`;
+ }
+ }
+ }
 };
 ```
 
@@ -261,22 +261,22 @@ Registers a `ping_command` node that responds to `!ping` with latency:
 
 ```js
 module.exports = {
-  nodes: {
-    ping_command: {
-      async execute(node, message) {
-        if (message.content.trim().toLowerCase() !== '!ping') return false;
-        const latency = Date.now() - message.createdTimestamp;
-        await message.channel.send(`🏓 Pong! Latency: **${latency}ms**`);
-        return true;
-      },
-      generateCode(node) {
-        return `if (message.content.trim().toLowerCase() === "!ping") {
-  const latency = Date.now() - message.createdTimestamp;
-  message.channel.send(\`🏓 Pong! Latency: \${latency}ms\`);
+ nodes: {
+ ping_command: {
+ async execute(node, message) {
+ if (message.content.trim().toLowerCase() !== '!ping') return false;
+ const latency = Date.now() - message.createdTimestamp;
+ await message.channel.send(`🏓 Pong! Latency: **${latency}ms**`);
+ return true;
+ },
+ generateCode(node) {
+ return `if (message.content.trim().toLowerCase() === "!ping") {
+ const latency = Date.now() - message.createdTimestamp;
+ message.channel.send(\`🏓 Pong! Latency: \${latency}ms\`);
 }`;
-      }
-    }
-  }
+ }
+ }
+ }
 };
 ```
 
@@ -291,23 +291,23 @@ Clicking **📦 Export** generates a self-contained `bot.js`:
 const { Client, GatewayIntentBits } = require("discord.js");
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+ intents: [
+ GatewayIntentBits.Guilds,
+ GatewayIntentBits.GuildMessages,
+ GatewayIntentBits.MessageContent,
+ ],
 });
 
 client.once("ready", () => {
-  console.log(`✅ Logged in as ${client.user.tag}`);
+ console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.author.bot) return;
+ if (message.author.bot) return;
 
-  if (message.content.startsWith("!hello")) {
-    message.channel.send(`Hello ${message.author.username}!`);
-  }
+ if (message.content.startsWith("!hello")) {
+ message.channel.send(`Hello ${message.author.username}!`);
+ }
 });
 
 client.login("YOUR_BOT_TOKEN");
@@ -345,4 +345,4 @@ node bot.js
 
 ## License
 
-� Kiodium. All rights reserved.
+Kiodium. All rights reserved.

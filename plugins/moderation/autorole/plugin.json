@@ -1,23 +1,23 @@
 {
-  "name": "Auto Role",
-  "version": "1.0.0",
-  "description": "Automatically gives one or more roles to members when they join.",
-  "author": "Akashsuu",
-  "icon": "ROLE",
-  "nodeConfig": {
-    "label": "Auto Role",
-    "icon": "ROLE",
-    "color": "#2563EB",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "enabled": true,
-      "roleIds": "",
-      "ignoreBots": true,
-      "sendMessage": false,
-      "output": "Assigned auto roles to **{member}**.",
-      "embedEnabled": false,
-      "embedColor": "#2563EB"
-    }
-  }
+ "name": "Auto Role",
+ "version": "1.0.0",
+ "description": "Automatically gives one or more roles to members when they join.",
+ "author": "Akashsuu",
+ "icon": "ROLE",
+ "nodeConfig": {
+ "label": "Auto Role",
+ "icon": "ROLE",
+ "color": "#2563EB",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "enabled": true,
+ "roleIds": "",
+ "ignoreBots": true,
+ "sendMessage": false,
+ "output": "Assigned auto roles to **{member}**.",
+ "embedEnabled": false,
+ "embedColor": "#2563EB"
+ }
+ }
 }

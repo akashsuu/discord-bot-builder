@@ -1,35 +1,35 @@
 {
-  "name": "Calculator",
-  "version": "1.0.0",
-  "description": "Calculate like a real calculator with interactive buttons.",
-  "author": "Akashsuu",
-  "icon": "CAL",
-  "nodeConfig": {
-    "label": "Calculator",
-    "icon": "CAL",
-    "color": "#5865F2",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "calculator",
-      "aliases": "calc,math,solve",
-      "titleTemplate": "Calculator Screen",
-      "expressionLabel": "Expression",
-      "resultLabel": "Result",
-      "statusLabel": "Status",
-      "readyText": "Ready",
-      "errorText": "Error",
-      "footerTemplate": "Aliases: {aliases} • Today at {time}",
-      "onlyUserMessage": "Only {user} can use this calculator.",
-      "timeoutMessage": "Calculator session expired.",
-      "embedEnabled": true,
-      "embedColor": "#5865F2",
-      "embedTitle": "Calculator Screen",
-      "embedFooter": "",
-      "logoUrl": "",
-      "logoName": "",
-      "imageUrl": "",
-      "imagePosition": "bottom"
-    }
-  }
+ "name": "Calculator",
+ "version": "1.0.0",
+ "description": "Calculate like a real calculator with interactive buttons.",
+ "author": "Akashsuu",
+ "icon": "CAL",
+ "nodeConfig": {
+ "label": "Calculator",
+ "icon": "CAL",
+ "color": "#5865F2",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "calculator",
+ "aliases": "calc,math,solve",
+ "titleTemplate": "Calculator Screen",
+ "expressionLabel": "Expression",
+ "resultLabel": "Result",
+ "statusLabel": "Status",
+ "readyText": "Ready",
+ "errorText": "Error",
+ "footerTemplate": "Aliases: {aliases} • Today at {time}",
+ "onlyUserMessage": "Only {user} can use this calculator.",
+ "timeoutMessage": "Calculator session expired.",
+ "embedEnabled": true,
+ "embedColor": "#5865F2",
+ "embedTitle": "Calculator Screen",
+ "embedFooter": "",
+ "logoUrl": "",
+ "logoName": "",
+ "imageUrl": "",
+ "imagePosition": "bottom"
+ }
+ }
 }

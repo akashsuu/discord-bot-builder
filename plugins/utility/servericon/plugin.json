@@ -1,34 +1,34 @@
 {
-  "name": "Server Icon",
-  "version": "1.0.0",
-  "description": "Shows the server icon with download links.",
-  "author": "Akashsuu",
-  "icon": "SI",
-  "nodeConfig": {
-    "label": "Server Icon",
-    "icon": "SI",
-    "color": "#3B82F6",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "servericon",
-      "aliases": "serverav,serveravatar,sicon",
-      "titleTemplate": "{server}'s Server Icon",
-      "descriptionTemplate": "Requested by {mention}\nServer ID: `{serverId}`",
-      "plainTextTemplate": "{server}'s server icon: {iconUrl}",
-      "noIconMessage": "This server does not have an icon.",
-      "downloadButtonLabel": "Download",
-      "openButtonLabel": "Open Icon",
-      "showDownloadButton": true,
-      "showOpenButton": true,
-      "embedEnabled": true,
-      "embedColor": "#3B82F6",
-      "embedTitle": "Server Icon",
-      "embedFooter": "Server icon requested by {user}",
-      "logoUrl": "",
-      "logoName": "",
-      "imageUrl": "",
-      "imagePosition": "bottom"
-    }
-  }
+ "name": "Server Icon",
+ "version": "1.0.0",
+ "description": "Shows the server icon with download links.",
+ "author": "Akashsuu",
+ "icon": "SI",
+ "nodeConfig": {
+ "label": "Server Icon",
+ "icon": "SI",
+ "color": "#3B82F6",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "servericon",
+ "aliases": "serverav,serveravatar,sicon",
+ "titleTemplate": "{server}'s Server Icon",
+ "descriptionTemplate": "Requested by {mention}\nServer ID: `{serverId}`",
+ "plainTextTemplate": "{server}'s server icon: {iconUrl}",
+ "noIconMessage": "This server does not have an icon.",
+ "downloadButtonLabel": "Download",
+ "openButtonLabel": "Open Icon",
+ "showDownloadButton": true,
+ "showOpenButton": true,
+ "embedEnabled": true,
+ "embedColor": "#3B82F6",
+ "embedTitle": "Server Icon",
+ "embedFooter": "Server icon requested by {user}",
+ "logoUrl": "",
+ "logoName": "",
+ "imageUrl": "",
+ "imagePosition": "bottom"
+ }
+ }
 }

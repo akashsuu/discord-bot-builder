@@ -1,21 +1,21 @@
 {
-  "name": "Channel Lock",
-  "version": "1.0.0",
-  "description": "Prefix command to lock a channel by disabling send messages for @everyone.",
-  "author": "Akashsuu",
-  "icon": "LOCK",
-  "nodeConfig": {
-    "label": "Channel Lock",
-    "icon": "LOCK",
-    "color": "#7C2D12",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "lock",
-      "reason": "No reason provided",
-      "output": "Channel {channelMention} has been locked by {mention}.\nReason: {reason}",
-      "embedEnabled": false,
-      "embedColor": "#B45309"
-    }
-  }
+ "name": "Channel Lock",
+ "version": "1.0.0",
+ "description": "Prefix command to lock a channel by disabling send messages for @everyone.",
+ "author": "Akashsuu",
+ "icon": "LOCK",
+ "nodeConfig": {
+ "label": "Channel Lock",
+ "icon": "LOCK",
+ "color": "#7C2D12",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "lock",
+ "reason": "No reason provided",
+ "output": "Channel {channelMention} has been locked by {mention}.\nReason: {reason}",
+ "embedEnabled": false,
+ "embedColor": "#B45309"
+ }
+ }
 }

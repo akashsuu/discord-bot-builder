@@ -1,17 +1,17 @@
 {
-  "name": "Welcome Member",
-  "version": "1.0.0",
-  "description": "Sends a welcome message to the system channel when a member joins",
-  "author": "Akashsuu",
-  "icon": "👋",
-  "nodeConfig": {
-    "label": "Welcome Member",
-    "icon": "👋",
-    "color": "#1a3a5c",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "output": "👋 Welcome **{member}** to the server! You are member #{count}."
-    }
-  }
+ "name": "Welcome Member",
+ "version": "1.0.0",
+ "description": "Sends a welcome message to the system channel when a member joins",
+ "author": "Akashsuu",
+ "icon": "👋",
+ "nodeConfig": {
+ "label": "Welcome Member",
+ "icon": "👋",
+ "color": "#1a3a5c",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "output": "👋 Welcome **{member}** to the server! You are member #{count}."
+ }
+ }
 }

@@ -1,21 +1,21 @@
 {
-  "name": "Channel Unlock",
-  "version": "1.0.0",
-  "description": "Prefix command to unlock a channel by restoring send permissions for @everyone.",
-  "author": "Akashsuu",
-  "icon": "UNL",
-  "nodeConfig": {
-    "label": "Channel Unlock",
-    "icon": "UNL",
-    "color": "#166534",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "unlock",
-      "reason": "No reason provided",
-      "output": "Channel {channelMention} has been unlocked by {mention}.\nReason: {reason}",
-      "embedEnabled": false,
-      "embedColor": "#16A34A"
-    }
-  }
+ "name": "Channel Unlock",
+ "version": "1.0.0",
+ "description": "Prefix command to unlock a channel by restoring send permissions for @everyone.",
+ "author": "Akashsuu",
+ "icon": "UNL",
+ "nodeConfig": {
+ "label": "Channel Unlock",
+ "icon": "UNL",
+ "color": "#166534",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "unlock",
+ "reason": "No reason provided",
+ "output": "Channel {channelMention} has been unlocked by {mention}.\nReason: {reason}",
+ "embedEnabled": false,
+ "embedColor": "#16A34A"
+ }
+ }
 }

@@ -1,20 +1,20 @@
 {
-  "name": "Warnings",
-  "version": "1.0.0",
-  "description": "Prefix command to view warning count/history for a user.",
-  "author": "Akashsuu",
-  "icon": "WRN",
-  "nodeConfig": {
-    "label": "Warnings",
-    "icon": "WRN",
-    "color": "#0EA5E9",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "warnings",
-      "output": "{targetMention} warning count: **{count}**.",
-      "embedEnabled": false,
-      "embedColor": "#0284C7"
-    }
-  }
+ "name": "Warnings",
+ "version": "1.0.0",
+ "description": "Prefix command to view warning count/history for a user.",
+ "author": "Akashsuu",
+ "icon": "WRN",
+ "nodeConfig": {
+ "label": "Warnings",
+ "icon": "WRN",
+ "color": "#0EA5E9",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "warnings",
+ "output": "{targetMention} warning count: **{count}**.",
+ "embedEnabled": false,
+ "embedColor": "#0284C7"
+ }
+ }
 }

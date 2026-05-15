@@ -1,25 +1,25 @@
 {
-  "name": "Minecraft Profile",
-  "version": "1.0.0",
-  "description": "Shows Java or Bedrock Minecraft profile information with skin render.",
-  "author": "Akashsuu",
-  "icon": "MC",
-  "nodeConfig": {
-    "label": "Minecraft Profile",
-    "icon": "MC",
-    "color": "#22C55E",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "mprofile",
-      "aliases": "profile,mcprofile,minecraftprofile",
-      "defaultEdition": "auto",
-      "embedColor": "#22C55E",
-      "titleTemplate": "Minecraft profile for {mc_name}",
-      "descriptionTemplate": "**UUID**\n`{mc_uuid}`\n\n**Textures**\nSkin: {skin_link}\n\n**Information**\nUsername Changes: `{name_change_count}`\nEdition: `{edition}`\nDiscord: {user_tag}\n\n**Name History**\n{name_history}",
-      "notFoundMessage": "No Minecraft profile found for `{query}`.",
-      "errorMessage": "Could not load Minecraft profile: {error}",
-      "skinLinkLabel": "Open Skin"
-    }
-  }
+ "name": "Minecraft Profile",
+ "version": "1.0.0",
+ "description": "Shows Java or Bedrock Minecraft profile information with skin render.",
+ "author": "Akashsuu",
+ "icon": "MC",
+ "nodeConfig": {
+ "label": "Minecraft Profile",
+ "icon": "MC",
+ "color": "#22C55E",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "mprofile",
+ "aliases": "profile,mcprofile,minecraftprofile",
+ "defaultEdition": "auto",
+ "embedColor": "#22C55E",
+ "titleTemplate": "Minecraft profile for {mc_name}",
+ "descriptionTemplate": "**UUID**\n`{mc_uuid}`\n\n**Textures**\nSkin: {skin_link}\n\n**Information**\nUsername Changes: `{name_change_count}`\nEdition: `{edition}`\nDiscord: {user_tag}\n\n**Name History**\n{name_history}",
+ "notFoundMessage": "No Minecraft profile found for `{query}`.",
+ "errorMessage": "Could not load Minecraft profile: {error}",
+ "skinLinkLabel": "Open Skin"
+ }
+ }
 }

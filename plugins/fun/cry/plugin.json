@@ -1,74 +1,74 @@
 {
-  "name": "Anime Cry",
-  "version": "1.0.0",
-  "description": "Fetches an anime cry GIF from nekos.best and sends a rich embed showing who is crying with whom.",
-  "author": "Akashsuu",
-  "icon": "CRY",
-  "nodeConfig": {
-    "label": "Anime Cry",
-    "icon": "CRY",
-    "color": "#3B82F6",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "cry",
-      "apiUrl": "https://nekos.best/api/v2/cry",
-      "embedEnabled": true,
-      "embedColor": "#3B82F6",
-      "titleTemplate": "{author} cried with {target}!",
-      "descriptionTemplate": "**{author}** is crying with **{target}**!",
-      "plainTextTemplate": "**{author}** is crying with **{target}**! {gif}",
-      "noTargetMessage": "❌ You need to mention someone to cry with! Usage: `{command} @user`",
-      "errorMessage": "❌ Could not fetch a cry GIF. Try again later."
-    },
-    "fields": [
-      {
-        "key": "command",
-        "label": "Command",
-        "type": "text",
-        "placeholder": "cry"
-      },
-      {
-        "key": "apiUrl",
-        "label": "GIF API URL",
-        "type": "text",
-        "placeholder": "https://nekos.best/api/v2/cry"
-      },
-      {
-        "key": "embedEnabled",
-        "label": "Enable Embed",
-        "type": "checkbox"
-      },
-      {
-        "key": "embedColor",
-        "label": "Embed Color",
-        "type": "color"
-      },
-      {
-        "key": "titleTemplate",
-        "label": "Embed Title",
-        "type": "text"
-      },
-      {
-        "key": "descriptionTemplate",
-        "label": "Embed Description",
-        "type": "text"
-      },
-      {
-        "key": "plainTextTemplate",
-        "label": "Plain Text",
-        "type": "text"
-      },
-      {
-        "key": "noTargetMessage",
-        "label": "No Target Message",
-        "type": "text"
-      },
-      {
-        "key": "errorMessage",
-        "label": "Error Message",
-        "type": "text"
-      }
-    ]
-  }
+ "name": "Anime Cry",
+ "version": "1.0.0",
+ "description": "Fetches an anime cry GIF from nekos.best and sends a rich embed showing who is crying with whom.",
+ "author": "Akashsuu",
+ "icon": "CRY",
+ "nodeConfig": {
+ "label": "Anime Cry",
+ "icon": "CRY",
+ "color": "#3B82F6",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "cry",
+ "apiUrl": "https://nekos.best/api/v2/cry",
+ "embedEnabled": true,
+ "embedColor": "#3B82F6",
+ "titleTemplate": "{author} cried with {target}!",
+ "descriptionTemplate": "**{author}** is crying with **{target}**!",
+ "plainTextTemplate": "**{author}** is crying with **{target}**! {gif}",
+ "noTargetMessage": "❌ You need to mention someone to cry with! Usage: `{command} @user`",
+ "errorMessage": "❌ Could not fetch a cry GIF. Try again later."
+ },
+ "fields": [
+ {
+ "key": "command",
+ "label": "Command",
+ "type": "text",
+ "placeholder": "cry"
+ },
+ {
+ "key": "apiUrl",
+ "label": "GIF API URL",
+ "type": "text",
+ "placeholder": "https://nekos.best/api/v2/cry"
+ },
+ {
+ "key": "embedEnabled",
+ "label": "Enable Embed",
+ "type": "checkbox"
+ },
+ {
+ "key": "embedColor",
+ "label": "Embed Color",
+ "type": "color"
+ },
+ {
+ "key": "titleTemplate",
+ "label": "Embed Title",
+ "type": "text"
+ },
+ {
+ "key": "descriptionTemplate",
+ "label": "Embed Description",
+ "type": "text"
+ },
+ {
+ "key": "plainTextTemplate",
+ "label": "Plain Text",
+ "type": "text"
+ },
+ {
+ "key": "noTargetMessage",
+ "label": "No Target Message",
+ "type": "text"
+ },
+ {
+ "key": "errorMessage",
+ "label": "Error Message",
+ "type": "text"
+ }
+ ]
+ }
 }

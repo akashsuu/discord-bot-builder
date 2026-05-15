@@ -1,28 +1,28 @@
 {
-  "name": "PUBG Profile",
-  "version": "1.0.0",
-  "description": "Shows a PUBG profile with account id, platform, recent matches, wins, kills, damage, and K/D.",
-  "author": "Akashsuu",
-  "icon": "PUBG",
-  "nodeConfig": {
-    "label": "PUBG Profile",
-    "icon": "PUBG",
-    "color": "#F2A900",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "pubg",
-      "aliases": "pubgprofile,bgprofile,battlegrounds",
-      "apiKey": "",
-      "platform": "steam",
-      "gameMode": "squad-fpp",
-      "embedColor": "#F2A900",
-      "titleTemplate": "PUBG profile for {pubg_name}",
-      "descriptionTemplate": "**Account**\nName: `{pubg_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nShard: `{shard}`\nRecent Matches: `{recent_matches}`\n\n**Lifetime Stats ({game_mode})**\nRounds: `{rounds}`\nWins: `{wins}`\nTop 10s: `{top10s}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nDamage: `{damage}`\nLongest Kill: `{longest_kill}`\n\n**Links**\nProfile: {profile_link}",
-      "missingKeyMessage": "Set a PUBG API key in this node before using `{command}`.",
-      "notFoundMessage": "No PUBG profile found for `{query}` on `{platform}`.",
-      "errorMessage": "Could not load PUBG profile: {error}",
-      "profileLinkLabel": "Open Profile"
-    }
-  }
+ "name": "PUBG Profile",
+ "version": "1.0.0",
+ "description": "Shows a PUBG profile with account id, platform, recent matches, wins, kills, damage, and K/D.",
+ "author": "Akashsuu",
+ "icon": "PUBG",
+ "nodeConfig": {
+ "label": "PUBG Profile",
+ "icon": "PUBG",
+ "color": "#F2A900",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "pubg",
+ "aliases": "pubgprofile,bgprofile,battlegrounds",
+ "apiKey": "",
+ "platform": "steam",
+ "gameMode": "squad-fpp",
+ "embedColor": "#F2A900",
+ "titleTemplate": "PUBG profile for {pubg_name}",
+ "descriptionTemplate": "**Account**\nName: `{pubg_name}`\nAccount ID: `{account_id}`\nPlatform: `{platform}`\nShard: `{shard}`\nRecent Matches: `{recent_matches}`\n\n**Lifetime Stats ({game_mode})**\nRounds: `{rounds}`\nWins: `{wins}`\nTop 10s: `{top10s}`\nKills: `{kills}`\nDeaths: `{deaths}`\nK/D: `{kd}`\nDamage: `{damage}`\nLongest Kill: `{longest_kill}`\n\n**Links**\nProfile: {profile_link}",
+ "missingKeyMessage": "Set a PUBG API key in this node before using `{command}`.",
+ "notFoundMessage": "No PUBG profile found for `{query}` on `{platform}`.",
+ "errorMessage": "Could not load PUBG profile: {error}",
+ "profileLinkLabel": "Open Profile"
+ }
+ }
 }

@@ -1,33 +1,33 @@
 {
-  "name": "Prefix",
-  "version": "1.0.0",
-  "description": "Change the bot prefix for the current server.",
-  "author": "Akashsuu",
-  "icon": "PX",
-  "nodeConfig": {
-    "label": "Prefix",
-    "icon": "PX",
-    "color": "#14B8A6",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "prefix",
-      "aliases": "setprefix",
-      "requireManageGuild": true,
-      "titleTemplate": "Prefix Updated",
-      "descriptionTemplate": "Prefix changed from `{oldPrefix}` to `{newPrefix}`.",
-      "plainTextTemplate": "Prefix changed from {oldPrefix} to {newPrefix}.",
-      "currentMessage": "Current prefix is `{oldPrefix}`. Use `{oldPrefix}{command} <new prefix>` to change it.",
-      "permissionMessage": "You need Manage Server permission to change the prefix.",
-      "invalidMessage": "Please provide a prefix from 1 to 5 characters without spaces.",
-      "embedEnabled": true,
-      "embedColor": "#14B8A6",
-      "embedTitle": "Prefix Updated",
-      "embedFooter": "Prefix changed by {user}",
-      "logoUrl": "",
-      "logoName": "",
-      "imageUrl": "",
-      "imagePosition": "bottom"
-    }
-  }
+ "name": "Prefix",
+ "version": "1.0.0",
+ "description": "Change the bot prefix for the current server.",
+ "author": "Akashsuu",
+ "icon": "PX",
+ "nodeConfig": {
+ "label": "Prefix",
+ "icon": "PX",
+ "color": "#14B8A6",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "prefix",
+ "aliases": "setprefix",
+ "requireManageGuild": true,
+ "titleTemplate": "Prefix Updated",
+ "descriptionTemplate": "Prefix changed from `{oldPrefix}` to `{newPrefix}`.",
+ "plainTextTemplate": "Prefix changed from {oldPrefix} to {newPrefix}.",
+ "currentMessage": "Current prefix is `{oldPrefix}`. Use `{oldPrefix}{command} <new prefix>` to change it.",
+ "permissionMessage": "You need Manage Server permission to change the prefix.",
+ "invalidMessage": "Please provide a prefix from 1 to 5 characters without spaces.",
+ "embedEnabled": true,
+ "embedColor": "#14B8A6",
+ "embedTitle": "Prefix Updated",
+ "embedFooter": "Prefix changed by {user}",
+ "logoUrl": "",
+ "logoName": "",
+ "imageUrl": "",
+ "imagePosition": "bottom"
+ }
+ }
 }

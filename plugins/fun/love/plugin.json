@@ -1,36 +1,36 @@
 {
-  "name": "Anime Love",
-  "version": "1.0.0",
-  "description": "Fetches an anime love GIF from nekos.best and sends a rich embed showing who is showing love to whom.",
-  "author": "Akashsuu",
-  "icon": "LUV",
-  "nodeConfig": {
-    "label": "Anime Love",
-    "icon": "LUV",
-    "color": "#EF4444",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "love",
-      "apiUrl": "https://nekos.best/api/v2/love",
-      "embedEnabled": true,
-      "embedColor": "#EF4444",
-      "titleTemplate": "{author} sent love to {target}!",
-      "descriptionTemplate": "**{author}** is showing love to **{target}**!",
-      "plainTextTemplate": "**{author}** is showing love to **{target}**! {gif}",
-      "noTargetMessage": "❌ You need to mention someone to love! Usage: `{command} @user`",
-      "errorMessage": "❌ Could not fetch a love GIF. Try again later."
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "love" },
-      { "key": "apiUrl", "label": "GIF API URL", "type": "text", "placeholder": "https://nekos.best/api/v2/love" },
-      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
-      { "key": "embedColor", "label": "Embed Color", "type": "color" },
-      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
-      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
-      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
-      { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
-      { "key": "errorMessage", "label": "Error Message", "type": "text" }
-    ]
-  }
+ "name": "Anime Love",
+ "version": "1.0.0",
+ "description": "Fetches an anime love GIF from nekos.best and sends a rich embed showing who is showing love to whom.",
+ "author": "Akashsuu",
+ "icon": "LUV",
+ "nodeConfig": {
+ "label": "Anime Love",
+ "icon": "LUV",
+ "color": "#EF4444",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "love",
+ "apiUrl": "https://nekos.best/api/v2/love",
+ "embedEnabled": true,
+ "embedColor": "#EF4444",
+ "titleTemplate": "{author} sent love to {target}!",
+ "descriptionTemplate": "**{author}** is showing love to **{target}**!",
+ "plainTextTemplate": "**{author}** is showing love to **{target}**! {gif}",
+ "noTargetMessage": "❌ You need to mention someone to love! Usage: `{command} @user`",
+ "errorMessage": "❌ Could not fetch a love GIF. Try again later."
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "love" },
+ { "key": "apiUrl", "label": "GIF API URL", "type": "text", "placeholder": "https://nekos.best/api/v2/love" },
+ { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+ { "key": "embedColor", "label": "Embed Color", "type": "color" },
+ { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+ { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+ { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+ { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
+ { "key": "errorMessage", "label": "Error Message", "type": "text" }
+ ]
+ }
 }

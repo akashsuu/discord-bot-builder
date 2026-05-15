@@ -1,29 +1,29 @@
 {
-  "name": "Ticket Create",
-  "version": "1.0.0",
-  "description": "Handles ticket creation when a user clicks a panel button or selects from dropdown.",
-  "author": "Akashsuu",
-  "icon": "➕",
-  "nodeConfig": {
-    "label": "Ticket Create",
-    "icon": "➕",
-    "color": "#1A5276",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "welcomeTitle": "🎫 Ticket Opened",
-      "welcomeDescription": "Hello {user}! Your **{category}** ticket has been created.\n\nA staff member will assist you shortly. Please describe your issue below.",
-      "embedColor": "#5865F2",
-      "embedFooter": "Ticket • {ticketId}",
-      "logoUrl": "",
-      "logoName": "",
-      "imageUrl": "",
-      "ticketNamingFormat": "ticket-{username}",
-      "ticketCategory": "",
-      "supportRoles": "",
-      "logChannel": "",
-      "claimEnabled": true,
-      "maxTicketsPerUser": 1
-    }
-  }
+ "name": "Ticket Create",
+ "version": "1.0.0",
+ "description": "Handles ticket creation when a user clicks a panel button or selects from dropdown.",
+ "author": "Akashsuu",
+ "icon": "➕",
+ "nodeConfig": {
+ "label": "Ticket Create",
+ "icon": "➕",
+ "color": "#1A5276",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "welcomeTitle": "🎫 Ticket Opened",
+ "welcomeDescription": "Hello {user}! Your **{category}** ticket has been created.\n\nA staff member will assist you shortly. Please describe your issue below.",
+ "embedColor": "#5865F2",
+ "embedFooter": "Ticket • {ticketId}",
+ "logoUrl": "",
+ "logoName": "",
+ "imageUrl": "",
+ "ticketNamingFormat": "ticket-{username}",
+ "ticketCategory": "",
+ "supportRoles": "",
+ "logChannel": "",
+ "claimEnabled": true,
+ "maxTicketsPerUser": 1
+ }
+ }
 }

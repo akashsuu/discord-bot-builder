@@ -1,22 +1,22 @@
 {
-  "name": "Ban",
-  "version": "1.0.0",
-  "description": "Bans a mentioned member with reason and optional message history deletion.",
-  "author": "Akashsuu",
-  "icon": "BAN",
-  "nodeConfig": {
-    "label": "Ban",
-    "icon": "BAN",
-    "color": "#C0392B",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "ban",
-      "reason": "No reason provided",
-      "deleteDays": 0,
-      "output": "**{target}** has been banned by **{user}**.\nReason: {reason}",
-      "embedEnabled": false,
-      "embedColor": "#C0392B"
-    }
-  }
+ "name": "Ban",
+ "version": "1.0.0",
+ "description": "Bans a mentioned member with reason and optional message history deletion.",
+ "author": "Akashsuu",
+ "icon": "BAN",
+ "nodeConfig": {
+ "label": "Ban",
+ "icon": "BAN",
+ "color": "#C0392B",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "ban",
+ "reason": "No reason provided",
+ "deleteDays": 0,
+ "output": "**{target}** has been banned by **{user}**.\nReason: {reason}",
+ "embedEnabled": false,
+ "embedColor": "#C0392B"
+ }
+ }
 }

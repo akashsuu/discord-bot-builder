@@ -1,30 +1,30 @@
 {
-  "name": "Coinflip",
-  "version": "1.0.0",
-  "description": "Flips a coin and returns heads or tails.",
-  "author": "Akashsuu",
-  "icon": "CF",
-  "nodeConfig": {
-    "label": "Coinflip",
-    "icon": "CF",
-    "color": "#EAB308",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "coinflip",
-      "embedEnabled": true,
-      "embedColor": "#EAB308",
-      "titleTemplate": "{requester} flipped a coin!",
-      "descriptionTemplate": "Result: **{result}** {emoji}",
-      "plainTextTemplate": "Result: {result} {emoji}"
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "coinflip" },
-      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
-      { "key": "embedColor", "label": "Embed Color", "type": "color" },
-      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
-      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
-      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" }
-    ]
-  }
+ "name": "Coinflip",
+ "version": "1.0.0",
+ "description": "Flips a coin and returns heads or tails.",
+ "author": "Akashsuu",
+ "icon": "CF",
+ "nodeConfig": {
+ "label": "Coinflip",
+ "icon": "CF",
+ "color": "#EAB308",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "coinflip",
+ "embedEnabled": true,
+ "embedColor": "#EAB308",
+ "titleTemplate": "{requester} flipped a coin!",
+ "descriptionTemplate": "Result: **{result}** {emoji}",
+ "plainTextTemplate": "Result: {result} {emoji}"
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "coinflip" },
+ { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+ { "key": "embedColor", "label": "Embed Color", "type": "color" },
+ { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+ { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+ { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" }
+ ]
+ }
 }

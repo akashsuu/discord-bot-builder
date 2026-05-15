@@ -1,30 +1,30 @@
 {
-  "name": "Text Art",
-  "version": "1.0.0",
-  "description": "Converts text into ASCII art using figlet.",
-  "author": "Akashsuu",
-  "icon": "TXT",
-  "nodeConfig": {
-    "label": "Text Art",
-    "icon": "TXT",
-    "color": "#0EA5E9",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "textart",
-      "font": "Standard",
-      "maxChars": 40,
-      "usageMessage": "❌ Usage: `{command} <text>`",
-      "tooLongMessage": "❌ Text too long. Max {max} characters.",
-      "missingModuleMessage": "❌ figlet module is not installed."
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "textart" },
-      { "key": "font", "label": "Figlet Font", "type": "text", "placeholder": "Standard" },
-      { "key": "maxChars", "label": "Max Characters", "type": "number" },
-      { "key": "usageMessage", "label": "Usage Message", "type": "text" },
-      { "key": "tooLongMessage", "label": "Too Long Message", "type": "text" },
-      { "key": "missingModuleMessage", "label": "Missing Module Message", "type": "text" }
-    ]
-  }
+ "name": "Text Art",
+ "version": "1.0.0",
+ "description": "Converts text into ASCII art using figlet.",
+ "author": "Akashsuu",
+ "icon": "TXT",
+ "nodeConfig": {
+ "label": "Text Art",
+ "icon": "TXT",
+ "color": "#0EA5E9",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "textart",
+ "font": "Standard",
+ "maxChars": 40,
+ "usageMessage": "❌ Usage: `{command} <text>`",
+ "tooLongMessage": "❌ Text too long. Max {max} characters.",
+ "missingModuleMessage": "❌ figlet module is not installed."
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "textart" },
+ { "key": "font", "label": "Figlet Font", "type": "text", "placeholder": "Standard" },
+ { "key": "maxChars", "label": "Max Characters", "type": "number" },
+ { "key": "usageMessage", "label": "Usage Message", "type": "text" },
+ { "key": "tooLongMessage", "label": "Too Long Message", "type": "text" },
+ { "key": "missingModuleMessage", "label": "Missing Module Message", "type": "text" }
+ ]
+ }
 }

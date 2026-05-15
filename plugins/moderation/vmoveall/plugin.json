@@ -1,0 +1,33 @@
+{
+ "name": "Voice Move All",
+ "version": "1.0.0",
+ "description": "Move all users from one voice channel to another.",
+ "author": "Kiodium",
+ "icon": "VMA",
+ "nodeConfig": {
+ "label": "Voice Move All",
+ "icon": "VMA",
+ "color": "#6366F1",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "vmoveall",
+ "aliases": "moveall,voiceall,vcallmove",
+ "embedEnabled": true,
+ "embedColor": "#6366F1",
+ "sourceChannelId": "",
+ "targetChannelId": "",
+ "reason": "No reason provided",
+ "successMessage": "Moved **{movedCount}** users from **{sourceChannel}** to **{targetChannel}**.\nReason: {reason}",
+ "usageMessage": "Usage: `{command} <targetVoiceChannelId|#voice-name> [reason]`",
+ "permissionMessage": "You need Move Members permission to move everyone.",
+ "botPermissionMessage": "I need Move Members permission to move everyone.",
+ "sourceMessage": "I could not find the source voice channel. Join a voice channel or add a Source Channel ID.",
+ "targetMessage": "I could not find the target voice channel. Add a Target Channel ID in the node or command.",
+ "emptyMessage": "There are no movable members in **{sourceChannel}**.",
+ "sameChannelMessage": "Source and target voice channels must be different.",
+ "partialMessage": "Moved **{movedCount}** users, but **{failedCount}** users could not be moved.",
+ "errorMessage": "Failed to move users: {error}"
+ }
+ }
+}

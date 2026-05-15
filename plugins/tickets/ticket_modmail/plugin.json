@@ -1,27 +1,27 @@
 {
-  "name": "Ticket ModMail",
-  "version": "1.0.0",
-  "description": "ModMail-style DM ticket system. Users DM the bot, staff reply from a private ticket channel, and transcripts are saved on close.",
-  "author": "Akashsuu",
-  "icon": "MAIL",
-  "nodeConfig": {
-    "label": "Ticket ModMail",
-    "icon": "MAIL",
-    "color": "#5865F2",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "guildId": "",
-      "ticketCategory": "",
-      "supportRoles": "",
-      "logChannel": "",
-      "transcriptChannel": "",
-      "ticketNamingFormat": "modmail-{username}",
-      "welcomeMessage": "Hello {user}, your message has been forwarded to the staff team. Ticket ID: {ticketId}",
-      "staffReplyPrefix": "reply",
-      "closeCommand": "close",
-      "anonymousMode": false,
-      "embedColor": "#5865F2"
-    }
-  }
+ "name": "Ticket ModMail",
+ "version": "1.0.0",
+ "description": "ModMail-style DM ticket system. Users DM the bot, staff reply from a private ticket channel, and transcripts are saved on close.",
+ "author": "Akashsuu",
+ "icon": "MAIL",
+ "nodeConfig": {
+ "label": "Ticket ModMail",
+ "icon": "MAIL",
+ "color": "#5865F2",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "guildId": "",
+ "ticketCategory": "",
+ "supportRoles": "",
+ "logChannel": "",
+ "transcriptChannel": "",
+ "ticketNamingFormat": "modmail-{username}",
+ "welcomeMessage": "Hello {user}, your message has been forwarded to the staff team. Ticket ID: {ticketId}",
+ "staffReplyPrefix": "reply",
+ "closeCommand": "close",
+ "anonymousMode": false,
+ "embedColor": "#5865F2"
+ }
+ }
 }

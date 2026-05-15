@@ -1,21 +1,21 @@
 {
-  "name": "Purge Chat",
-  "version": "1.0.0",
-  "description": "Prefix command to purge as much recent channel chat as possible.",
-  "author": "Akashsuu",
-  "icon": "PRG",
-  "nodeConfig": {
-    "label": "Purge Chat",
-    "icon": "PRG",
-    "color": "#4B5563",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "purge",
-      "maxCycles": 30,
-      "output": "Purge completed by {mention} in {channelMention}. Deleted: {deleted}.",
-      "embedEnabled": false,
-      "embedColor": "#6B7280"
-    }
-  }
+ "name": "Purge Chat",
+ "version": "1.0.0",
+ "description": "Prefix command to purge as much recent channel chat as possible.",
+ "author": "Akashsuu",
+ "icon": "PRG",
+ "nodeConfig": {
+ "label": "Purge Chat",
+ "icon": "PRG",
+ "color": "#4B5563",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "purge",
+ "maxCycles": 30,
+ "output": "Purge completed by {mention} in {channelMention}. Deleted: {deleted}.",
+ "embedEnabled": false,
+ "embedColor": "#6B7280"
+ }
+ }
 }

@@ -1,26 +1,26 @@
 {
-  "name": "Giveaway Stop",
-  "version": "1.0.0",
-  "description": "Stop active giveaways across all channels in the current server.",
-  "author": "Kiodium",
-  "icon": "STOP",
-  "nodeConfig": {
-    "label": "Giveaway Stop",
-    "icon": "GSTP",
-    "color": "#DC2626",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "giveaway-stop",
-      "aliases": "gstop,endgiveaway,stopgiveaway",
-      "embedEnabled": true,
-      "embedColor": "#DC2626",
-      "titleTemplate": "Giveaways Stopped",
-      "descriptionTemplate": "Stopped **{count}** active giveaway(s) across all channels.",
-      "plainTextTemplate": "Stopped {count} active giveaway(s) across all channels.",
-      "noneMessage": "No active giveaways found in this server.",
-      "permissionMessage": "You need Manage Server permission to stop giveaways.",
-      "errorMessage": "Could not stop giveaways: {error}"
-    }
-  }
+ "name": "Giveaway Stop",
+ "version": "1.0.0",
+ "description": "Stop active giveaways across all channels in the current server.",
+ "author": "Kiodium",
+ "icon": "STOP",
+ "nodeConfig": {
+ "label": "Giveaway Stop",
+ "icon": "GSTP",
+ "color": "#DC2626",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "giveaway-stop",
+ "aliases": "gstop,endgiveaway,stopgiveaway",
+ "embedEnabled": true,
+ "embedColor": "#DC2626",
+ "titleTemplate": "Giveaways Stopped",
+ "descriptionTemplate": "Stopped **{count}** active giveaway(s) across all channels.",
+ "plainTextTemplate": "Stopped {count} active giveaway(s) across all channels.",
+ "noneMessage": "No active giveaways found in this server.",
+ "permissionMessage": "You need Manage Server permission to stop giveaways.",
+ "errorMessage": "Could not stop giveaways: {error}"
+ }
+ }
 }

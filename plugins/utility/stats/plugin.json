@@ -1,29 +1,29 @@
 {
-  "name": "Stats",
-  "version": "1.0.0",
-  "description": "Shows detailed bot statistics.",
-  "author": "Akashsuu",
-  "icon": "ST",
-  "nodeConfig": {
-    "label": "Stats",
-    "icon": "ST",
-    "color": "#8B5CF6",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "stats",
-      "aliases": "botinfo,bi,statistics",
-      "titleTemplate": "{botName} Statistics",
-      "descriptionTemplate": "**Servers:** {serverCount}\n**Users:** {userCount}\n**Channels:** {channelCount}\n**Ping:** {ping}ms\n**Uptime:** {uptime}\n**Memory:** {memoryUsed} / {memoryTotal}\n**Node.js:** {nodeVersion}\n**Discord.js:** {discordVersion}",
-      "plainTextTemplate": "{botName}: {serverCount} servers, {userCount} users, {ping}ms ping, uptime {uptime}.",
-      "embedEnabled": true,
-      "embedColor": "#8B5CF6",
-      "embedTitle": "Bot Statistics",
-      "embedFooter": "Stats requested by {user}",
-      "logoUrl": "",
-      "logoName": "",
-      "imageUrl": "",
-      "imagePosition": "bottom"
-    }
-  }
+ "name": "Stats",
+ "version": "1.0.0",
+ "description": "Shows detailed bot statistics.",
+ "author": "Akashsuu",
+ "icon": "ST",
+ "nodeConfig": {
+ "label": "Stats",
+ "icon": "ST",
+ "color": "#8B5CF6",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "stats",
+ "aliases": "botinfo,bi,statistics",
+ "titleTemplate": "{botName} Statistics",
+ "descriptionTemplate": "**Servers:** {serverCount}\n**Users:** {userCount}\n**Channels:** {channelCount}\n**Ping:** {ping}ms\n**Uptime:** {uptime}\n**Memory:** {memoryUsed} / {memoryTotal}\n**Node.js:** {nodeVersion}\n**Discord.js:** {discordVersion}",
+ "plainTextTemplate": "{botName}: {serverCount} servers, {userCount} users, {ping}ms ping, uptime {uptime}.",
+ "embedEnabled": true,
+ "embedColor": "#8B5CF6",
+ "embedTitle": "Bot Statistics",
+ "embedFooter": "Stats requested by {user}",
+ "logoUrl": "",
+ "logoName": "",
+ "imageUrl": "",
+ "imagePosition": "bottom"
+ }
+ }
 }

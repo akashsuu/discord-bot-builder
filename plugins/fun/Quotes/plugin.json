@@ -1,36 +1,36 @@
 {
-  "name": "Random Quotes",
-  "version": "1.0.0",
-  "description": "Fetches a random quote from quotable API and sends it as message or embed.",
-  "author": "Akashsuu",
-  "icon": "QTE",
-  "nodeConfig": {
-    "label": "Random Quotes",
-    "icon": "QTE",
-    "color": "#A855F7",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "quotes",
-      "apiUrl": "https://api.quotable.io/random",
-      "embedEnabled": true,
-      "embedColor": "#A855F7",
-      "titleTemplate": "{requester} asked for a quote!",
-      "descriptionTemplate": "\"{quote}\"",
-      "plainTextTemplate": "\"{quote}\" — {author}",
-      "footerTemplate": "By: {author}",
-      "errorMessage": "❌ Could not fetch a quote. Try again later."
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "quotes" },
-      { "key": "apiUrl", "label": "Quotes API URL", "type": "text", "placeholder": "https://api.quotable.io/random" },
-      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
-      { "key": "embedColor", "label": "Embed Color", "type": "color" },
-      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
-      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
-      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
-      { "key": "footerTemplate", "label": "Embed Footer", "type": "text" },
-      { "key": "errorMessage", "label": "Error Message", "type": "text" }
-    ]
-  }
+ "name": "Random Quotes",
+ "version": "1.0.0",
+ "description": "Fetches a random quote from quotable API and sends it as message or embed.",
+ "author": "Akashsuu",
+ "icon": "QTE",
+ "nodeConfig": {
+ "label": "Random Quotes",
+ "icon": "QTE",
+ "color": "#A855F7",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "quotes",
+ "apiUrl": "https://api.quotable.io/random",
+ "embedEnabled": true,
+ "embedColor": "#A855F7",
+ "titleTemplate": "{requester} asked for a quote!",
+ "descriptionTemplate": "\"{quote}\"",
+ "plainTextTemplate": "\"{quote}\" — {author}",
+ "footerTemplate": "By: {author}",
+ "errorMessage": "❌ Could not fetch a quote. Try again later."
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "quotes" },
+ { "key": "apiUrl", "label": "Quotes API URL", "type": "text", "placeholder": "https://api.quotable.io/random" },
+ { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+ { "key": "embedColor", "label": "Embed Color", "type": "color" },
+ { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+ { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+ { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+ { "key": "footerTemplate", "label": "Embed Footer", "type": "text" },
+ { "key": "errorMessage", "label": "Error Message", "type": "text" }
+ ]
+ }
 }

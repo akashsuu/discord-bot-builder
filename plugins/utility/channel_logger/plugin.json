@@ -1,17 +1,17 @@
 {
-  "name": "Channel Logger",
-  "version": "1.0.0",
-  "description": "Logs channel create/delete/update events to the server's system channel",
-  "author": "Akashsuu",
-  "icon": "📋",
-  "nodeConfig": {
-    "label": "Channel Logger",
-    "icon": "📋",
-    "color": "#1a3a5c",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "output": "📢 Channel **{channel}** was modified!"
-    }
-  }
+ "name": "Channel Logger",
+ "version": "1.0.0",
+ "description": "Logs channel create/delete/update events to the server's system channel",
+ "author": "Akashsuu",
+ "icon": "📋",
+ "nodeConfig": {
+ "label": "Channel Logger",
+ "icon": "📋",
+ "color": "#1a3a5c",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "output": "📢 Channel **{channel}** was modified!"
+ }
+ }
 }

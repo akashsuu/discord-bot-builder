@@ -1,38 +1,38 @@
 {
-  "name": "Pixelate Avatar",
-  "version": "1.0.0",
-  "description": "Pixelates a mentioned user's avatar using Jimp.",
-  "author": "Akashsuu",
-  "icon": "PXL",
-  "nodeConfig": {
-    "label": "Pixelate Avatar",
-    "icon": "PXL",
-    "color": "#8B5CF6",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "pixelate",
-      "pixelSize": 8,
-      "embedEnabled": true,
-      "embedColor": "#8B5CF6",
-      "titleTemplate": "{target}'s Pixelated Avatar",
-      "descriptionTemplate": "Requested by {requester}",
-      "plainTextTemplate": "{target} avatar pixelated by {requester}",
-      "noTargetMessage": "❌ You need to mention someone. Usage: `{command} @user`",
-      "missingModuleMessage": "❌ jimp module is not installed.",
-      "errorMessage": "❌ Failed to pixelate avatar. Try again later."
-    },
-    "fields": [
-      { "key": "command", "label": "Command", "type": "text", "placeholder": "pixelate" },
-      { "key": "pixelSize", "label": "Pixel Size", "type": "number" },
-      { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
-      { "key": "embedColor", "label": "Embed Color", "type": "color" },
-      { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
-      { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
-      { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
-      { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
-      { "key": "missingModuleMessage", "label": "Missing Module Message", "type": "text" },
-      { "key": "errorMessage", "label": "Error Message", "type": "text" }
-    ]
-  }
+ "name": "Pixelate Avatar",
+ "version": "1.0.0",
+ "description": "Pixelates a mentioned user's avatar using Jimp.",
+ "author": "Akashsuu",
+ "icon": "PXL",
+ "nodeConfig": {
+ "label": "Pixelate Avatar",
+ "icon": "PXL",
+ "color": "#8B5CF6",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "pixelate",
+ "pixelSize": 8,
+ "embedEnabled": true,
+ "embedColor": "#8B5CF6",
+ "titleTemplate": "{target}'s Pixelated Avatar",
+ "descriptionTemplate": "Requested by {requester}",
+ "plainTextTemplate": "{target} avatar pixelated by {requester}",
+ "noTargetMessage": "❌ You need to mention someone. Usage: `{command} @user`",
+ "missingModuleMessage": "❌ jimp module is not installed.",
+ "errorMessage": "❌ Failed to pixelate avatar. Try again later."
+ },
+ "fields": [
+ { "key": "command", "label": "Command", "type": "text", "placeholder": "pixelate" },
+ { "key": "pixelSize", "label": "Pixel Size", "type": "number" },
+ { "key": "embedEnabled", "label": "Enable Embed", "type": "checkbox" },
+ { "key": "embedColor", "label": "Embed Color", "type": "color" },
+ { "key": "titleTemplate", "label": "Embed Title", "type": "text" },
+ { "key": "descriptionTemplate", "label": "Embed Description", "type": "text" },
+ { "key": "plainTextTemplate", "label": "Plain Text", "type": "text" },
+ { "key": "noTargetMessage", "label": "No Target Message", "type": "text" },
+ { "key": "missingModuleMessage", "label": "Missing Module Message", "type": "text" },
+ { "key": "errorMessage", "label": "Error Message", "type": "text" }
+ ]
+ }
 }

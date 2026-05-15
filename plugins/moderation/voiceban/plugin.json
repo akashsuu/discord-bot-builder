@@ -1,30 +1,30 @@
 {
-  "name": "Voice Ban",
-  "version": "1.0.0",
-  "description": "Ban a user from their current voice channel.",
-  "author": "Kiodium",
-  "icon": "VCB",
-  "nodeConfig": {
-    "label": "Voice Ban",
-    "icon": "VCB",
-    "color": "#8B5CF6",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "voiceban",
-      "aliases": "vcban,vban",
-      "embedEnabled": true,
-      "embedColor": "#8B5CF6",
-      "reason": "No reason provided",
-      "disconnectAfterBan": true,
-      "successMessage": "{targetMention} was banned from **{voiceChannel}** by {mention}.\nReason: {reason}",
-      "usageMessage": "Usage: `{command} @user [reason]`",
-      "permissionMessage": "You need Manage Channels permission to voice ban users.",
-      "botPermissionMessage": "I need Manage Channels permission to voice ban users.",
-      "movePermissionMessage": "I need Move Members permission to disconnect the user after banning them.",
-      "notInVoiceMessage": "{targetMention} is not connected to a voice channel.",
-      "selfMessage": "You cannot voice ban yourself.",
-      "errorMessage": "Failed to voice ban: {error}"
-    }
-  }
+ "name": "Voice Ban",
+ "version": "1.0.0",
+ "description": "Ban a user from their current voice channel.",
+ "author": "Kiodium",
+ "icon": "VCB",
+ "nodeConfig": {
+ "label": "Voice Ban",
+ "icon": "VCB",
+ "color": "#8B5CF6",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "voiceban",
+ "aliases": "vcban,vban",
+ "embedEnabled": true,
+ "embedColor": "#8B5CF6",
+ "reason": "No reason provided",
+ "disconnectAfterBan": true,
+ "successMessage": "{targetMention} was banned from **{voiceChannel}** by {mention}.\nReason: {reason}",
+ "usageMessage": "Usage: `{command} @user [reason]`",
+ "permissionMessage": "You need Manage Channels permission to voice ban users.",
+ "botPermissionMessage": "I need Manage Channels permission to voice ban users.",
+ "movePermissionMessage": "I need Move Members permission to disconnect the user after banning them.",
+ "notInVoiceMessage": "{targetMention} is not connected to a voice channel.",
+ "selfMessage": "You cannot voice ban yourself.",
+ "errorMessage": "Failed to voice ban: {error}"
+ }
+ }
 }

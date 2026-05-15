@@ -1,24 +1,24 @@
 {
-  "name": "Roblox Profile",
-  "version": "1.0.0",
-  "description": "Shows a Roblox profile with avatar image and public account details.",
-  "author": "Akashsuu",
-  "icon": "RB",
-  "nodeConfig": {
-    "label": "Roblox Profile",
-    "icon": "RB",
-    "color": "#E11D48",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "command": "rprofile",
-      "aliases": "robloxprofile,rbprofile,roblox",
-      "embedColor": "#E11D48",
-      "titleTemplate": "Roblox profile for {roblox_name}",
-      "descriptionTemplate": "**User ID**\n`{roblox_id}`\n\n**Profile**\nUsername: `{roblox_name}`\nDisplay Name: `{display_name}`\nCreated: `{created_at}`\nVerified: `{verified}`\nBanned: `{banned}`\n\n**Social**\nFriends: `{friends}`\nFollowing: `{following}`\nFollowers: `{followers}`\n\n**About**\n{description}\n\n**Links**\nProfile: {profile_link}",
-      "notFoundMessage": "No Roblox profile found for `{query}`.",
-      "errorMessage": "Could not load Roblox profile: {error}",
-      "profileLinkLabel": "Open Profile"
-    }
-  }
+ "name": "Roblox Profile",
+ "version": "1.0.0",
+ "description": "Shows a Roblox profile with avatar image and public account details.",
+ "author": "Akashsuu",
+ "icon": "RB",
+ "nodeConfig": {
+ "label": "Roblox Profile",
+ "icon": "RB",
+ "color": "#E11D48",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "command": "rprofile",
+ "aliases": "robloxprofile,rbprofile,roblox",
+ "embedColor": "#E11D48",
+ "titleTemplate": "Roblox profile for {roblox_name}",
+ "descriptionTemplate": "**User ID**\n`{roblox_id}`\n\n**Profile**\nUsername: `{roblox_name}`\nDisplay Name: `{display_name}`\nCreated: `{created_at}`\nVerified: `{verified}`\nBanned: `{banned}`\n\n**Social**\nFriends: `{friends}`\nFollowing: `{following}`\nFollowers: `{followers}`\n\n**About**\n{description}\n\n**Links**\nProfile: {profile_link}",
+ "notFoundMessage": "No Roblox profile found for `{query}`.",
+ "errorMessage": "Could not load Roblox profile: {error}",
+ "profileLinkLabel": "Open Profile"
+ }
+ }
 }

@@ -1,66 +1,66 @@
 {
-  "name": "HTTP Request",
-  "version": "1.0.0",
-  "description": "Sends HTTP requests (GET, POST, PUT, PATCH, DELETE) to any API. Template variables in URL, headers, and body. Stores the JSON response in ctx.vars.",
-  "author": "Akashsuu",
-  "icon": "🌐",
-  "nodeConfig": {
-    "label": "HTTP Request",
-    "icon": "🌐",
-    "color": "#1A6B3C",
-    "hasInput": true,
-    "hasOutput": true,
-    "defaults": {
-      "method": "GET",
-      "url": "",
-      "headers": "{}",
-      "body": "",
-      "output": "apiResponse",
-      "timeout": 10000,
-      "errorMessage": ""
-    },
-    "fields": [
-      {
-        "key": "method",
-        "label": "HTTP Method",
-        "type": "dropdown",
-        "options": ["GET", "POST", "PUT", "PATCH", "DELETE"]
-      },
-      {
-        "key": "url",
-        "label": "URL",
-        "type": "text",
-        "placeholder": "https://api.example.com/endpoint"
-      },
-      {
-        "key": "headers",
-        "label": "Headers (JSON)",
-        "type": "textarea",
-        "placeholder": "{\"Authorization\": \"Bearer {token}\"}"
-      },
-      {
-        "key": "body",
-        "label": "Request Body",
-        "type": "textarea",
-        "placeholder": "{\"key\": \"value\"}"
-      },
-      {
-        "key": "output",
-        "label": "Output Variable",
-        "type": "text",
-        "placeholder": "apiResponse"
-      },
-      {
-        "key": "timeout",
-        "label": "Timeout (ms)",
-        "type": "number"
-      },
-      {
-        "key": "errorMessage",
-        "label": "Error Message (optional)",
-        "type": "text",
-        "placeholder": "❌ Request failed: {error}"
-      }
-    ]
-  }
+ "name": "HTTP Request",
+ "version": "1.0.0",
+ "description": "Sends HTTP requests (GET, POST, PUT, PATCH, DELETE) to any API. Template variables in URL, headers, and body. Stores the JSON response in ctx.vars.",
+ "author": "Akashsuu",
+ "icon": "🌐",
+ "nodeConfig": {
+ "label": "HTTP Request",
+ "icon": "🌐",
+ "color": "#1A6B3C",
+ "hasInput": true,
+ "hasOutput": true,
+ "defaults": {
+ "method": "GET",
+ "url": "",
+ "headers": "{}",
+ "body": "",
+ "output": "apiResponse",
+ "timeout": 10000,
+ "errorMessage": ""
+ },
+ "fields": [
+ {
+ "key": "method",
+ "label": "HTTP Method",
+ "type": "dropdown",
+ "options": ["GET", "POST", "PUT", "PATCH", "DELETE"]
+ },
+ {
+ "key": "url",
+ "label": "URL",
+ "type": "text",
+ "placeholder": "https://api.example.com/endpoint"
+ },
+ {
+ "key": "headers",
+ "label": "Headers (JSON)",
+ "type": "textarea",
+ "placeholder": "{\"Authorization\": \"Bearer {token}\"}"
+ },
+ {
+ "key": "body",
+ "label": "Request Body",
+ "type": "textarea",
+ "placeholder": "{\"key\": \"value\"}"
+ },
+ {
+ "key": "output",
+ "label": "Output Variable",
+ "type": "text",
+ "placeholder": "apiResponse"
+ },
+ {
+ "key": "timeout",
+ "label": "Timeout (ms)",
+ "type": "number"
+ },
+ {
+ "key": "errorMessage",
+ "label": "Error Message (optional)",
+ "type": "text",
+ "placeholder": "❌ Request failed: {error}"
+ }
+ ]
+ }
 }

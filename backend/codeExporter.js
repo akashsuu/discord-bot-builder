@@ -1,240 +1,337 @@
 'use strict';
 
-const { buildTemplateLiteral } = require('./variables');
+const path = require('path');
 
-const INDENT = '  ';
+function generateCode(projectData) {
+ const { token = 'YOUR_BOT_TOKEN', name = 'Bot', prefix: rawPrefix = '!' } = projectData || {};
+ const prefix = String(rawPrefix - '!').trim() || '!';
+ const pluginRoot = path.resolve(__dirname, '..', 'plugins');
+ const safeProject = { ...(projectData || {}), token: token || 'YOUR_BOT_TOKEN', prefix };
 
-// ─── Graph helpers ─────────────────────────────────────────────────────────
-function getOutputNodes(nodeId, nodes, edges, handleId) {
-  return edges
-    .filter((e) => e.source === nodeId && (handleId == null || e.sourceHandle === handleId))
-    .map((e) => nodes.find((n) => n.id === e.target))
-    .filter(Boolean);
-}
-
-// ─── Build JS for a subtree rooted at `node` ──────────────────────────────
-function buildNode(node, nodes, edges, plugins, depth, prefix) {
-  const pad = INDENT.repeat(depth);
-  const lines = [];
-
-  // Plugin-provided code generation
-  const plugin = plugins[node.type];
-  if (plugin && typeof plugin.generateCode === 'function') {
-    const raw = plugin.generateCode(node, prefix);
-    raw.split('\n').forEach((l) => lines.push(pad + l));
-    return lines.join('\n');
-  }
-
-  switch (node.type) {
-    case 'custom_command': {
-      const rawCmd = (node.data.command || '').trim();
-      const fullCmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
-      const cmd = JSON.stringify(fullCmd);
-      lines.push(`${pad}if (message.content.startsWith(${cmd}) && (!message.content.charAt(${fullCmd.length}) || /\\s/.test(message.content.charAt(${fullCmd.length})))) {`);
-
-      if (node.data.apiEnabled) {
-        lines.push(...buildCustomCommandApi(node.data, fullCmd, pad + INDENT));
-      } else if (node.data.reply) {
-        if (node.data.embedEnabled) {
-          lines.push(...buildEmbedSend(node.data, node.data.reply, pad + INDENT));
-        } else {
-          const reply = buildTemplateLiteral(node.data.reply);
-          lines.push(`${pad}${INDENT}message.channel.send(${reply});`);
-        }
-      }
-
-      for (const next of getOutputNodes(node.id, nodes, edges)) {
-        lines.push(buildNode(next, nodes, edges, plugins, depth + 1, prefix));
-      }
-      lines.push(`${pad}}`);
-      break;
-    }
-
-    case 'send_message': {
-      if (node.data.embedEnabled) {
-        lines.push(...buildEmbedSend(node.data, node.data.text || '', pad));
-      } else {
-        const txt = buildTemplateLiteral(node.data.text || '');
-        lines.push(`${pad}message.channel.send(${txt});`);
-      }
-      for (const next of getOutputNodes(node.id, nodes, edges)) {
-        lines.push(buildNode(next, nodes, edges, plugins, depth + 1, prefix));
-      }
-      break;
-    }
-
-    case 'condition_branch': {
-      const val = JSON.stringify(node.data.value || '');
-      let condExpr;
-      switch (node.data.condition) {
-        case 'starts_with': condExpr = `message.content.startsWith(${val})`; break;
-        case 'contains':    condExpr = `message.content.includes(${val})`;    break;
-        case 'equals':      condExpr = `message.content === ${val}`;           break;
-        default:            condExpr = 'false';
-      }
-
-      lines.push(`${pad}if (${condExpr}) {`);
-      for (const t of getOutputNodes(node.id, nodes, edges, 'true')) {
-        lines.push(buildNode(t, nodes, edges, plugins, depth + 1, prefix));
-      }
-
-      const falseNodes = getOutputNodes(node.id, nodes, edges, 'false');
-      if (falseNodes.length > 0) {
-        lines.push(`${pad}} else {`);
-        for (const f of falseNodes) {
-          lines.push(buildNode(f, nodes, edges, plugins, depth + 1, prefix));
-        }
-      }
-      lines.push(`${pad}}`);
-      break;
-    }
-
-    default:
-      lines.push(`${pad}// [${node.type}] — no code generator`);
-  }
-
-  return lines.join('\n');
-}
-
-function buildCustomCommandApi(data, fullCmd, pad) {
-  const lines = [];
-  const method = String(data.apiMethod || 'GET').toUpperCase();
-  const noBody = ['GET', 'HEAD'].includes(method);
-  const timeout = Math.max(1000, Number(data.apiTimeout || 15000));
-
-  lines.push(`${pad}const _ccRawArgs = message.content.slice(${JSON.stringify(fullCmd)}.length).trim();`);
-  lines.push(`${pad}const _ccParts = _ccRawArgs ? _ccRawArgs.split(/\\s+/).filter(Boolean) : [];`);
-  lines.push(`${pad}const _ccVars = {`);
-  lines.push(`${pad}  user: message.author?.username || "", username: message.author?.username || "", tag: message.author?.tag || "",`);
-  lines.push(`${pad}  id: message.author?.id || "", user_id: message.author?.id || "", userId: message.author?.id || "",`);
-  lines.push(`${pad}  mention: message.author?.id ? \`<@\${message.author.id}>\` : "",`);
-  lines.push(`${pad}  server: message.guild?.name || "", guild: message.guild?.name || "", serverId: message.guild?.id || "", server_id: message.guild?.id || "",`);
-  lines.push(`${pad}  channel: message.channel?.name || "", channelId: message.channel?.id || "", channel_id: message.channel?.id || "",`);
-  lines.push(`${pad}  channelMention: message.channel?.id ? \`<#\${message.channel.id}>\` : "",`);
-  lines.push(`${pad}  memberCount: String(message.guild?.memberCount ?? ""), member_count: String(message.guild?.memberCount ?? ""),`);
-  lines.push(`${pad}  command: ${JSON.stringify(fullCmd)}, args: _ccRawArgs, arg0: _ccParts[0] || "", arg1: _ccParts[1] || "", arg2: _ccParts[2] || "",`);
-  lines.push(`${pad}  message: message.content || "", date: new Date().toISOString().slice(0, 10), time: new Date().toTimeString().slice(0, 8),`);
-  lines.push(`${pad}};`);
-  lines.push(`${pad}const _ccTpl = (s, v) => String(s || "").replace(/\\{([A-Za-z_][A-Za-z0-9_]*)\\}/g, (m, k) => v[k] == null ? m : String(v[k]));`);
-  lines.push(`${pad}const _ccGet = (obj, p) => !p ? obj : String(p).split(".").reduce((cur, key) => cur == null ? undefined : (Array.isArray(cur) ? cur[Number(key)] : cur[key]), obj);`);
-  lines.push(`${pad}const _ccHeaders = {};`);
-  lines.push(`${pad}for (const _line of _ccTpl(${JSON.stringify(data.apiHeaders || '')}, _ccVars).split(/\\r?\\n/)) {`);
-  lines.push(`${pad}  const _idx = _line.indexOf(":");`);
-  lines.push(`${pad}  if (_idx > 0) _ccHeaders[_line.slice(0, _idx).trim()] = _line.slice(_idx + 1).trim();`);
-  lines.push(`${pad}}`);
-  if (!noBody) {
-    lines.push(`${pad}if (!_ccHeaders["Content-Type"] && !_ccHeaders["content-type"]) _ccHeaders["Content-Type"] = "application/json";`);
-  }
-  lines.push(`${pad}const _ccController = new AbortController();`);
-  lines.push(`${pad}const _ccTimer = setTimeout(() => _ccController.abort(), ${timeout});`);
-  lines.push(`${pad}try {`);
-  lines.push(`${pad}  if (message.channel?.sendTyping) await message.channel.sendTyping().catch(() => {});`);
-  lines.push(`${pad}  const _ccUrl = _ccTpl(${JSON.stringify(data.apiUrl || '')}, _ccVars);`);
-  lines.push(`${pad}  const _ccOptions = { method: ${JSON.stringify(method)}, headers: _ccHeaders, signal: _ccController.signal };`);
-  if (!noBody) lines.push(`${pad}  _ccOptions.body = _ccTpl(${JSON.stringify(data.apiBody || '')}, _ccVars);`);
-  lines.push(`${pad}  const _ccRes = await fetch(_ccUrl, _ccOptions);`);
-  lines.push(`${pad}  const _ccType = _ccRes.headers.get("content-type") || "";`);
-  lines.push(`${pad}  const _ccData = _ccType.includes("application/json") ? await _ccRes.json() : await _ccRes.text();`);
-  lines.push(`${pad}  let _ccResult = _ccGet(_ccData, ${JSON.stringify(data.apiResultPath || '')});`);
-  lines.push(`${pad}  if (_ccResult && typeof _ccResult === "object") _ccResult = JSON.stringify(_ccResult, null, 2);`);
-  lines.push(`${pad}  _ccResult = String(_ccResult ?? (typeof _ccData === "string" ? _ccData : JSON.stringify(_ccData)));`);
-  lines.push(`${pad}  if (!_ccRes.ok) throw new Error(\`HTTP \${_ccRes.status} \${_ccRes.statusText}\`);`);
-  lines.push(`${pad}  const _ccText = _ccTpl(${JSON.stringify(data.apiReply || data.reply || '{apiResult}')}, { ..._ccVars, result: _ccResult, apiResult: _ccResult, apiStatus: String(_ccRes.status), apiStatusText: _ccRes.statusText, apiOk: String(_ccRes.ok), apiJson: typeof _ccData === "string" ? _ccData : JSON.stringify(_ccData, null, 2) });`);
-  if (data.embedEnabled) {
-    const colorNum = data.embedColor ? parseInt(String(data.embedColor).replace('#', ''), 16) : NaN;
-    lines.push(`${pad}  await message.channel.send({ embeds: [{`);
-    lines.push(`${pad}    description: String(_ccText || '').slice(0, 4096),`);
-    if (data.embedTitle) lines.push(`${pad}    title: ${JSON.stringify(data.embedTitle)},`);
-    if (!Number.isNaN(colorNum)) lines.push(`${pad}    color: ${colorNum},`);
-    if (data.imageUrl && data.imagePosition === 'thumbnail') lines.push(`${pad}    thumbnail: { url: ${JSON.stringify(data.imageUrl)} },`);
-    else if (data.imageUrl) lines.push(`${pad}    image: { url: ${JSON.stringify(data.imageUrl)} },`);
-    if (data.embedFooter) lines.push(`${pad}    footer: { text: ${JSON.stringify(data.embedFooter)} },`);
-    lines.push(`${pad}  }] });`);
-  } else {
-    lines.push(`${pad}  await message.channel.send(String(_ccText || '').slice(0, 2000));`);
-  }
-  lines.push(`${pad}} catch (_ccErr) {`);
-  lines.push(`${pad}  const _ccText = _ccTpl(${JSON.stringify(data.apiErrorMessage || 'API error: {apiError}')}, { ..._ccVars, apiError: _ccErr.message, error: _ccErr.message, apiOk: "false" });`);
-  lines.push(`${pad}  if (_ccText) await message.channel.send(String(_ccText).slice(0, 2000)).catch(() => {});`);
-  lines.push(`${pad}} finally {`);
-  lines.push(`${pad}  clearTimeout(_ccTimer);`);
-  lines.push(`${pad}}`);
-  return lines;
-}
-
-// Returns an array of code lines that send an embed
-function buildEmbedSend(data, rawText, pad) {
-  const lines = [];
-  const txt = buildTemplateLiteral(rawText);
-  lines.push(`${pad}await message.channel.send({ embeds: [{`);
-  lines.push(`${pad}  description: ${txt},`);
-  if (data.embedTitle) {
-    lines.push(`${pad}  title: ${JSON.stringify(data.embedTitle)},`);
-  }
-  if (data.embedColor) {
-    const colorNum = parseInt(data.embedColor.replace('#', ''), 16);
-    if (!isNaN(colorNum)) lines.push(`${pad}  color: ${colorNum},`);
-  }
-  if (data.imageUrl) {
-    if (data.imagePosition === 'thumbnail') {
-      lines.push(`${pad}  thumbnail: { url: ${JSON.stringify(data.imageUrl)} },`);
-    } else {
-      lines.push(`${pad}  image: { url: ${JSON.stringify(data.imageUrl)} },`);
-    }
-  }
-  if (data.embedFooter) {
-    lines.push(`${pad}  footer: { text: ${JSON.stringify(data.embedFooter)} },`);
-  }
-  lines.push(`${pad}}] });`);
-  return lines;
-}
-
-// ─── Public ────────────────────────────────────────────────────────────────
-function generateCode(projectData, plugins = {}) {
-  const { nodes = [], edges = [], token = 'YOUR_BOT_TOKEN', name = 'Bot', prefix: rawPrefix = '!' } = projectData;
-  const prefix = String(rawPrefix ?? '!').trim() || '!';
-
-  const eventNodes = nodes.filter((n) => n.type === 'event_message');
-
-  const bodyLines = [];
-  for (const evNode of eventNodes) {
-    for (const next of getOutputNodes(evNode.id, nodes, edges)) {
-      bodyLines.push(buildNode(next, nodes, edges, plugins, 2, prefix));
-    }
-  }
-
-  const body = bodyLines.join('\n') || `${INDENT.repeat(2)}// No nodes connected to event yet`;
-
-  const prefixGuard = prefix
-    ? `  if (!message.content.startsWith(${JSON.stringify(prefix)})) return;\n`
-    : '';
-
-  return `// ─────────────────────────────────────────────────────────────
-// Generated by Kiodium — ${name}
+ return `// Generated by Kiodium - ${String(name || 'Bot').replace(/\r?\n/g, ' ')}
 // Generated: ${new Date().toISOString()}
-// ─────────────────────────────────────────────────────────────
+// Run with: npm install discord.js && node bot.js
 
-const { Client, GatewayIntentBits } = require("discord.js");
+const fs = require("fs");
+const path = require("path");
+const { Client, GatewayIntentBits, Partials } = require("discord.js");
 
+if (typeof globalThis.File === "undefined") {
+ try {
+ const { File, Blob } = require("node:buffer");
+ if (typeof globalThis.Blob === "undefined" && Blob) globalThis.Blob = Blob;
+ if (File) globalThis.File = File;
+ } catch {
+ globalThis.File = class File {
+ constructor(parts, fileName, options = {}) {
+ this.parts = parts;
+ this.name = String(fileName || "");
+ this.type = options.type || "";
+ this.lastModified = options.lastModified || Date.now();
+ }
+ };
+ }
+}
+
+const PROJECT = ${JSON.stringify(safeProject, null, 2)};
+const PLUGIN_ROOT = ${JSON.stringify(pluginRoot)};
+
+const NODE_EVENT_DEFAULT = {
+ event_channel: "channelCreate",
+ event_client: "ready",
+ event_emoji: "emojiCreate",
+ event_guild: "guildCreate",
+ event_member: "guildMemberAdd",
+ event_role: "roleCreate",
+};
+
+const DISCORD_EVENT_TO_NODE = {
+ channelCreate: "event_channel",
+ channelDelete: "event_channel",
+ channelUpdate: "event_channel",
+ channelPinsUpdate: "event_channel",
+ ready: "event_client",
+ warn: "event_client",
+ emojiCreate: "event_emoji",
+ emojiDelete: "event_emoji",
+ emojiUpdate: "event_emoji",
+ guildCreate: "event_guild",
+ guildDelete: "event_guild",
+ guildUpdate: "event_guild",
+ guildAvailable: "event_guild",
+ guildMemberAdd: "event_member",
+ guildMemberRemove: "event_member",
+ guildMemberUpdate: "event_member",
+ roleCreate: "event_role",
+ roleDelete: "event_role",
+ roleUpdate: "event_role",
+};
+
+function walkPluginDirs(root, out = []) {
+ if (!fs.existsSync(root)) return out;
+ for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+ const full = path.join(root, entry.name);
+ if (!entry.isDirectory()) continue;
+ if (fs.existsSync(path.join(full, "index.js"))) out.push(full);
+ walkPluginDirs(full, out);
+ }
+ return out;
+}
+
+function loadPluginNodes(root) {
+ const registry = {};
+ for (const dir of walkPluginDirs(root)) {
+ try {
+ const mod = require(path.join(dir, "index.js"));
+ const plugin = mod && mod.default ? mod.default : mod;
+ for (const [type, definition] of Object.entries(plugin.nodes || {})) registry[type] = definition;
+ } catch (err) {
+ console.warn("[plugin-load]", dir, err.message);
+ }
+ }
+ return registry;
+}
+
+function getOutputNodes(nodeId, nodes, edges, handleId = null) {
+ return edges
+ .filter((edge) => edge.source === nodeId && (handleId == null || edge.sourceHandle === handleId))
+ .map((edge) => nodes.find((node) => node.id === edge.target))
+ .filter(Boolean);
+}
+
+function template(text, vars) {
+ return String(text || "").replace(/\\{([A-Za-z_][A-Za-z0-9_]*)\\}/g, (match, key) => (
+ vars[key] === undefined || vars[key] === null ? match : String(vars[key])
+ ));
+}
+
+function buildVars(message, prefix, command = "", rawArgs = "", extra = {}) {
+ const parts = rawArgs ? rawArgs.split(/\\s+/).filter(Boolean) : [];
+ return {
+ user: message?.author?.username || "",
+ username: message?.author?.username || "",
+ tag: message?.author?.tag || "",
+ id: message?.author?.id || "",
+ userId: message?.author?.id || "",
+ user_id: message?.author?.id || "",
+ mention: message?.author?.id ? \`<@\${message.author.id}>\` : "",
+ server: message?.guild?.name || "",
+ guild: message?.guild?.name || "",
+ serverId: message?.guild?.id || "",
+ server_id: message?.guild?.id || "",
+ channel: message?.channel?.name || "",
+ channelId: message?.channel?.id || "",
+ channel_id: message?.channel?.id || "",
+ channelMention: message?.channel?.id ? \`<#\${message.channel.id}>\` : "",
+ memberCount: String(message?.guild?.memberCount - ""),
+ member_count: String(message?.guild?.memberCount - ""),
+ prefix,
+ command,
+ args: rawArgs,
+ arg0: parts[0] || "",
+ arg1: parts[1] || "",
+ arg2: parts[2] || "",
+ message: message?.content || "",
+ date: new Date().toISOString().slice(0, 10),
+ time: new Date().toTimeString().slice(0, 8),
+ ...extra,
+ };
+}
+
+function buildEmbed(data, text) {
+ const embed = {};
+ if (text) embed.description = String(text).slice(0, 4096);
+ if (data.embedTitle) embed.title = data.embedTitle;
+ if (data.embedColor) {
+ const color = parseInt(String(data.embedColor).replace("#", ""), 16);
+ if (!Number.isNaN(color)) embed.color = color;
+ }
+ if (data.logoName || data.logoUrl) embed.author = { name: data.logoName || "\\u200b", icon_url: data.logoUrl || undefined };
+ if (data.imageUrl) embed.image = { url: data.imageUrl };
+ if (data.embedFooter) embed.footer = { text: data.embedFooter };
+ return embed;
+}
+
+async function sendEmbed(message, data, text) {
+ if (!message?.channel) return;
+ if (data.embedEnabled === false) {
+ if (text) await message.channel.send(String(text).slice(0, 2000));
+ return;
+ }
+ await message.channel.send({ embeds: [buildEmbed(data, text)] });
+}
+
+const prefixStore = new Map();
+function getPrefix(guildId = "global") {
+ return prefixStore.get(guildId || "global") || prefixStore.get("global") || PROJECT.prefix || "!";
+}
+function setPrefix(nextPrefix, guildId = "global") {
+ const clean = String(nextPrefix || "").trim() || PROJECT.prefix || "!";
+ prefixStore.set(guildId || "global", clean);
+ return clean;
+}
+
+async function runCustomCommandApi(node, message, prefix, fullCmd, rawArgs) {
+ const data = node.data || {};
+ const vars = buildVars(message, prefix, fullCmd, rawArgs);
+ const method = String(data.apiMethod || "GET").toUpperCase();
+ const headers = {};
+ for (const line of template(data.apiHeaders || "", vars).split(/\\r?\\n/)) {
+ const idx = line.indexOf(":");
+ if (idx > 0) headers[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+ }
+ const controller = new AbortController();
+ const timer = setTimeout(() => controller.abort(), Math.max(1000, Number(data.apiTimeout || 15000)));
+ try {
+ const options = { method, headers, signal: controller.signal };
+ if (!["GET", "HEAD"].includes(method)) options.body = template(data.apiBody || "", vars);
+ const response = await fetch(template(data.apiUrl || "", vars), options);
+ const contentType = response.headers.get("content-type") || "";
+ const body = contentType.includes("application/json") ? await response.json() : await response.text();
+ const result = typeof body === "string" ? body : JSON.stringify(body, null, 2);
+ if (!response.ok) throw new Error(\`HTTP \${response.status} \${response.statusText}\`);
+ const text = template(data.apiReply || data.reply || "{apiResult}", { ...vars, apiResult: result, apiJson: result, apiStatus: response.status, apiStatusText: response.statusText, apiOk: response.ok });
+ await sendEmbed(message, data, text);
+ } catch (err) {
+ const text = template(data.apiErrorMessage || "API error: {apiError}", { ...vars, apiError: err.message, error: err.message });
+ if (text) await message.channel.send(String(text).slice(0, 2000)).catch(() => {});
+ } finally {
+ clearTimeout(timer);
+ }
+}
+
+function commandMatch(message, prefix, command) {
+ const raw = String(command || "").trim();
+ if (!raw) return null;
+ const full = raw.startsWith(prefix) ? raw : prefix + raw;
+ if (!message.content.toLowerCase().startsWith(full.toLowerCase())) return null;
+ const rest = message.content.slice(full.length);
+ if (rest && !/^\\s/.test(rest)) return null;
+ return { full, rawArgs: rest.trim() };
+}
+
+async function executeNode(node, eventObj, eventType, prefix, helpers, visited = new Set(), depth = 0) {
+ if (!node || visited.has(node.id) || depth > 50) return;
+ visited.add(node.id);
+ const nodes = PROJECT.nodes || [];
+ const edges = PROJECT.edges || [];
+ const def = PLUGINS[node.type];
+
+ if (def && typeof def.execute === "function") {
+ let cont = false;
+ try {
+ const ctx = { node, eventType, eventData: eventObj, message: eventType === "messageCreate" ? eventObj : null, prefix, ...helpers };
+ const legacy = def.execute.length >= 2;
+ cont = await Promise.resolve(legacy ? def.execute(node, eventObj, { ...helpers, prefix, eventType, eventData: eventObj }) : def.execute(ctx));
+ } catch (err) {
+ console.error("[node-error]", node.type, err);
+ return;
+ }
+ if (cont) for (const next of getOutputNodes(node.id, nodes, edges)) await executeNode(next, eventObj, eventType, prefix, helpers, new Set(visited), depth + 1);
+ return;
+ }
+
+ if (node.type === "custom_command" && eventType === "messageCreate") {
+ const match = commandMatch(eventObj, prefix, node.data?.command);
+ if (!match) return;
+ if (node.data?.apiEnabled) await runCustomCommandApi(node, eventObj, prefix, match.full, match.rawArgs);
+ else if (node.data?.reply) await sendEmbed(eventObj, node.data, template(node.data.reply, buildVars(eventObj, prefix, match.full, match.rawArgs)));
+ for (const next of getOutputNodes(node.id, nodes, edges)) await executeNode(next, eventObj, eventType, prefix, helpers, new Set(visited), depth + 1);
+ return;
+ }
+
+ if (node.type === "send_message" && eventObj?.channel) {
+ await sendEmbed(eventObj, node.data || {}, template(node.data?.text || "", buildVars(eventObj, prefix)));
+ for (const next of getOutputNodes(node.id, nodes, edges)) await executeNode(next, eventObj, eventType, prefix, helpers, new Set(visited), depth + 1);
+ return;
+ }
+
+ if (node.type === "condition_branch" && eventObj?.content != null) {
+ const value = String(node.data?.value || "");
+ const condition = node.data?.condition || "starts_with";
+ const ok = condition === "contains" ? eventObj.content.includes(value) : condition === "equals" ? eventObj.content === value : eventObj.content.startsWith(value);
+ for (const next of getOutputNodes(node.id, nodes, edges, ok ? "true" : "false")) await executeNode(next, eventObj, eventType, prefix, helpers, new Set(visited), depth + 1);
+ }
+}
+
+async function executeGraph(eventNode, eventObj, eventType, prefix, helpers) {
+ for (const next of getOutputNodes(eventNode.id, PROJECT.nodes || [], PROJECT.edges || [])) {
+ await executeNode(next, eventObj, eventType, prefix, helpers);
+ }
+}
+
+function makeHelpers(prefix) {
+ return {
+ prefix,
+ defaultPrefix: PROJECT.prefix || "!",
+ getPrefix,
+ setPrefix,
+ buildEmbed,
+ sendEmbed,
+ allowedUsers: new Set(),
+ allowedRoles: new Set(),
+ cooldowns: new Map(),
+ args: [],
+ flow: {},
+ };
+}
+
+const PLUGINS = loadPluginNodes(PLUGIN_ROOT);
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+ intents: [
+ GatewayIntentBits.Guilds,
+ GatewayIntentBits.GuildMessages,
+ GatewayIntentBits.MessageContent,
+ GatewayIntentBits.DirectMessages,
+ GatewayIntentBits.GuildMembers,
+ GatewayIntentBits.GuildEmojisAndStickers,
+ GatewayIntentBits.GuildVoiceStates,
+ GatewayIntentBits.GuildModeration,
+ GatewayIntentBits.GuildWebhooks,
+ GatewayIntentBits.GuildIntegrations,
+ ].filter(Boolean),
+ partials: [Partials.Channel],
 });
 
-client.once("ready", () => {
-  console.log(\`✅ Logged in as \${client.user.tag}\`);
+client.once("ready", async () => {
+ console.log(\`Logged in as \${client.user.tag}\`);
+ for (const node of PROJECT.nodes || []) {
+ const def = PLUGINS[node.type];
+ if (def && typeof def.initProject === "function") {
+ try {
+ await def.initProject({ node, client, prefix: getPrefix("global"), ...makeHelpers(getPrefix("global")) });
+ } catch (err) {
+ console.error("[init-error]", node.type, err.message);
+ }
+ }
+ }
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.author.bot) return;
-${prefixGuard}
-${body}
+ if (message.author?.bot) return;
+ const prefix = getPrefix(message.guild?.id);
+ const helpers = makeHelpers(prefix);
+ for (const eventNode of (PROJECT.nodes || []).filter((node) => node.type === "event_message")) {
+ await executeGraph(eventNode, message, "messageCreate", prefix, helpers);
+ }
 });
 
-client.login("${token}");
+for (const [eventName, nodeType] of Object.entries(DISCORD_EVENT_TO_NODE)) {
+ client.on(eventName, async (...args) => {
+ const eventData = eventName.endsWith("Update") ? (args[1] || args[0]) : args[0];
+ const defaultEvent = NODE_EVENT_DEFAULT[nodeType];
+ const matching = (PROJECT.nodes || []).filter((node) => node.type === nodeType && (node.data?.event || defaultEvent) === eventName);
+ for (const eventNode of matching) {
+ const prefix = getPrefix(eventData?.guild?.id);
+ await executeGraph(eventNode, eventData, eventName, prefix, makeHelpers(prefix));
+ }
+ });
+}
+
+client.on("error", (err) => console.error("[discord-error]", err));
+client.on("warn", (msg) => console.warn("[discord-warn]", msg));
+
+client.login(PROJECT.token || process.env.DISCORD_TOKEN || "YOUR_BOT_TOKEN");
 `;
 }
 

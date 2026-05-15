@@ -1,19 +1,19 @@
 {
-  "name": "Ticket Log",
-  "version": "1.0.0",
-  "description": "Standalone ticket event logger — sends structured embed logs to a log channel.",
-  "author": "Akashsuu",
-  "icon": "📋",
-  "nodeConfig": {
-    "label": "Ticket Log",
-    "icon": "📋",
-    "color": "#117A65",
-    "hasInput": true,
-    "hasOutput": false,
-    "defaults": {
-      "command": "ticket-log",
-      "eventType": "created",
-      "logChannel": ""
-    }
-  }
+ "name": "Ticket Log",
+ "version": "1.0.0",
+ "description": "Standalone ticket event logger — sends structured embed logs to a log channel.",
+ "author": "Akashsuu",
+ "icon": "📋",
+ "nodeConfig": {
+ "label": "Ticket Log",
+ "icon": "📋",
+ "color": "#117A65",
+ "hasInput": true,
+ "hasOutput": false,
+ "defaults": {
+ "command": "ticket-log",
+ "eventType": "created",
+ "logChannel": ""
+ }
+ }
 }

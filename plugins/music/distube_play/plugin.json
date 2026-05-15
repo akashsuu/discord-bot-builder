@@ -1,27 +1,27 @@
 {
-  "name": "Distube Play",
-  "version": "1.0.1",
-  "description": "Play music using Distube and YouTube search from a builder node.",
-  "author": "Kiodium",
-  "icon": "🎵",
-  "nodeConfig": {
-    "label": "Distube Play",
-    "icon": "DTS",
-    "color": "#8E44AD",
-    "defaults": {
-      "command": "play",
-      "aliases": "p",
-      "embedColor": "#8E44AD",
-      "embedTitle": "Music Player",
-      "embedDescription": "Queued **{query}** in **{channel}**.",
-      "missingQueryMessage": "Use `{command} <song name or url>` to play music.",
-      "missingVoiceMessage": "Join a voice channel first.",
-      "queuedMessage": "Added **{query}** to the queue.",
-      "errorMessage": "Music playback failed: {error}",
-      "pauseButtonLabel": "Pause",
-      "resumeButtonLabel": "Resume",
-      "skipButtonLabel": "Skip",
-      "stopButtonLabel": "Stop"
-    }
-  }
+ "name": "Distube Play",
+ "version": "1.0.1",
+ "description": "Play music using Distube and YouTube search from a builder node.",
+ "author": "Kiodium",
+ "icon": "🎵",
+ "nodeConfig": {
+ "label": "Distube Play",
+ "icon": "DTS",
+ "color": "#8E44AD",
+ "defaults": {
+ "command": "play",
+ "aliases": "p",
+ "embedColor": "#8E44AD",
+ "embedTitle": "Music Player",
+ "embedDescription": "Queued **{query}** in **{channel}**.",
+ "missingQueryMessage": "Use `{command} <song name or url>` to play music.",
+ "missingVoiceMessage": "Join a voice channel first.",
+ "queuedMessage": "Added **{query}** to the queue.",
+ "errorMessage": "Music playback failed: {error}",
+ "pauseButtonLabel": "Pause",
+ "resumeButtonLabel": "Resume",
+ "skipButtonLabel": "Skip",
+ "stopButtonLabel": "Stop"
+ }
+ }
 }
