@@ -805,6 +805,15 @@ export default function PluginNode({ id, type, data, selected }) {
  saveTicketOptions(ticketOptions.filter((_, optionIndex) => optionIndex !== index));
  }, [ticketOptions, saveTicketOptions]);
 
+ const stopToggleGesture = useCallback((event) => {
+ const target = event.target;
+ if (target?.closest?.('.bl-embed-toggle, input[type="checkbox"]')) {
+ event.stopPropagation();
+ }
+ }, []);
+
+ const embedOutputChecked = data.embedEnabled !== false;
+
  // Keep previewPg in bounds when pages shrink
  const safePg = Math.min(previewPg, Math.max(0, pgs.length - 1));
 
@@ -812,6 +821,10 @@ export default function PluginNode({ id, type, data, selected }) {
  <div
  className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`}
  style={{ minWidth: 260 }}
+ onPointerDown={stopToggleGesture}
+ onMouseDown={stopToggleGesture}
+ onClick={stopToggleGesture}
+ onDoubleClick={stopToggleGesture}
  >
  {/* -- Header ------------------------------------------------------- */}
  <div
@@ -844,10 +857,13 @@ export default function PluginNode({ id, type, data, selected }) {
   </div>
  {actionMenu}
 
- {!collapsed && (
- <div
-   className="bl-node-body nowheel"
-   >
+  {!collapsed && (
+  <div
+    className="bl-node-body nowheel nodrag nopan"
+    onMouseDown={(e) => e.stopPropagation()}
+    onPointerDown={(e) => e.stopPropagation()}
+    onClick={(e) => e.stopPropagation()}
+    >
  {/* -- Input socket ----------------------------------------------- */}
  {data._hasInput && (
  <div className="bl-row bl-row-in">
@@ -972,8 +988,9 @@ export default function PluginNode({ id, type, data, selected }) {
  ['showServerButton', 'serverButtonLabel', 'Server Button', 'Server Icon'],
  ].map(([enabledKey, labelKey, label, fallback]) => (
  <div key={labelKey} className="bl-field">
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data[enabledKey] !== false}
  onChange={(e) => update(enabledKey, e.target.checked)}
@@ -1008,8 +1025,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <div className="bl-node-divider" />
  <SectionHead color="#F472B6">Boost Settings</SectionHead>
  <div className="bl-field">
- <label className="bl-embed-toggle" style={{ fontSize: 11 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data.enabledByDefault !== false}
  onChange={(e) => update('enabledByDefault', e.target.checked)}
@@ -1460,8 +1478,9 @@ export default function PluginNode({ id, type, data, selected }) {
  />
  </div>
  <div className="bl-field">
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={!!data.showSupportButton}
  onChange={(e) => update('showSupportButton', e.target.checked)}
@@ -1594,8 +1613,9 @@ export default function PluginNode({ id, type, data, selected }) {
  ['showOpenButton', 'openButtonLabel', 'Open Button', 'Open Icon'],
  ].map(([enabledKey, labelKey, label, fallback]) => (
  <div key={labelKey} className="bl-field">
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data[enabledKey] !== false}
  onChange={(e) => update(enabledKey, e.target.checked)}
@@ -1800,8 +1820,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data.requireManageGuild !== false}
  onChange={(e) => update('requireManageGuild', e.target.checked)}
@@ -1963,8 +1984,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data.useAnimatedAvatar === true}
  onChange={(e) => update('useAnimatedAvatar', e.target.checked)}
@@ -1985,8 +2007,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data.useAnimatedBanner === true}
  onChange={(e) => update('useAnimatedBanner', e.target.checked)}
@@ -2007,8 +2030,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data.requireManageGuild !== false}
  onChange={(e) => update('requireManageGuild', e.target.checked)}
@@ -2112,16 +2136,16 @@ export default function PluginNode({ id, type, data, selected }) {
  <input className="bl-node-input" value={data[key] || ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={placeholder} spellCheck={false} />
  </div>
  ))}
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
- <input type="checkbox" checked={data.requireManageGuild !== false} onChange={(e) => update('requireManageGuild', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
+ <input className="nodrag nopan nowheel" type="checkbox" checked={data.requireManageGuild !== false} onChange={(e) => update('requireManageGuild', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
  Require Manage Server for test command
  </label>
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
- <input type="checkbox" checked={data.mentionUser !== false} onChange={(e) => update('mentionUser', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
+ <input className="nodrag nopan nowheel" type="checkbox" checked={data.mentionUser !== false} onChange={(e) => update('mentionUser', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
  Mention user above welcome embed
  </label>
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
- <input type="checkbox" checked={data.embedEnabled !== false} onChange={(e) => update('embedEnabled', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
+ <input className="nodrag nopan nowheel" type="checkbox" checked={data.embedEnabled !== false} onChange={(e) => update('embedEnabled', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
  Send as embed
  </label>
  <div className="bl-field">
@@ -2263,8 +2287,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <>
  <div className="bl-node-divider" />
  <SectionHead color="#DC2626">Nuke Settings</SectionHead>
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data.confirmationRequired !== false}
  onChange={(e) => update('confirmationRequired', e.target.checked)}
@@ -2390,8 +2415,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={data.disconnectAfterBan !== false}
  onChange={(e) => update('disconnectAfterBan', e.target.checked)}
@@ -2696,8 +2722,8 @@ export default function PluginNode({ id, type, data, selected }) {
  ['autoRecovery', 'Auto recovery'],
  ['deleteTriggerMessage', 'Delete trigger messages'],
  ].map(([key, label]) => (
- <label key={key} className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
- <input type="checkbox" checked={data[key] !== false} onChange={(e) => update(key, e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <label key={key} className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
+ <input className="nodrag nopan nowheel" type="checkbox" checked={data[key] !== false} onChange={(e) => update(key, e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
  {label}
  </label>
  ))}
@@ -2750,8 +2776,8 @@ export default function PluginNode({ id, type, data, selected }) {
  ['antiWebhookUpdate', 'Anti Webhook Update'], ['antiLinkRole', 'Anti Link Role'],
  ['antiInviteRole', 'Anti Invite Role'],
  ].map(([key, label]) => (
- <label key={key} className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 3 }}>
- <input type="checkbox" checked={data[key] !== false} onChange={(e) => update(key, e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <label key={key} className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 3 }}>
+ <input className="nodrag nopan nowheel" type="checkbox" checked={data[key] !== false} onChange={(e) => update(key, e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
  {label}
  </label>
  ))}
@@ -2795,8 +2821,8 @@ export default function PluginNode({ id, type, data, selected }) {
  <input className="bl-node-input" value={data[key] || ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={fallback} spellCheck={false} />
  </div>
  ))}
- <label className="bl-embed-toggle" style={{ fontSize: 11, marginBottom: 4 }}>
- <input type="checkbox" checked={data.lavalinkSecure === true} onChange={(e) => update('lavalinkSecure', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
+ <input className="nodrag nopan nowheel" type="checkbox" checked={data.lavalinkSecure === true} onChange={(e) => update('lavalinkSecure', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
  Secure Lavalink
  </label>
  <div className="bl-node-divider" />
@@ -3417,8 +3443,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{key}</span>
  {typeof val === 'boolean' ? (
- <label className="bl-embed-toggle" style={{ fontSize: 11 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={!!val}
  onChange={(e) => update(key, e.target.checked)}
@@ -3543,8 +3570,8 @@ export default function PluginNode({ id, type, data, selected }) {
  <>
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle">
- <input type="checkbox" checked={!!data.dmEnabled} onChange={(e) => update('dmEnabled', e.target.checked)} />
+ <label className="bl-embed-toggle nodrag nopan nowheel">
+ <input className="nodrag nopan nowheel" type="checkbox" checked={!!data.dmEnabled} onChange={(e) => update('dmEnabled', e.target.checked)} />
  DM Target
  </label>
  </div>
@@ -3767,8 +3794,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <>
  <div className="bl-node-divider" style={{ borderColor: '#2A3A2A' }} />
  <div className="bl-field">
- <label className="bl-embed-toggle">
+ <label className="bl-embed-toggle nodrag nopan nowheel">
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={!!dd.enabled}
  onChange={(e) => updateDropdown('enabled', e.target.checked)}
@@ -3794,8 +3822,9 @@ export default function PluginNode({ id, type, data, selected }) {
  />
  </div>
  <div className="bl-field">
- <label className="bl-embed-toggle" style={{ fontSize: 11 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={dd.usePages !== false}
  onChange={(e) => updateDropdown('usePages', e.target.checked)}
@@ -3831,8 +3860,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <>
  <div className="bl-node-divider" style={{ borderColor: '#2A2A3A' }} />
  <div className="bl-field">
- <label className="bl-embed-toggle">
+ <label className="bl-embed-toggle nodrag nopan nowheel">
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={!!bt.enabled}
  onChange={(e) => updateButtons('enabled', e.target.checked)}
@@ -3845,8 +3875,9 @@ export default function PluginNode({ id, type, data, selected }) {
  {bt.enabled && (
  <>
  <div className="bl-field">
- <label className="bl-embed-toggle" style={{ fontSize: 11 }}>
+ <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11 }}>
  <input
+ className="nodrag nopan nowheel"
  type="checkbox"
  checked={bt.navigation !== false}
  onChange={(e) => updateButtons('navigation', e.target.checked)}
@@ -3885,18 +3916,25 @@ export default function PluginNode({ id, type, data, selected }) {
  -------------------------------------------------------------- */}
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle">
- <input
- type="checkbox"
- checked={data.embedEnabled !== false}
- onChange={(e) => update('embedEnabled', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
- Embed Output
- </label>
+ <button
+ type="button"
+ className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
+ role="checkbox"
+ aria-checked={embedOutputChecked}
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ update('embedEnabled', !embedOutputChecked);
+ }}
+ >
+ <span className={`bl-check-box ${embedOutputChecked ? 'checked' : ''}`} aria-hidden="true" />
+ <span>Embed Output</span>
+ </button>
  </div>
 
- {data.embedEnabled !== false && (
+ {embedOutputChecked && (
  <>
  <div className="bl-field">
  <span className="bl-field-lbl">Color</span>

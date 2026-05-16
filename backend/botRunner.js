@@ -107,7 +107,8 @@ function makeStaticHelpers(defaultPrefix) {
  sendEmbed: async (message, data, text) => {
  const chan = message?.channel;
  if (!chan) return;
- if (data.embedEnabled) {
+ const wantsEmbed = data?.embedEnabled !== false && data?.embedEnabled !== 'false';
+ if (wantsEmbed) {
  await chan.send({ embeds: [buildEmbed(data, text)] });
  } else if (text) {
  await chan.send(text);

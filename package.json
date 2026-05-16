@@ -8,9 +8,9 @@
  "start": "npm run build && node launch.js",
  "dev": "npm run build && node launch.js",
   "watch": "webpack --watch --mode development",
-  "set-icon": "node scripts/set-icon.js release-selection",
-  "pack-asar": "node scripts/pack-asar.js release-selection",
-  "dist": "npm run build && cross-env ELECTRON_BUILDER_CACHE=.electron-builder-cache electron-builder --win --x64 --dir && npm run set-icon && npm run pack-asar"
+ "set-icon": "node scripts/set-icon.js release-button-final",
+ "pack-asar": "node scripts/pack-asar.js release-button-final",
+ "dist": "npm run build && cross-env ELECTRON_BUILDER_CACHE=.electron-builder-cache electron-builder --win --x64 --dir && npm run set-icon"
  },
  "dependencies": {
   "@discordjs/voice": "^0.18.0",
@@ -51,10 +51,14 @@
  "build": {
   "appId": "com.kiodium.app",
   "productName": "Kiodium",
-  "asar": false,
+  "asar": true,
+  "asarUnpack": [
+   "**/*.node",
+   "node_modules/ffmpeg-static/**/*"
+  ],
   "electronDist": ".electron-dist-clean",
   "directories": {
-   "output": "release-selection"
+   "output": "release-button-final"
   },
   "files": [
    "dist/**/*",

@@ -44,6 +44,13 @@ const CATEGORIES = [
  { label: 'Logic', items: ['condition_branch'] },
 ];
 
+function stopCheckboxGesture(event) {
+ const target = event.target;
+ if (target?.closest?.('.bl-embed-toggle, input[type="checkbox"]')) {
+ event.stopPropagation();
+ }
+}
+
 // Event sub-options for each new event node type (used in NPanel + node components)
 const EVENT_NODE_OPTIONS = {
  event_channel: [
@@ -531,18 +538,34 @@ function DiscordPreview({ node }) {
 
 // ── Shared embed sub-form used in NPanel ─────────────────────────────────────
 function EmbedFields({ d, update }) {
+ const embedChecked = d.embedEnabled !== false;
+ const handleEmbedClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ update('embedEnabled', !embedChecked);
+ }, [embedChecked, update]);
+
  return (
  <>
  <div style={{ height: 1, background: '#2A2A2A', margin: '6px 0' }} />
 
  <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
- <label className="bl-embed-toggle" style={{ paddingLeft: 0 }}>
- <input type="checkbox" checked={d.embedEnabled !== false} onChange={(e) => update('embedEnabled', e.target.checked)} />
- Embed
- </label>
+ <button
+ type="button"
+ className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
+ role="checkbox"
+ aria-checked={embedChecked}
+ style={{ paddingLeft: 0 }}
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={handleEmbedClick}
+ >
+ <span className={`bl-check-box ${embedChecked ? 'checked' : ''}`} aria-hidden="true" />
+ <span>Embed</span>
+ </button>
  </div>
 
- {d.embedEnabled !== false && (
+ {embedChecked && (
  <>
  <div className="bl-prop-row">
  <span className="bl-prop-label">Color</span>
@@ -3995,14 +4018,30 @@ function DiscordPreviewEpicGamesProfile({ node }) {
 }
 
 function TicketPanelEditor({ d, update }) {
+ const embedChecked = d.embedEnabled !== false;
+ const handleEmbedClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ update('embedEnabled', !embedChecked);
+ }, [embedChecked, update]);
+
  return (
  <>
  <div className="bl-prop-row">
  <span className="bl-prop-label">Embed</span>
- <label className="bl-embed-toggle" style={{ paddingLeft: 0 }}>
- <input type="checkbox" checked={d.embedEnabled !== false} onChange={(e) => update('embedEnabled', e.target.checked)} />
- Enabled
- </label>
+ <button
+ type="button"
+ className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
+ role="checkbox"
+ aria-checked={embedChecked}
+ style={{ paddingLeft: 0 }}
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={handleEmbedClick}
+ >
+ <span className={`bl-check-box ${embedChecked ? 'checked' : ''}`} aria-hidden="true" />
+ <span>Enabled</span>
+ </button>
  </div>
  <div className="bl-prop-row" style={{ gridTemplateColumns: '1fr' }}>
  <span className="bl-prop-label" style={{ textAlign: 'left' }}>Description</span>
@@ -4115,6 +4154,10 @@ function NPanel({ selectedNode, setNodes }) {
  exit={{ x: 300, opacity: 0 }}
  transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
  className={`${isTicketPanel ? 'w-[420px] min-w-[420px]' : 'w-80 min-w-[320px]'} bg-zinc-900/60 backdrop-blur-2xl border border-zinc-800 rounded-2xl flex flex-col overflow-y-auto bl-scroll-invisible text-xs absolute right-4 top-4 bottom-4 z-50 shadow-2xl shadow-black/50`}
+ onPointerDown={stopCheckboxGesture}
+ onMouseDown={stopCheckboxGesture}
+ onClick={stopCheckboxGesture}
+ onDoubleClick={stopCheckboxGesture}
  >
  {/* Node section */}
  <div className="bl-npanel-section">
@@ -4220,7 +4263,7 @@ function NPanel({ selectedNode, setNodes }) {
  <div className="bl-prop-row">
  <span className="bl-prop-label">API</span>
  <label className="bl-embed-toggle" style={{ justifyContent: 'flex-start' }}>
- <input type="checkbox" checked={!!d.apiEnabled} onChange={(e) => update('apiEnabled', e.target.checked)} />
+ <input className="nodrag nopan nowheel" type="checkbox" checked={!!d.apiEnabled} onChange={(e) => update('apiEnabled', e.target.checked)} />
  On
  </label>
  </div>

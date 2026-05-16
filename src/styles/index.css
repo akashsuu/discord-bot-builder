@@ -322,6 +322,9 @@ code {
 .node-editor-flow .react-flow__node button,
 .node-editor-flow .react-flow__node input,
 .node-editor-flow .react-flow__node textarea,
+.node-editor-flow .react-flow__node label,
+.node-editor-flow .react-flow__node select,
+.node-editor-flow .react-flow__node .bl-node-body,
 .node-editor-flow .react-flow__node .bl-plugin-select {
  pointer-events: auto !important;
 }
@@ -1589,12 +1592,52 @@ code {
  font-size: 11px;
  color: var(--bl-text);
  padding: 2px 0;
+ user-select: none;
+ pointer-events: auto;
 }
 .bl-embed-toggle input[type="checkbox"] {
  cursor: pointer;
- accent-color: var(--bl-orange);
- width: 12px;
- height: 12px;
+ accent-color: #a855f7;
+ width: 14px;
+ height: 14px;
+ pointer-events: auto;
+}
+
+.bl-check-toggle {
+ border: 0;
+ background: transparent;
+ width: fit-content;
+ text-align: left;
+ touch-action: none;
+}
+.bl-check-toggle:focus-visible {
+ outline: 1px solid #c084fc;
+ outline-offset: 2px;
+}
+.bl-check-box {
+ position: relative;
+ width: 14px;
+ height: 14px;
+ flex: 0 0 14px;
+ border: 1px solid #d4d4d8;
+ border-radius: 3px;
+ background: #f4f4f5;
+ box-shadow: 0 0 0 1px rgba(0, 0, 0, .22);
+}
+.bl-check-box.checked {
+ border-color: #c084fc;
+ background: #a855f7;
+}
+.bl-check-box.checked::after {
+ content: "";
+ position: absolute;
+ left: 4px;
+ top: 1px;
+ width: 4px;
+ height: 8px;
+ border: solid #fff;
+ border-width: 0 2px 2px 0;
+ transform: rotate(45deg);
 }
 
 .bl-color-field {

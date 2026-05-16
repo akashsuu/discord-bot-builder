@@ -98,8 +98,8 @@ export default function CustomCommandNode({ id, data, selected }) {
 
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nowheel">
- <input type="checkbox" checked={!!data.apiEnabled} onChange={(e) => update('apiEnabled', e.target.checked)} />
+ <label className="bl-embed-toggle nodrag nopan nowheel">
+ <input className="nodrag nopan nowheel" type="checkbox" checked={!!data.apiEnabled} onChange={(e) => update('apiEnabled', e.target.checked)} />
  API Request
  </label>
  <span className="bl-field-hint">Call any REST API, then reply with API variables.</span>
@@ -192,10 +192,22 @@ export default function CustomCommandNode({ id, data, selected }) {
  {/* Embed section */}
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nowheel">
- <input type="checkbox" checked={!!data.embedEnabled} onChange={(e) => update('embedEnabled', e.target.checked)} />
- Embed Reply
- </label>
+ <button
+ type="button"
+ className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
+ role="checkbox"
+ aria-checked={!!data.embedEnabled}
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ update('embedEnabled', !data.embedEnabled);
+ }}
+ >
+ <span className={`bl-check-box ${data.embedEnabled ? 'checked' : ''}`} aria-hidden="true" />
+ <span>Embed Reply</span>
+ </button>
  </div>
 
  {data.embedEnabled && (

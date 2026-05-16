@@ -60,10 +60,22 @@ export default function SendMessageNode({ id, data, selected }) {
  {/* Embed section */}
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nowheel">
- <input type="checkbox" checked={!!data.embedEnabled} onChange={(e) => update('embedEnabled', e.target.checked)} />
- Embed Output
- </label>
+ <button
+ type="button"
+ className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
+ role="checkbox"
+ aria-checked={!!data.embedEnabled}
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ update('embedEnabled', !data.embedEnabled);
+ }}
+ >
+ <span className={`bl-check-box ${data.embedEnabled ? 'checked' : ''}`} aria-hidden="true" />
+ <span>Embed Output</span>
+ </button>
  </div>
 
  {data.embedEnabled && (

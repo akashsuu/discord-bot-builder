@@ -5,6 +5,7 @@ const fs = require('fs');
 let mainWindow;
 let botRunner = null;
 let pluginLoader = null;
+let pluginsReady = Promise.resolve();
 
 function createWindow() {
  const rendererPath = path.join(__dirname, 'dist', 'index.html');
@@ -22,7 +23,7 @@ function createWindow() {
  },
  backgroundColor: '#09090b',
  title: 'Kiodium',
- show: false,
+ show: true,
  frame: false,
  titleBarStyle: 'hidden',
  });
@@ -48,6 +49,10 @@ function createWindow() {
  mainWindow.show();
  });
 
+ mainWindow.webContents.on('did-finish-load', () => {
+ if (mainWindow && !mainWindow.isDestroyed()) mainWindow.show();
+ });
+
  mainWindow.webContents.on('did-fail-load', (_e, code, desc) => {
  console.error('[Main] Failed to load renderer:', code, desc);
  });
@@ -62,11 +67,12 @@ app.whenReady().then(async () => {
  botRunner = require('./backend/botRunner');
  pluginLoader = require('./backend/pluginLoader');
 
- // loadPlugins is now async — await it so plugins are registered before
- // the window opens and IPC handlers start receiving requests.
- await pluginLoader.loadPlugins(path.join(__dirname, 'plugins'));
-
  createWindow();
+
+ pluginsReady = pluginLoader.loadPlugins(path.join(__dirname, 'plugins')).catch((err) => {
+ console.error('[Main] Plugin loading failed:', err);
+ return null;
+ });
 
  app.on('activate', () => {
  if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -134,6 +140,7 @@ ipcMain.handle('project:save', async (_event, { projectPath, projectData }) => {
 // ─── IPC: Run Bot ──────────────────────────────────────────────────────────
 ipcMain.handle('bot:run', async (_event, { projectData }) => {
  try {
+ await pluginsReady;
  const plugins = pluginLoader.getPlugins();
  await botRunner.start(
  projectData,
@@ -182,6 +189,7 @@ ipcMain.handle('code:export', async (_event, { projectData }) => {
  if (result.canceled) return { success: false };
 
  try {
+ await pluginsReady;
  const codeExporter = require('./backend/codeExporter');
  const plugins = pluginLoader.getPlugins();
  const code = codeExporter.generateCode(projectData, plugins);
@@ -194,6 +202,7 @@ ipcMain.handle('code:export', async (_event, { projectData }) => {
 
 // ─── IPC: Get Plugin Node Types ────────────────────────────────────────────
 ipcMain.handle('plugins:getNodeTypes', async () => {
+ await pluginsReady;
  return pluginLoader.getPluginNodeTypes();
 });
 
