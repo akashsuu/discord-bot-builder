@@ -4616,7 +4616,6 @@ function EditorInner() {
  onPaneContextMenu={onPaneContextMenu}
  onPaneClick={onPaneClick}
  nodeTypes={nodeTypes}
- nodesDraggable
  noPanClassName="nopan"
  noDragClassName="nodrag"
  noWheelClassName="nowheel"
@@ -4625,10 +4624,6 @@ function EditorInner() {
  deleteKeyCode="Delete"
  snapToGrid
  snapGrid={[10, 10]}
- selectionOnDrag={false}
- panOnDrag={[1, 2]}
- panOnScroll={false}
- zoomOnScroll={true}
  selectionMode={SelectionMode.Partial}
  minZoom={0.1}
  maxZoom={2}

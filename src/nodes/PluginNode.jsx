@@ -595,6 +595,12 @@ export default function PluginNode({ id, type, data, selected }) {
  toggleNodeMenu(event);
  }, [toggleNodeMenu]);
 
+ const handleHeaderDoubleClick = useCallback((event) => {
+ const interactive = event.target.closest('button, input, textarea, select, label, a');
+ if (interactive) return;
+ toggleNodeMenu(event);
+ }, [toggleNodeMenu]);
+
  const stopNodeMenuEvent = useCallback((event) => {
  event.preventDefault();
  event.stopPropagation();
@@ -705,6 +711,11 @@ export default function PluginNode({ id, type, data, selected }) {
  toggle();
  }, [toggle]);
 
+ const stopCollapseDoubleClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ }, []);
+
  // -- Dropdown updater ------------------------------------------------------
  const updateDropdown = useCallback((key, val) => {
  setNodes((ns) => ns.map((n) => {
@@ -803,13 +814,20 @@ export default function PluginNode({ id, type, data, selected }) {
  style={{ minWidth: 260 }}
  >
  {/* -- Header ------------------------------------------------------- */}
- <div className="bl-node-hdr" style={{ background: PLUGIN_HEADER_PURPLE }}>
+ <div
+ ref={menuRef}
+ className="bl-node-hdr"
+ style={{ background: PLUGIN_HEADER_PURPLE }}
+ onDoubleClick={handleHeaderDoubleClick}
+ title="Double-click to open node options"
+ >
  <button
   type="button"
   className="bl-collapse-btn nodrag nopan"
   onPointerDown={handleCollapsePointerDown}
   onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
   onClick={handleCollapseClick}
+  onDoubleClick={stopCollapseDoubleClick}
   title={collapsed ? 'Expand' : 'Minimize'}
   aria-label={collapsed ? 'Expand node' : 'Collapse node'}
  >
@@ -817,32 +835,18 @@ export default function PluginNode({ id, type, data, selected }) {
  </button>
  <span className="bl-node-hdr-icon">{data._icon || ''}</span>
  <span className="bl-node-hdr-title">{data._label || 'Plugin Node'}</span>
- <div ref={menuRef} className="bl-node-menu-anchor nodrag nopan">
-  <button
-  type="button"
-  className="bl-node-menu-btn nodrag nopan"
-  onPointerDown={handleNodeMenuPointerDown}
-  onMouseDown={stopNodeMenuEvent}
-  onClick={handleNodeMenuClick}
-  title="Options"
- >
-  ⋮
-  </button>
-  {actionMenu}
- </div>
  {collapsed && (
  <>
  {data._hasInput && <Handle type="target" position={Position.Left} id="input" className="handle-gray" />}
  {data._hasOutput && <Handle type="source" position={Position.Right} id="output" className="handle-yellow" />}
  </>
- )}
- </div>
+  )}
+  </div>
+ {actionMenu}
 
  {!collapsed && (
  <div
-   className="bl-node-body nodrag nopan"
-   onPointerDown={(e) => e.stopPropagation()}
-   onMouseDown={(e) => e.stopPropagation()}
+   className="bl-node-body nowheel"
    >
  {/* -- Input socket ----------------------------------------------- */}
  {data._hasInput && (

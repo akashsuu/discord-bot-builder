@@ -364,7 +364,6 @@ code {
  stroke-width: 2px !important;
  filter: drop-shadow(0 0 6px rgba(168, 85, 247, .85));
 }
-
 .canvas-info {
  background: rgba(0,0,0,.5);
  border: 1px solid var(--bl-border);
@@ -744,7 +743,7 @@ code {
 }
 
 .node-card {
- @apply min-w-[260px] bg-black/80 backdrop-blur-xl border border-purple-900/40 rounded-2xl shadow-lg transition-all duration-300 text-[11px] hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] hover:-translate-y-0.5;
+ @apply min-w-[260px] bg-black/80 backdrop-blur-xl border border-purple-900/40 rounded-2xl shadow-lg text-[11px] hover:shadow-[0_0_20px_rgba(139,92,246,0.15)];
 }
 
 .purple-glow {
@@ -753,7 +752,10 @@ code {
 
 .bl-node {
  @apply node-card;
+ position: relative;
+ z-index: 1;
  cursor: grab;
+ pointer-events: auto;
 }
 
 .bl-node:active {
@@ -766,7 +768,9 @@ code {
 
 .bl-node-hdr {
  @apply h-8 flex items-center px-3 border-b border-purple-900/40 rounded-t-2xl text-[11px] font-semibold gap-2 relative bg-gradient-to-r from-purple-500/20 to-fuchsia-500/10;
- cursor: grab;
+ z-index: 2;
+ cursor: default;
+ pointer-events: auto;
 }
 
 /* minimized: round all corners, no bottom border radius gap */
@@ -784,8 +788,18 @@ code {
  pointer-events: auto !important;
  touch-action: none;
 }
-.bl-node-hdr-icon { @apply text-sm; }
-.bl-node-hdr-title { @apply text-zinc-200 tracking-wide font-['Outfit']; }
+.bl-node-hdr-icon {
+ @apply text-sm;
+ position: relative;
+ z-index: 2;
+ pointer-events: auto;
+}
+.bl-node-hdr-title {
+ @apply text-zinc-200 tracking-wide font-['Outfit'];
+ position: relative;
+ z-index: 2;
+ pointer-events: auto;
+}
 
 .bl-node-menu-anchor {
  position: relative;

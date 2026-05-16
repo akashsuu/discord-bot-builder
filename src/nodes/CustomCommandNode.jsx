@@ -1,10 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 import { demoSub, varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
 
 export default function CustomCommandNode({ id, data, selected }) {
  const { setNodes } = useReactFlow();
  const collapsed = !!data.collapsed;
+ const collapsePointerHandledRef = useRef(false);
 
  const update = useCallback((key, val) => {
  setNodes((ns) => ns.map((n) => n.id === id ? { ...n, data: { ...n.data, [key]: val } } : n));
@@ -13,6 +14,23 @@ export default function CustomCommandNode({ id, data, selected }) {
  const toggle = useCallback(() => {
  setNodes((ns) => ns.map((n) => n.id === id ? { ...n, data: { ...n.data, collapsed: !n.data.collapsed } } : n));
  }, [id, setNodes]);
+
+ const handleCollapsePointerDown = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ collapsePointerHandledRef.current = true;
+ toggle();
+ }, [toggle]);
+
+ const handleCollapseClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ if (collapsePointerHandledRef.current) {
+ collapsePointerHandledRef.current = false;
+ return;
+ }
+ toggle();
+ }, [toggle]);
 
  const apiPreview = demoSub(data.apiReply || data.reply || '{apiResult}', {
  ...data,
@@ -26,7 +44,13 @@ export default function CustomCommandNode({ id, data, selected }) {
  return (
  <div className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`} style={{ minWidth: 220 }}>
  <div className="bl-node-hdr bl-hdr-command">
- <button className="bl-collapse-btn" onClick={toggle} title={collapsed ? 'Expand' : 'Minimize'}>
+ <button
+ className="bl-collapse-btn nodrag nopan"
+ onPointerDown={handleCollapsePointerDown}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={handleCollapseClick}
+ title={collapsed ? 'Expand' : 'Minimize'}
+ >
  {collapsed ? '▶' : '▼'}
  </button>
  <span className="bl-node-hdr-icon">💬</span>
