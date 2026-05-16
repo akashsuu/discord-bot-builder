@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -195,6 +195,19 @@ ipcMain.handle('code:export', async (_event, { projectData }) => {
 // ─── IPC: Get Plugin Node Types ────────────────────────────────────────────
 ipcMain.handle('plugins:getNodeTypes', async () => {
  return pluginLoader.getPluginNodeTypes();
+});
+
+ipcMain.handle('shell:openExternal', async (_event, url) => {
+ try {
+ const parsed = new URL(String(url));
+ if (!['http:', 'https:'].includes(parsed.protocol)) {
+ throw new Error('Only http and https links can be opened.');
+ }
+ await shell.openExternal(parsed.toString());
+ return { success: true };
+ } catch (err) {
+ return { success: false, error: err.message };
+ }
 });
 
 // Window controls

@@ -11,7 +11,15 @@ const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+function getWritablePluginDir(folder) {
+ try {
+ const { app } = require('electron');
+ if (app?.getPath) return path.join(app.getPath('userData'), 'plugins', 'tickets', folder);
+ } catch {}
+ return path.join(__dirname, '..', folder);
+}
+
+const DATA_DIR = getWritablePluginDir('data');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 
 // ── Event type → color + emoji map ───────────────────────────────────────────

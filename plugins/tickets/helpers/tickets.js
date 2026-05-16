@@ -28,8 +28,16 @@
 const fs = require('fs');
 const path = require('path');
 
-// Resolve data/tickets.json relative to this helpers/ folder
-const DATA_DIR = path.join(__dirname, '..', 'data');
+function getWritablePluginDir(folder) {
+ try {
+ const { app } = require('electron');
+ if (app?.getPath) return path.join(app.getPath('userData'), 'plugins', 'tickets', folder);
+ } catch {}
+ return path.join(__dirname, '..', folder);
+}
+
+// Keep runtime data outside app.asar because packaged ASAR files are read-only.
+const DATA_DIR = getWritablePluginDir('data');
 const DATA_FILE = path.join(DATA_DIR, 'tickets.json');
 
 // ── Ensure data directory exists ──────────────────────────────────────────────

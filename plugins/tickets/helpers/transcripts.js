@@ -13,7 +13,15 @@
 const fs = require('fs');
 const path = require('path');
 
-const TRANSCRIPT_DIR = path.join(__dirname, '..', 'transcripts');
+function getWritablePluginDir(folder) {
+ try {
+ const { app } = require('electron');
+ if (app?.getPath) return path.join(app.getPath('userData'), 'plugins', 'tickets', folder);
+ } catch {}
+ return path.join(__dirname, '..', folder);
+}
+
+const TRANSCRIPT_DIR = getWritablePluginDir('transcripts');
 
 // ── Ensure transcript directory exists ────────────────────────────────────────
 function ensureDir() {

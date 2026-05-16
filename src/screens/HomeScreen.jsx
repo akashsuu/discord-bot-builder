@@ -1,10 +1,18 @@
-﻿import React from 'react';
+import React from 'react';
 import { useProject } from '../context/ProjectContext';
 
+const DISCORD_URL = 'https://discord.gg/coquette';
+const HELP_URL = 'https://akashsuu.oops.wtf/';
+
 export default function HomeScreen() {
- const { setScreen, openProject, addLog } = useProject();
+ const { setScreen, openProject } = useProject();
 
  const handleCreate = () => setScreen('create');
+
+ const handleOpenExternal = async (url) => {
+ const result = await window.electronAPI.openExternal(url);
+ if (!result?.success) console.error('[HomeScreen] Could not open link:', result?.error);
+ };
 
  const handleLoad = async () => {
  const result = await window.electronAPI.loadProject();
@@ -28,35 +36,28 @@ export default function HomeScreen() {
  <p className="home-subtitle">Visual Discord bot builder</p>
  </div>
 
+ <div className="home-actions">
  <div className="home-buttons">
- <button className="btn-primary" onClick={handleCreate}>
+ <button className="btn-primary" type="button" onClick={handleCreate}>
  <span className="btn-icon"></span>
  Create Project
  </button>
- <button className="btn-secondary" onClick={handleLoad}>
+ <button className="btn-secondary" type="button" onClick={handleLoad}>
  <span className="btn-icon"></span>
  Load Project
  </button>
  </div>
 
- <div className="home-features">
- <div className="feature-card">
- <span className="feature-icon">Color</span>
- <span>Visual node editor</span>
- </div>
- <div className="feature-card">
- <span className="feature-icon">></span>
- <span>Run bots live</span>
- </div>
- <div className="feature-card">
- <span className="feature-icon"></span>
- <span>Export real JS code</span>
- </div>
- <div className="feature-card">
- <span className="feature-icon"></span>
- <span>Plugin system</span>
+ <div className="home-link-buttons">
+ <button className="btn-secondary" type="button" onClick={() => handleOpenExternal(DISCORD_URL)}>
+ Discord
+ </button>
+ <button className="btn-secondary" type="button" onClick={() => handleOpenExternal(HELP_URL)}>
+ Help Website
+ </button>
  </div>
  </div>
+
  </div>
 
  <footer className="home-footer">

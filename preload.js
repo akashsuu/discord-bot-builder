@@ -16,6 +16,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
  // Plugins
  getPluginNodeTypes: () => ipcRenderer.invoke('plugins:getNodeTypes'),
 
+ // External links
+ openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
+
  // Window
  minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
  toggleMaximizeWindow: () => ipcRenderer.invoke('window:toggleMaximize'),

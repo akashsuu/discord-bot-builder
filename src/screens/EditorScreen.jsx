@@ -4624,7 +4624,9 @@ function EditorInner() {
  deleteKeyCode="Delete"
  snapToGrid
  snapGrid={[10, 10]}
+ selectionOnDrag
  selectionMode={SelectionMode.Partial}
+ panOnDrag={[1, 2]}
  minZoom={0.1}
  maxZoom={2}
  defaultEdgeOptions={{
