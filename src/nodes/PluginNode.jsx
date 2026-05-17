@@ -539,6 +539,7 @@ export default function PluginNode({ id, type, data, selected }) {
  const menuPointerHandledRef = React.useRef(false);
  const actionPointerHandledRef = React.useRef(false);
  const collapsePointerHandledRef = React.useRef(false);
+ const embedTogglePointerHandledRef = React.useRef(false);
 
  React.useEffect(() => {
   if (!menuOpen) return undefined;
@@ -814,6 +815,29 @@ export default function PluginNode({ id, type, data, selected }) {
 
  const embedOutputChecked = data.embedEnabled !== false;
 
+ const toggleEmbedOutput = useCallback(() => {
+ update('embedEnabled', !embedOutputChecked);
+ }, [embedOutputChecked, update]);
+
+ const handleEmbedOutputPointerDown = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ embedTogglePointerHandledRef.current = true;
+ toggleEmbedOutput();
+ }, [toggleEmbedOutput]);
+
+ const handleEmbedOutputClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ if (embedTogglePointerHandledRef.current) {
+ embedTogglePointerHandledRef.current = false;
+ return;
+ }
+ toggleEmbedOutput();
+ }, [toggleEmbedOutput]);
+
  // Keep previewPg in bounds when pages shrink
  const safePg = Math.min(previewPg, Math.max(0, pgs.length - 1));
 
@@ -860,9 +884,9 @@ export default function PluginNode({ id, type, data, selected }) {
   {!collapsed && (
   <div
     className="bl-node-body nowheel nodrag nopan"
-    onMouseDown={(e) => e.stopPropagation()}
-    onPointerDown={(e) => e.stopPropagation()}
-    onClick={(e) => e.stopPropagation()}
+    onMouseDown={(e) => { e.stopPropagation(); e.nativeEvent?.stopImmediatePropagation?.(); }}
+    onPointerDown={(e) => { e.stopPropagation(); e.nativeEvent?.stopImmediatePropagation?.(); }}
+    onClick={(e) => { e.stopPropagation(); e.nativeEvent?.stopImmediatePropagation?.(); }}
     >
  {/* -- Input socket ----------------------------------------------- */}
  {data._hasInput && (
@@ -3921,13 +3945,9 @@ export default function PluginNode({ id, type, data, selected }) {
  className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
  role="checkbox"
  aria-checked={embedOutputChecked}
- onPointerDown={(e) => e.stopPropagation()}
+ onPointerDown={handleEmbedOutputPointerDown}
  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
- onClick={(e) => {
- e.preventDefault();
- e.stopPropagation();
- update('embedEnabled', !embedOutputChecked);
- }}
+ onClick={handleEmbedOutputClick}
  >
  <span className={`bl-check-box ${embedOutputChecked ? 'checked' : ''}`} aria-hidden="true" />
  <span>Embed Output</span>

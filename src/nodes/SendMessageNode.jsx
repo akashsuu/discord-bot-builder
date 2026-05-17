@@ -1,10 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 import { demoSub, varHint, BUILTIN_VARS } from '../utils/variables';
 
 export default function SendMessageNode({ id, data, selected }) {
  const { setNodes } = useReactFlow();
  const collapsed = !!data.collapsed;
+ const embedTogglePointerHandledRef = useRef(false);
 
  const update = useCallback((key, val) => {
  setNodes((ns) => ns.map((n) => n.id === id ? { ...n, data: { ...n.data, [key]: val } } : n));
@@ -13,6 +14,29 @@ export default function SendMessageNode({ id, data, selected }) {
  const toggle = useCallback(() => {
  setNodes((ns) => ns.map((n) => n.id === id ? { ...n, data: { ...n.data, collapsed: !n.data.collapsed } } : n));
  }, [id, setNodes]);
+
+ const toggleEmbedOutput = useCallback(() => {
+ update('embedEnabled', !data.embedEnabled);
+ }, [data.embedEnabled, update]);
+
+ const handleEmbedOutputPointerDown = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ embedTogglePointerHandledRef.current = true;
+ toggleEmbedOutput();
+ }, [toggleEmbedOutput]);
+
+ const handleEmbedOutputClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ if (embedTogglePointerHandledRef.current) {
+ embedTogglePointerHandledRef.current = false;
+ return;
+ }
+ toggleEmbedOutput();
+ }, [toggleEmbedOutput]);
 
  return (
  <div className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`} style={{ minWidth: 220 }}>
@@ -65,13 +89,9 @@ export default function SendMessageNode({ id, data, selected }) {
  className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
  role="checkbox"
  aria-checked={!!data.embedEnabled}
- onPointerDown={(e) => e.stopPropagation()}
+ onPointerDown={handleEmbedOutputPointerDown}
  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
- onClick={(e) => {
- e.preventDefault();
- e.stopPropagation();
- update('embedEnabled', !data.embedEnabled);
- }}
+ onClick={handleEmbedOutputClick}
  >
  <span className={`bl-check-box ${data.embedEnabled ? 'checked' : ''}`} aria-hidden="true" />
  <span>Embed Output</span>

@@ -1,11 +1,87 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 import { demoSub, varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
+
+function NodeSelect({ value, onChange, options }) {
+ const [open, setOpen] = useState(false);
+ const wrapRef = useRef(null);
+ const current = options.find((option) => option.value === value) || options[0];
+
+ useEffect(() => {
+ if (!open) return undefined;
+ const close = (event) => {
+ if (!wrapRef.current?.contains(event.target)) setOpen(false);
+ };
+ document.addEventListener('pointerdown', close, true);
+ return () => document.removeEventListener('pointerdown', close, true);
+ }, [open]);
+
+ const stop = (event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ };
+
+ return (
+ <div
+ ref={wrapRef}
+ className="bl-plugin-select nodrag nopan nowheel"
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => e.stopPropagation()}
+ >
+ <button
+ type="button"
+ className="bl-plugin-select-trigger"
+ onPointerDown={stop}
+ onMouseDown={stop}
+ onClick={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ e.nativeEvent?.stopImmediatePropagation?.();
+ setOpen((next) => !next);
+ }}
+ >
+ <span>{current?.label || value}</span>
+ <span className="bl-plugin-select-arrow">v</span>
+ </button>
+ {open && (
+ <div className="bl-plugin-select-menu">
+ {options.map((option) => (
+ <button
+ key={option.value}
+ type="button"
+ className={`bl-plugin-select-option ${option.value === value ? 'selected' : ''}`}
+ onPointerDown={stop}
+ onMouseDown={stop}
+ onClick={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ e.nativeEvent?.stopImmediatePropagation?.();
+ onChange(option.value);
+ setOpen(false);
+ }}
+ >
+ {option.label}
+ </button>
+ ))}
+ </div>
+ )}
+ </div>
+ );
+}
+
+function stopControlEvent(event) {
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+}
 
 export default function CustomCommandNode({ id, data, selected }) {
  const { setNodes } = useReactFlow();
  const collapsed = !!data.collapsed;
  const collapsePointerHandledRef = useRef(false);
+ const apiTogglePointerHandledRef = useRef(false);
+ const embedTogglePointerHandledRef = useRef(false);
 
  const update = useCallback((key, val) => {
  setNodes((ns) => ns.map((n) => n.id === id ? { ...n, data: { ...n.data, [key]: val } } : n));
@@ -31,6 +107,68 @@ export default function CustomCommandNode({ id, data, selected }) {
  }
  toggle();
  }, [toggle]);
+
+ const toggleApiRequest = useCallback(() => {
+ update('apiEnabled', !data.apiEnabled);
+ }, [data.apiEnabled, update]);
+
+ const handleApiRequestPointerDown = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ apiTogglePointerHandledRef.current = true;
+ toggleApiRequest();
+ }, [toggleApiRequest]);
+
+ const handleApiRequestClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ if (apiTogglePointerHandledRef.current) {
+ apiTogglePointerHandledRef.current = false;
+ return;
+ }
+ toggleApiRequest();
+ }, [toggleApiRequest]);
+
+ const handleApiRequestKeyDown = useCallback((event) => {
+ if (event.key !== ' ' && event.key !== 'Enter') return;
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ toggleApiRequest();
+ }, [toggleApiRequest]);
+
+ const toggleEmbedReply = useCallback(() => {
+ update('embedEnabled', !data.embedEnabled);
+ }, [data.embedEnabled, update]);
+
+ const handleEmbedReplyPointerDown = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ embedTogglePointerHandledRef.current = true;
+ toggleEmbedReply();
+ }, [toggleEmbedReply]);
+
+ const handleEmbedReplyKeyDown = useCallback((event) => {
+ if (event.key !== ' ' && event.key !== 'Enter') return;
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ toggleEmbedReply();
+ }, [toggleEmbedReply]);
+
+ const handleEmbedReplyClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ if (embedTogglePointerHandledRef.current) {
+ embedTogglePointerHandledRef.current = false;
+ return;
+ }
+ toggleEmbedReply();
+ }, [toggleEmbedReply]);
 
  const apiPreview = demoSub(data.apiReply || data.reply || '{apiResult}', {
  ...data,
@@ -75,9 +213,13 @@ export default function CustomCommandNode({ id, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Command</span>
  <input
- className="bl-node-input"
+ className="bl-node-input nodrag nopan nowheel"
  value={data.command || ''}
  onChange={(e) => update('command', e.target.value)}
+ onPointerDown={stopControlEvent}
+ onMouseDown={stopControlEvent}
+ onClick={stopControlEvent}
+ onKeyDown={stopControlEvent}
  placeholder="!hello"
  spellCheck={false}
  />
@@ -86,9 +228,13 @@ export default function CustomCommandNode({ id, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">{data.apiEnabled ? 'Fallback Reply' : 'Reply'}</span>
  <textarea
- className="bl-node-textarea"
+ className="bl-node-textarea nodrag nopan nowheel"
  value={data.reply || ''}
  onChange={(e) => update('reply', e.target.value)}
+ onPointerDown={stopControlEvent}
+ onMouseDown={stopControlEvent}
+ onClick={stopControlEvent}
+ onKeyDown={stopControlEvent}
  placeholder="Hello {user}!"
  rows={2}
  spellCheck={false}
@@ -98,10 +244,19 @@ export default function CustomCommandNode({ id, data, selected }) {
 
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel">
- <input className="nodrag nopan nowheel" type="checkbox" checked={!!data.apiEnabled} onChange={(e) => update('apiEnabled', e.target.checked)} />
- API Request
- </label>
+ <button
+ type="button"
+ className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
+ role="checkbox"
+ aria-checked={!!data.apiEnabled}
+ onPointerDown={handleApiRequestPointerDown}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={handleApiRequestClick}
+ onKeyDown={handleApiRequestKeyDown}
+ >
+ <span className={`bl-check-box ${data.apiEnabled ? 'checked' : ''}`} aria-hidden="true" />
+ <span>API Request</span>
+ </button>
  <span className="bl-field-hint">Call any REST API, then reply with API variables.</span>
  </div>
 
@@ -109,24 +264,28 @@ export default function CustomCommandNode({ id, data, selected }) {
  <>
  <div className="bl-field">
  <span className="bl-field-lbl">Method</span>
- <select
- className="bl-node-input nodrag nopan"
+ <NodeSelect
  value={data.apiMethod || 'GET'}
- onChange={(e) => update('apiMethod', e.target.value)}
- >
- <option value="GET">GET</option>
- <option value="POST">POST</option>
- <option value="PUT">PUT</option>
- <option value="PATCH">PATCH</option>
- <option value="DELETE">DELETE</option>
- </select>
+ onChange={(nextValue) => update('apiMethod', nextValue)}
+ options={[
+ { value: 'GET', label: 'GET' },
+ { value: 'POST', label: 'POST' },
+ { value: 'PUT', label: 'PUT' },
+ { value: 'PATCH', label: 'PATCH' },
+ { value: 'DELETE', label: 'DELETE' },
+ ]}
+ />
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">API URL</span>
  <textarea
- className="bl-node-textarea"
+ className="bl-node-textarea nodrag nopan nowheel"
  value={data.apiUrl || ''}
  onChange={(e) => update('apiUrl', e.target.value)}
+ onPointerDown={stopControlEvent}
+ onMouseDown={stopControlEvent}
+ onClick={stopControlEvent}
+ onKeyDown={stopControlEvent}
  placeholder="https://api.example.com/search?q={args}"
  rows={2}
  spellCheck={false}
@@ -135,9 +294,13 @@ export default function CustomCommandNode({ id, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Headers</span>
  <textarea
- className="bl-node-textarea"
+ className="bl-node-textarea nodrag nopan nowheel"
  value={data.apiHeaders || ''}
  onChange={(e) => update('apiHeaders', e.target.value)}
+ onPointerDown={stopControlEvent}
+ onMouseDown={stopControlEvent}
+ onClick={stopControlEvent}
+ onKeyDown={stopControlEvent}
  placeholder={'Accept: application/json\nAuthorization: Bearer YOUR_KEY'}
  rows={2}
  spellCheck={false}
@@ -147,9 +310,13 @@ export default function CustomCommandNode({ id, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Body</span>
  <textarea
- className="bl-node-textarea"
+ className="bl-node-textarea nodrag nopan nowheel"
  value={data.apiBody || ''}
  onChange={(e) => update('apiBody', e.target.value)}
+ onPointerDown={stopControlEvent}
+ onMouseDown={stopControlEvent}
+ onClick={stopControlEvent}
+ onKeyDown={stopControlEvent}
  placeholder={'{"prompt":"{args}","user":"{user}"}'}
  rows={3}
  spellCheck={false}
@@ -159,9 +326,13 @@ export default function CustomCommandNode({ id, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Result Path</span>
  <input
- className="bl-node-input"
+ className="bl-node-input nodrag nopan nowheel"
  value={data.apiResultPath || ''}
  onChange={(e) => update('apiResultPath', e.target.value)}
+ onPointerDown={stopControlEvent}
+ onMouseDown={stopControlEvent}
+ onClick={stopControlEvent}
+ onKeyDown={stopControlEvent}
  placeholder="data.0.name or choices.0.message.content"
  spellCheck={false}
  />
@@ -169,9 +340,13 @@ export default function CustomCommandNode({ id, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">API Reply</span>
  <textarea
- className="bl-node-textarea"
+ className="bl-node-textarea nodrag nopan nowheel"
  value={data.apiReply || ''}
  onChange={(e) => update('apiReply', e.target.value)}
+ onPointerDown={stopControlEvent}
+ onMouseDown={stopControlEvent}
+ onClick={stopControlEvent}
+ onKeyDown={stopControlEvent}
  placeholder="{apiResult}"
  rows={2}
  spellCheck={false}
@@ -197,13 +372,10 @@ export default function CustomCommandNode({ id, data, selected }) {
  className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
  role="checkbox"
  aria-checked={!!data.embedEnabled}
- onPointerDown={(e) => e.stopPropagation()}
+ onPointerDown={handleEmbedReplyPointerDown}
  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
- onClick={(e) => {
- e.preventDefault();
- e.stopPropagation();
- update('embedEnabled', !data.embedEnabled);
- }}
+ onClick={handleEmbedReplyClick}
+ onKeyDown={handleEmbedReplyKeyDown}
  >
  <span className={`bl-check-box ${data.embedEnabled ? 'checked' : ''}`} aria-hidden="true" />
  <span>Embed Reply</span>
@@ -215,8 +387,8 @@ export default function CustomCommandNode({ id, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Color</span>
  <div className="bl-color-field">
- <input type="color" className="bl-color-pick" value={data.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} />
- <input type="text" className="bl-node-input" value={data.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
+ <input type="color" className="bl-color-pick nodrag nopan nowheel" value={data.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} onPointerDown={stopControlEvent} onMouseDown={stopControlEvent} onClick={stopControlEvent} />
+ <input type="text" className="bl-node-input nodrag nopan nowheel" value={data.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} onPointerDown={stopControlEvent} onMouseDown={stopControlEvent} onClick={stopControlEvent} onKeyDown={stopControlEvent} spellCheck={false} style={{ flex: 1 }} />
  </div>
  </div>
  <div className="bl-field">
