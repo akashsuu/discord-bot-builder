@@ -37,7 +37,7 @@ export const NODE_PALETTE = [
  },
  {
  type: 'event_message',
- label: 'Message Event',
+ label: 'Discord Connect',
  icon: '⚡',
  color: '#9b59b6',
  description: 'Triggered on every Discord message',
@@ -105,10 +105,10 @@ export const NODE_PALETTE = [
  color: '#e67e22',
  description: 'Branch based on message content',
  },
-];
+].filter((item) => item.type === 'event_message' || !item.type.startsWith('event_'));
 
 export const DEFAULT_NODE_DATA = {
- event_message: { label: 'Message Event' },
+ event_message: { label: 'Discord Connect' },
  event_channel: { label: 'Channel Event', event: 'channelCreate' },
  event_client: { label: 'Client Event', event: 'ready' },
  event_emoji: { label: 'Emoji Event', event: 'emojiCreate' },

@@ -16,7 +16,7 @@ export default function EventMessageNode({ id, data, selected }) {
  {collapsed ? '▶' : '▼'}
  </button>
  <span className="bl-node-hdr-icon">⚡</span>
- <span className="bl-node-hdr-title">Message Event</span>
+ <span className="bl-node-hdr-title">Discord Connect</span>
  {collapsed && (
  <Handle type="source" position={Position.Right} id="output" className="handle-yellow" />
  )}

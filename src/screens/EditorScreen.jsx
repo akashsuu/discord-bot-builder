@@ -38,11 +38,13 @@ const MINIMAP_NODE_COLOR = {
 };
 
 const CATEGORIES = [
- { label: 'Events', items: ['event_message', 'event_channel', 'event_client', 'event_emoji', 'event_guild', 'event_member', 'event_role'] },
+ { label: 'Events', items: ['event_message'] },
  { label: 'Commands', items: ['custom_command'] },
  { label: 'Actions', items: ['send_message', 'page_menu'] },
  { label: 'Logic', items: ['condition_branch'] },
 ];
+const EVENT_NODE_TYPES = CATEGORIES.find((cat) => cat.label === 'Events')?.items || [];
+const HIDDEN_CONTEXT_NODE_TYPES = new Set(['page_menu']);
 
 function stopCheckboxGesture(event) {
  const target = event.target;
@@ -92,16 +94,16 @@ function serialize(nodes) {
 
 // ── Category definitions — all plugin folders shown in the right-click menu ──
 const CATEGORY_LIST = [
- { key: 'moderation', label: 'Moderation', color: '#C0392B', eventType: 'event_guild' },
- { key: 'fun', label: 'Fun', color: '#F39C12', eventType: 'event_emoji' },
- { key: 'utility', label: 'Utility', color: '#2980B9', eventType: 'event_channel' },
- { key: 'music', label: 'Music', color: '#8E44AD', eventType: 'event_client' },
- { key: 'economy', label: 'Economy', color: '#27AE60', eventType: 'event_member' },
- { key: 'games', label: 'Games', color: '#D35400', eventType: 'event_message' },
+ { key: 'moderation', label: 'Moderation', color: '#C0392B', eventType: null },
+ { key: 'fun', label: 'Fun', color: '#F39C12', eventType: null },
+ { key: 'utility', label: 'Utility', color: '#2980B9', eventType: null },
+ { key: 'music', label: 'Music', color: '#8E44AD', eventType: null },
+ { key: 'economy', label: 'Economy', color: '#27AE60', eventType: null },
+ { key: 'games', label: 'Games', color: '#D35400', eventType: null },
  { key: 'giveaway', label: 'Giveaway', color: '#E84393', eventType: null },
- { key: 'admin', label: 'Admin', color: '#7F8C8D', eventType: 'event_role' },
+ { key: 'admin', label: 'Admin', color: '#7F8C8D', eventType: null },
  { key: 'info', label: 'Info', color: '#16A085', eventType: null },
- { key: 'tickets', label: 'Tickets', color: '#1ABC9C', eventType: 'event_message' },
+ { key: 'tickets', label: 'Tickets', color: '#1ABC9C', eventType: null },
  { key: 'ai', label: 'AI', color: '#3498DB', eventType: null },
 ];
 
@@ -133,13 +135,11 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  };
 
  const extraPluginGroups = useMemo(() => {
- const list = (pluginMeta || []).filter((p) => !EVENT_SUBMENU_CATS.has(p.category));
+ const list = (pluginMeta || []).filter((p) => p.category && !EVENT_SUBMENU_CATS.has(p.category));
  if (!list.length) return [];
  const map = new Map();
  for (const p of list) {
- const key = p.category
- ? p.category.charAt(0).toUpperCase() + p.category.slice(1) + ' Plugins'
- : 'Plugins';
+ const key = p.category.charAt(0).toUpperCase() + p.category.slice(1) + ' Plugins';
  if (!map.has(key)) map.set(key, []);
  map.get(key).push(p);
  }
@@ -147,7 +147,7 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  }, [pluginMeta]);
 
  const allItems = [
- ...palette,
+ ...palette.filter((p) => !HIDDEN_CONTEXT_NODE_TYPES.has(p.type)),
  ...(pluginMeta || []).map((p) => ({ type: p.type, label: p.label, color: p.color })),
  ];
  const filtered = search.trim()
@@ -239,6 +239,16 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  <>
  {/* ── Events ── */}
  <div className="bl-ctx-cat">Events</div>
+ {EVENT_NODE_TYPES.map((type) => {
+ const p = palette.find((x) => x.type === type);
+ if (!p) return null;
+ return (
+ <button key={type} type="button" className="bl-ctx-item" onClick={(e) => selectNode(e, type)}>
+ <span className="bl-ctx-item-dot" style={{ background: p.color }} />
+ {p.label}
+ </button>
+ );
+ })}
  {CATEGORY_LIST.map((cat) => {
  const isActive = activeSub?.key === cat.key;
  return (
@@ -260,7 +270,7 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
  {/* ── Commands, Actions, Logic ── */}
  {[
  { label: 'Commands', items: ['custom_command'] },
- { label: 'Actions', items: ['send_message', 'page_menu'] },
+ { label: 'Actions', items: ['send_message'] },
  { label: 'Logic', items: ['condition_branch'] },
  ].map((cat) => (
  <React.Fragment key={cat.label}>
