@@ -307,6 +307,10 @@ code {
 .node-editor-flow .react-flow__background {
  background: #0f0f0f !important;
 }
+.node-editor-flow .react-flow__background,
+.node-editor-flow .react-flow__background * {
+ pointer-events: none !important;
+}
 .react-flow__attribution { display: none !important; }
 .react-flow__pane { cursor: default; }
 .node-editor-flow .react-flow__pane.selection {
@@ -324,6 +328,7 @@ code {
 .node-editor-flow .react-flow__node textarea,
 .node-editor-flow .react-flow__node label,
 .node-editor-flow .react-flow__node select,
+.node-editor-flow .react-flow__node .bl-node,
 .node-editor-flow .react-flow__node .bl-node-body,
 .node-editor-flow .react-flow__node .bl-plugin-select {
  pointer-events: auto !important;
@@ -938,6 +943,15 @@ code {
 .bl-node-textarea {
  @apply w-full bg-black/50 border border-purple-900/40 rounded-lg text-zinc-200 px-2.5 py-1.5 text-[11px] outline-none transition-all focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] hover:bg-[#0d0b14] min-h-[48px] resize-y;
 }
+.bl-node-page-scroll {
+ max-height: min(420px, 58vh);
+ overflow-y: auto;
+ overscroll-behavior: contain;
+ padding-right: 4px;
+}
+.bl-node-page-scroll textarea {
+ overscroll-behavior: contain;
+}
 .bl-node-select {
  width: 100%;
  background: #222;
@@ -953,7 +967,9 @@ code {
 
 .bl-plugin-select {
  position: relative;
+ z-index: 30;
  width: 100%;
+ overflow: visible;
 }
 
 .bl-plugin-select-trigger {
@@ -990,7 +1006,7 @@ code {
 
 .bl-plugin-select-menu {
  position: absolute;
- z-index: 9999;
+ z-index: 10000;
  top: calc(100% + 4px);
  left: 0;
  right: 0;

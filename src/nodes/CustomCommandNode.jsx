@@ -5,6 +5,7 @@ import { demoSub, varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables'
 function NodeSelect({ value, onChange, options }) {
  const [open, setOpen] = useState(false);
  const wrapRef = useRef(null);
+ const pointerHandledRef = useRef(false);
  const current = options.find((option) => option.value === value) || options[0];
 
  useEffect(() => {
@@ -22,6 +23,28 @@ function NodeSelect({ value, onChange, options }) {
  event.nativeEvent?.stopImmediatePropagation?.();
  };
 
+ const toggleOpenFromPointer = (event) => {
+ stop(event);
+ pointerHandledRef.current = true;
+ setOpen((next) => !next);
+ };
+
+ const handleTriggerClick = (event) => {
+ stop(event);
+ if (pointerHandledRef.current) {
+ pointerHandledRef.current = false;
+ return;
+ }
+ setOpen((next) => !next);
+ };
+
+ const chooseFromPointer = (event, nextValue) => {
+ stop(event);
+ pointerHandledRef.current = true;
+ onChange(nextValue);
+ setOpen(false);
+ };
+
  return (
  <div
  ref={wrapRef}
@@ -33,14 +56,9 @@ function NodeSelect({ value, onChange, options }) {
  <button
  type="button"
  className="bl-plugin-select-trigger"
- onPointerDown={stop}
+ onPointerDown={toggleOpenFromPointer}
  onMouseDown={stop}
- onClick={(e) => {
- e.preventDefault();
- e.stopPropagation();
- e.nativeEvent?.stopImmediatePropagation?.();
- setOpen((next) => !next);
- }}
+ onClick={handleTriggerClick}
  >
  <span>{current?.label || value}</span>
  <span className="bl-plugin-select-arrow">v</span>
@@ -52,12 +70,14 @@ function NodeSelect({ value, onChange, options }) {
  key={option.value}
  type="button"
  className={`bl-plugin-select-option ${option.value === value ? 'selected' : ''}`}
- onPointerDown={stop}
+ onPointerDown={(e) => chooseFromPointer(e, option.value)}
  onMouseDown={stop}
  onClick={(e) => {
- e.preventDefault();
- e.stopPropagation();
- e.nativeEvent?.stopImmediatePropagation?.();
+ stop(e);
+ if (pointerHandledRef.current) {
+ pointerHandledRef.current = false;
+ return;
+ }
  onChange(option.value);
  setOpen(false);
  }}

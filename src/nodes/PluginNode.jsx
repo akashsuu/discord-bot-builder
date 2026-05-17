@@ -345,6 +345,7 @@ function SectionHead({ color = '#888', children }) {
 function PluginSelect({ value, onChange, options = [], placeholder = 'Select' }) {
  const [open, setOpen] = useState(false);
  const wrapRef = React.useRef(null);
+ const pointerHandledRef = React.useRef(false);
  const current = options.find((option) => option.value === value) || options[0];
 
  React.useEffect(() => {
@@ -361,6 +362,30 @@ function PluginSelect({ value, onChange, options = [], placeholder = 'Select' })
  setOpen(false);
  }, [onChange]);
 
+ const toggleOpenFromPointer = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ pointerHandledRef.current = true;
+ setOpen((next) => !next);
+ }, []);
+
+ const handleTriggerClick = useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ if (pointerHandledRef.current) {
+ pointerHandledRef.current = false;
+ return;
+ }
+ setOpen((next) => !next);
+ }, []);
+
+ const chooseFromPointer = useCallback((event, nextValue) => {
+ event.preventDefault();
+ event.stopPropagation();
+ pointerHandledRef.current = true;
+ choose(nextValue);
+ }, [choose]);
+
  const stopNodeCapture = (event) => {
  event.stopPropagation();
  };
@@ -376,9 +401,9 @@ function PluginSelect({ value, onChange, options = [], placeholder = 'Select' })
  <button
  type="button"
  className="bl-plugin-select-trigger"
-  onPointerDown={(e) => e.stopPropagation()}
-  onMouseDown={(e) => e.stopPropagation()}
- onClick={(e) => { e.stopPropagation(); setOpen((next) => !next); }}
+ onPointerDown={toggleOpenFromPointer}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={handleTriggerClick}
  >
  <span>{current?.label || placeholder}</span>
  <span className="bl-plugin-select-arrow">v</span>
@@ -390,9 +415,17 @@ function PluginSelect({ value, onChange, options = [], placeholder = 'Select' })
  key={option.value}
  type="button"
  className={`bl-plugin-select-option ${option.value === value ? 'selected' : ''}`}
- onPointerDown={(e) => e.stopPropagation()}
-  onMouseDown={(e) => e.stopPropagation()}
-  onClick={(e) => { e.stopPropagation(); choose(option.value); }}
+ onPointerDown={(e) => chooseFromPointer(e, option.value)}
+  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+  onClick={(e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (pointerHandledRef.current) {
+  pointerHandledRef.current = false;
+  return;
+  }
+  choose(option.value);
+  }}
  >
  {option.label}
  </button>
@@ -400,6 +433,59 @@ function PluginSelect({ value, onChange, options = [], placeholder = 'Select' })
  </div>
  )}
  </div>
+ );
+}
+
+function NodeToggle({ checked, onChange, children, style }) {
+ const pointerHandledRef = React.useRef(false);
+ const isChecked = !!checked;
+
+ const toggle = React.useCallback(() => {
+ onChange(!isChecked);
+ }, [isChecked, onChange]);
+
+ const handlePointerDown = React.useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ pointerHandledRef.current = true;
+ toggle();
+ }, [toggle]);
+
+ const handleClick = React.useCallback((event) => {
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ if (pointerHandledRef.current) {
+ pointerHandledRef.current = false;
+ return;
+ }
+ toggle();
+ }, [toggle]);
+
+ const handleKeyDown = React.useCallback((event) => {
+ if (event.key !== ' ' && event.key !== 'Enter') return;
+ event.preventDefault();
+ event.stopPropagation();
+ event.nativeEvent?.stopImmediatePropagation?.();
+ toggle();
+ }, [toggle]);
+
+ return (
+ <button
+ type="button"
+ className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
+ role="checkbox"
+ aria-checked={isChecked}
+ style={style}
+ onPointerDown={handlePointerDown}
+ onMouseDown={(event) => { event.preventDefault(); event.stopPropagation(); }}
+ onClick={handleClick}
+ onKeyDown={handleKeyDown}
+ >
+ <span className={`bl-check-box ${isChecked ? 'checked' : ''}`} aria-hidden="true" />
+ {children}
+ </button>
  );
 }
 
@@ -806,10 +892,47 @@ export default function PluginNode({ id, type, data, selected }) {
  saveTicketOptions(ticketOptions.filter((_, optionIndex) => optionIndex !== index));
  }, [ticketOptions, saveTicketOptions]);
 
- const stopToggleGesture = useCallback((event) => {
+ const stopNodeControls = useCallback((event) => {
  const target = event.target;
- if (target?.closest?.('.bl-embed-toggle, input[type="checkbox"]')) {
+ if (target?.closest?.('button, input, textarea, select, label, .bl-plugin-select, .bl-embed-toggle, .bl-img-pos-btn')) {
  event.stopPropagation();
+ }
+ }, []);
+
+ const focusNodeControl = useCallback((event) => {
+ const control = event.target?.closest?.('input, textarea, select');
+ if (control && event.currentTarget.contains(control)) {
+ control.focus({ preventScroll: true });
+ window.requestAnimationFrame?.(() => control.focus({ preventScroll: true }));
+ window.setTimeout?.(() => control.focus({ preventScroll: true }), 0);
+ }
+ event.stopPropagation();
+ }, []);
+
+ const focusNodeControlCapture = useCallback((event) => {
+ const control = event.target?.closest?.('input, textarea, select');
+ if (control && event.currentTarget.contains(control)) {
+ event.stopPropagation();
+ control.focus({ preventScroll: true });
+ window.requestAnimationFrame?.(() => control.focus({ preventScroll: true }));
+ window.setTimeout?.(() => control.focus({ preventScroll: true }), 0);
+ }
+ }, []);
+
+ const handlePageScrollWheel = useCallback((event) => {
+ event.stopPropagation();
+ const targetScroll = event.target?.closest?.('textarea');
+ if (targetScroll && event.currentTarget.contains(targetScroll)) {
+ const canScrollTarget = targetScroll.scrollHeight > targetScroll.clientHeight;
+ const atTop = targetScroll.scrollTop <= 0;
+ const atBottom = Math.ceil(targetScroll.scrollTop + targetScroll.clientHeight) >= targetScroll.scrollHeight;
+ if (canScrollTarget && ((event.deltaY < 0 && !atTop) || (event.deltaY > 0 && !atBottom))) {
+ return;
+ }
+ }
+ if (event.currentTarget.scrollHeight > event.currentTarget.clientHeight) {
+ event.preventDefault();
+ event.currentTarget.scrollTop += event.deltaY;
  }
  }, []);
 
@@ -845,10 +968,10 @@ export default function PluginNode({ id, type, data, selected }) {
  <div
  className={`bl-node ${selected ? 'selected' : ''} ${collapsed ? 'bl-node-min' : ''}`}
  style={{ minWidth: 260 }}
- onPointerDown={stopToggleGesture}
- onMouseDown={stopToggleGesture}
- onClick={stopToggleGesture}
- onDoubleClick={stopToggleGesture}
+ onPointerDown={stopNodeControls}
+ onMouseDown={stopNodeControls}
+ onClick={stopNodeControls}
+ onDoubleClick={stopNodeControls}
  >
  {/* -- Header ------------------------------------------------------- */}
  <div
@@ -884,9 +1007,14 @@ export default function PluginNode({ id, type, data, selected }) {
   {!collapsed && (
   <div
     className="bl-node-body nowheel nodrag nopan"
-    onMouseDown={(e) => { e.stopPropagation(); e.nativeEvent?.stopImmediatePropagation?.(); }}
-    onPointerDown={(e) => { e.stopPropagation(); e.nativeEvent?.stopImmediatePropagation?.(); }}
-    onClick={(e) => { e.stopPropagation(); e.nativeEvent?.stopImmediatePropagation?.(); }}
+    onPointerDownCapture={focusNodeControlCapture}
+    onMouseDownCapture={focusNodeControlCapture}
+    onClickCapture={focusNodeControlCapture}
+    onMouseDown={(e) => e.stopPropagation()}
+    onPointerDown={(e) => e.stopPropagation()}
+    onPointerUp={focusNodeControl}
+    onClick={focusNodeControl}
+    onWheel={(e) => e.stopPropagation()}
     >
  {/* -- Input socket ----------------------------------------------- */}
  {data._hasInput && (
@@ -1012,16 +1140,9 @@ export default function PluginNode({ id, type, data, selected }) {
  ['showServerButton', 'serverButtonLabel', 'Server Button', 'Server Icon'],
  ].map(([enabledKey, labelKey, label, fallback]) => (
  <div key={labelKey} className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data[enabledKey] !== false}
- onChange={(e) => update(enabledKey, e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data[enabledKey] !== false} onChange={(next) => update(enabledKey, next)} style={{ fontSize: 11, marginBottom: 4 }}>
  {label}
- </label>
+ </NodeToggle>
  <input
  className="bl-node-input nodrag nowheel"
  value={data[labelKey] || ''}
@@ -1049,16 +1170,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <div className="bl-node-divider" />
  <SectionHead color="#F472B6">Boost Settings</SectionHead>
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data.enabledByDefault !== false}
- onChange={(e) => update('enabledByDefault', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data.enabledByDefault !== false} onChange={(next) => update('enabledByDefault', next)} style={{ fontSize: 11 }}>
  Enabled by default
- </label>
+ </NodeToggle>
  </div>
  <div className="bl-field">
  <span className="bl-field-lbl">Boost Channel ID</span>
@@ -1502,16 +1616,9 @@ export default function PluginNode({ id, type, data, selected }) {
  />
  </div>
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={!!data.showSupportButton}
- onChange={(e) => update('showSupportButton', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={!!data.showSupportButton} onChange={(next) => update('showSupportButton', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Support Button
- </label>
+ </NodeToggle>
  <input
  className="bl-node-input"
  value={data.supportButtonLabel || ''}
@@ -1637,16 +1744,9 @@ export default function PluginNode({ id, type, data, selected }) {
  ['showOpenButton', 'openButtonLabel', 'Open Button', 'Open Icon'],
  ].map(([enabledKey, labelKey, label, fallback]) => (
  <div key={labelKey} className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data[enabledKey] !== false}
- onChange={(e) => update(enabledKey, e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data[enabledKey] !== false} onChange={(next) => update(enabledKey, next)} style={{ fontSize: 11, marginBottom: 4 }}>
  {label}
- </label>
+ </NodeToggle>
  <input
  className="bl-node-input"
  value={data[labelKey] || ''}
@@ -1844,16 +1944,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data.requireManageGuild !== false}
- onChange={(e) => update('requireManageGuild', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data.requireManageGuild !== false} onChange={(next) => update('requireManageGuild', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Require Manage Server
- </label>
+ </NodeToggle>
  {[
  { key: 'titleTemplate', label: 'Embed Title', fallback: 'Prefix Updated', rows: 2 },
  { key: 'descriptionTemplate', label: 'Embed Description', fallback: 'Prefix changed from `{oldPrefix}` to `{newPrefix}`.', rows: 3 },
@@ -2008,16 +2101,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data.useAnimatedAvatar === true}
- onChange={(e) => update('useAnimatedAvatar', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data.useAnimatedAvatar === true} onChange={(next) => update('useAnimatedAvatar', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Use Animated Avatar
- </label>
+ </NodeToggle>
  <div className="bl-field">
  <span className="bl-field-lbl">Animated Avatar URL</span>
  <input
@@ -2031,16 +2117,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data.useAnimatedBanner === true}
- onChange={(e) => update('useAnimatedBanner', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data.useAnimatedBanner === true} onChange={(next) => update('useAnimatedBanner', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Use Animated Banner
- </label>
+ </NodeToggle>
  <div className="bl-field">
  <span className="bl-field-lbl">Animated Banner URL</span>
  <input
@@ -2054,16 +2133,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data.requireManageGuild !== false}
- onChange={(e) => update('requireManageGuild', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data.requireManageGuild !== false} onChange={(next) => update('requireManageGuild', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Require Manage Server
- </label>
+ </NodeToggle>
  {[
  { key: 'titleTemplate', label: 'Embed Title', fallback: 'Bot Activity Updated', rows: 2 },
  { key: 'descriptionTemplate', label: 'Embed Description', fallback: '**Type:** {activityType}\n**Name:** {activityName}\n**Producer:** {producerName}\n**Status:** {status}\n**Profile:** {profileUpdate}', rows: 6 },
@@ -2160,18 +2232,15 @@ export default function PluginNode({ id, type, data, selected }) {
  <input className="bl-node-input" value={data[key] || ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={placeholder} spellCheck={false} />
  </div>
  ))}
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input className="nodrag nopan nowheel" type="checkbox" checked={data.requireManageGuild !== false} onChange={(e) => update('requireManageGuild', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <NodeToggle checked={data.requireManageGuild !== false} onChange={(next) => update('requireManageGuild', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Require Manage Server for test command
- </label>
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input className="nodrag nopan nowheel" type="checkbox" checked={data.mentionUser !== false} onChange={(e) => update('mentionUser', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ </NodeToggle>
+ <NodeToggle checked={data.mentionUser !== false} onChange={(next) => update('mentionUser', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Mention user above welcome embed
- </label>
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input className="nodrag nopan nowheel" type="checkbox" checked={data.embedEnabled !== false} onChange={(e) => update('embedEnabled', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ </NodeToggle>
+ <NodeToggle checked={data.embedEnabled !== false} onChange={(next) => update('embedEnabled', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Send as embed
- </label>
+ </NodeToggle>
  <div className="bl-field">
  <span className="bl-field-lbl">Embed Color</span>
  <div style={{ display: 'flex', gap: 6 }}>
@@ -2311,16 +2380,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <>
  <div className="bl-node-divider" />
  <SectionHead color="#DC2626">Nuke Settings</SectionHead>
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data.confirmationRequired !== false}
- onChange={(e) => update('confirmationRequired', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data.confirmationRequired !== false} onChange={(next) => update('confirmationRequired', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Require Confirmation
- </label>
+ </NodeToggle>
  <div className="bl-field">
  <span className="bl-field-lbl">Confirm Keyword</span>
  <input
@@ -2439,16 +2501,9 @@ export default function PluginNode({ id, type, data, selected }) {
  spellCheck={false}
  />
  </div>
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={data.disconnectAfterBan !== false}
- onChange={(e) => update('disconnectAfterBan', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={data.disconnectAfterBan !== false} onChange={(next) => update('disconnectAfterBan', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Disconnect after ban
- </label>
+ </NodeToggle>
  {[
  { key: 'reason', label: 'Default Reason', fallback: 'No reason provided', rows: 2 },
  { key: 'successMessage', label: 'Success Message', fallback: '{targetMention} was banned from **{voiceChannel}** by {mention}.\nReason: {reason}', rows: 3 },
@@ -2746,10 +2801,9 @@ export default function PluginNode({ id, type, data, selected }) {
  ['autoRecovery', 'Auto recovery'],
  ['deleteTriggerMessage', 'Delete trigger messages'],
  ].map(([key, label]) => (
- <label key={key} className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input className="nodrag nopan nowheel" type="checkbox" checked={data[key] !== false} onChange={(e) => update(key, e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <NodeToggle key={key} checked={data[key] !== false} onChange={(next) => update(key, next)} style={{ fontSize: 11, marginBottom: 4 }}>
  {label}
- </label>
+ </NodeToggle>
  ))}
  {[
  ['logChannelId', 'Log Channel ID', 'Optional log channel id'],
@@ -2800,10 +2854,9 @@ export default function PluginNode({ id, type, data, selected }) {
  ['antiWebhookUpdate', 'Anti Webhook Update'], ['antiLinkRole', 'Anti Link Role'],
  ['antiInviteRole', 'Anti Invite Role'],
  ].map(([key, label]) => (
- <label key={key} className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 3 }}>
- <input className="nodrag nopan nowheel" type="checkbox" checked={data[key] !== false} onChange={(e) => update(key, e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <NodeToggle key={key} checked={data[key] !== false} onChange={(next) => update(key, next)} style={{ fontSize: 11, marginBottom: 3 }}>
  {label}
- </label>
+ </NodeToggle>
  ))}
  <div className="bl-field">
  <span className="bl-field-lbl">Embed Color</span>
@@ -2845,10 +2898,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <input className="bl-node-input" value={data[key] || ''} onChange={(e) => update(key, e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder={fallback} spellCheck={false} />
  </div>
  ))}
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11, marginBottom: 4 }}>
- <input className="nodrag nopan nowheel" type="checkbox" checked={data.lavalinkSecure === true} onChange={(e) => update('lavalinkSecure', e.target.checked)} onMouseDown={(e) => e.stopPropagation()} />
+ <NodeToggle checked={data.lavalinkSecure === true} onChange={(next) => update('lavalinkSecure', next)} style={{ fontSize: 11, marginBottom: 4 }}>
  Secure Lavalink
- </label>
+ </NodeToggle>
  <div className="bl-node-divider" />
  <SectionHead color="#A78BFA">Player Text</SectionHead>
  {[
@@ -3467,16 +3519,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <div key={key} className="bl-field">
  <span className="bl-field-lbl">{key}</span>
  {typeof val === 'boolean' ? (
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={!!val}
- onChange={(e) => update(key, e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={!!val} onChange={(next) => update(key, next)} style={{ fontSize: 11 }}>
  Enabled
- </label>
+ </NodeToggle>
  ) : (
  <input
  className="bl-node-input"
@@ -3594,10 +3639,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <>
  <div className="bl-node-divider" />
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel">
- <input className="nodrag nopan nowheel" type="checkbox" checked={!!data.dmEnabled} onChange={(e) => update('dmEnabled', e.target.checked)} />
+ <NodeToggle checked={!!data.dmEnabled} onChange={(next) => update('dmEnabled', next)}>
  DM Target
- </label>
+ </NodeToggle>
  </div>
  {data.dmEnabled && (
  <div className="bl-field">
@@ -3630,7 +3674,15 @@ export default function PluginNode({ id, type, data, selected }) {
  <p style={{ color: '#555', fontSize: 11, padding: '2px 0 4px', textAlign: 'center' }}>No pages yet</p>
  )}
 
- <div className="nowheel" style={{ maxHeight: 420, overflowY: 'auto' }}>
+ <div
+ className="bl-node-page-scroll nowheel nodrag nopan"
+ style={{ maxHeight: 420, overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 4 }}
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => e.stopPropagation()}
+ onWheelCapture={handlePageScrollWheel}
+ onWheel={(e) => e.stopPropagation()}
+ >
  {(data.pages || []).map((page, i) => {
  const pages = data.pages || [];
 
@@ -3643,13 +3695,41 @@ export default function PluginNode({ id, type, data, selected }) {
  background: '#16162A'
  }}>
 
- <strong style={{ display: 'block', marginBottom: 5, color: '#C8A0F0' }}>Page {i + 1}</strong>
+ <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+ <strong style={{ display: 'block', color: '#C8A0F0', flex: 1 }}>Page {i + 1}</strong>
+ <button
+ type="button"
+ aria-label={`Delete page ${i + 1}`}
+ title="Delete page"
+ onPointerDown={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ const newPages = [...pages];
+ newPages.splice(i, 1);
+ updatePages(newPages);
+ setPreviewPg((p) => Math.max(0, p - (p >= i ? 1 : 0)));
+ }}
+ onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ }}
+ style={{
+ background: '#3A1010', border: '1px solid #5A2020', color: '#FF7070',
+ width: 22, height: 22, borderRadius: 4, cursor: 'pointer',
+ fontSize: 12, fontWeight: 900, lineHeight: 1,
+ }}
+ >
+ X
+ </button>
+ </div>
 
  {/* TITLE */}
  <input
- className="bl-node-input"
+ className="bl-node-input nodrag nopan nowheel"
  value={page.title || ""}
  placeholder="Page Title"
+ onPointerDown={(e) => e.stopPropagation()}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
  onKeyDown={(e) => e.stopPropagation()}
@@ -3663,9 +3743,10 @@ export default function PluginNode({ id, type, data, selected }) {
 
  {/* DESCRIPTION */}
  <input
- className="bl-node-input"
+ className="bl-node-input nodrag nopan nowheel"
  value={page.description || ""}
  placeholder="Dropdown Description (Optional)"
+ onPointerDown={(e) => e.stopPropagation()}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
  onKeyDown={(e) => e.stopPropagation()}
@@ -3679,12 +3760,14 @@ export default function PluginNode({ id, type, data, selected }) {
 
  {/* CONTENT */}
  <textarea
- className="bl-node-textarea"
+ className="bl-node-textarea nodrag nopan nowheel"
  value={page.content || ""}
  placeholder="Page Content"
+ onPointerDown={(e) => e.stopPropagation()}
  onMouseDown={(e) => e.stopPropagation()}
  onClick={(e) => e.stopPropagation()}
  onKeyDown={(e) => e.stopPropagation()}
+ onWheel={(e) => e.stopPropagation()}
  onFocus={() => setPreviewPg && setPreviewPg(i)}
  onChange={(e) => {
  const newPages = [...pages];
@@ -3698,8 +3781,11 @@ export default function PluginNode({ id, type, data, selected }) {
  <div style={{ marginTop: 5, display: 'flex', gap: 5 }}>
 
  <button
+ type="button"
  disabled={i === 0}
- onClick={() => {
+ onPointerDown={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
  if (i === 0) return;
  const newPages = [...pages];
  [newPages[i - 1], newPages[i]] = [newPages[i], newPages[i - 1]];
@@ -3707,6 +3793,7 @@ export default function PluginNode({ id, type, data, selected }) {
  setPreviewPg(i - 1);
  }}
  onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
  style={{
  background: '#2A2A3A', border: '1px solid #4A4A5A', color: i === 0 ? '#555' : '#DCDDDE',
  padding: '2px 8px', borderRadius: 3, cursor: i === 0 ? 'default' : 'pointer'
@@ -3716,8 +3803,11 @@ export default function PluginNode({ id, type, data, selected }) {
  </button>
 
  <button
+ type="button"
  disabled={i === pages.length - 1}
- onClick={() => {
+ onPointerDown={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
  if (i === pages.length - 1) return;
  const newPages = [...pages];
  [newPages[i + 1], newPages[i]] = [newPages[i], newPages[i + 1]];
@@ -3725,28 +3815,13 @@ export default function PluginNode({ id, type, data, selected }) {
  setPreviewPg(i + 1);
  }}
  onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
  style={{
  background: '#2A2A3A', border: '1px solid #4A4A5A', color: i === pages.length - 1 ? '#555' : '#DCDDDE',
  padding: '2px 8px', borderRadius: 3, cursor: i === pages.length - 1 ? 'default' : 'pointer'
  }}
  >
  v
- </button>
-
- <button
- onClick={() => {
- const newPages = [...pages];
- newPages.splice(i, 1);
- updatePages(newPages);
- setPreviewPg((p) => Math.max(0, p - (p >= i ? 1 : 0)));
- }}
- onMouseDown={(e) => e.stopPropagation()}
- style={{
- background: '#3A1010', border: '1px solid #5A2020', color: '#FF7070',
- padding: '2px 8px', borderRadius: 3, cursor: 'pointer', marginLeft: 'auto'
- }}
- >
- X
  </button>
 
  </div>
@@ -3757,7 +3832,11 @@ export default function PluginNode({ id, type, data, selected }) {
 
  {/* ADD PAGE */}
  <button
- onClick={() => {
+ type="button"
+ title="Add page"
+ onPointerDown={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
  const pages = data.pages || [];
  const newPages = [
  ...pages,
@@ -3770,6 +3849,7 @@ export default function PluginNode({ id, type, data, selected }) {
  updatePages(newPages);
  }}
  onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
  style={{
  width: '100%', background: '#1A2A1A',
  border: '1px solid #2A4A2A', color: '#6AAA4A',
@@ -3789,8 +3869,14 @@ export default function PluginNode({ id, type, data, selected }) {
  {pgs.map((p, i) => (
  <button
  key={i}
- onClick={() => setPreviewPg(i)}
+ type="button"
+ onPointerDown={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ setPreviewPg(i);
+ }}
  onMouseDown={(e) => e.stopPropagation()}
+ onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
  title={p.title || `Page ${i + 1}`}
  style={{
  background: safePg === i ? '#2A2A5A' : '#1A1A2A',
@@ -3818,16 +3904,9 @@ export default function PluginNode({ id, type, data, selected }) {
  <>
  <div className="bl-node-divider" style={{ borderColor: '#2A3A2A' }} />
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel">
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={!!dd.enabled}
- onChange={(e) => updateDropdown('enabled', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={!!dd.enabled} onChange={(next) => updateDropdown('enabled', next)}>
  <SectionHead color="#6AAA4A">v Dropdown Menu</SectionHead>
- </label>
+ </NodeToggle>
  </div>
 
  {dd.enabled && (
@@ -3846,16 +3925,9 @@ export default function PluginNode({ id, type, data, selected }) {
  />
  </div>
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={dd.usePages !== false}
- onChange={(e) => updateDropdown('usePages', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={dd.usePages !== false} onChange={(next) => updateDropdown('usePages', next)} style={{ fontSize: 11 }}>
  Auto-generate options from Pages
- </label>
+ </NodeToggle>
  </div>
 
  {/* Preview of dropdown options */}
@@ -3884,31 +3956,17 @@ export default function PluginNode({ id, type, data, selected }) {
  <>
  <div className="bl-node-divider" style={{ borderColor: '#2A2A3A' }} />
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel">
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={!!bt.enabled}
- onChange={(e) => updateButtons('enabled', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={!!bt.enabled} onChange={(next) => updateButtons('enabled', next)}>
  <SectionHead color="#7EB8F7"># Button Row</SectionHead>
- </label>
+ </NodeToggle>
  </div>
 
  {bt.enabled && (
  <>
  <div className="bl-field">
- <label className="bl-embed-toggle nodrag nopan nowheel" style={{ fontSize: 11 }}>
- <input
- className="nodrag nopan nowheel"
- type="checkbox"
- checked={bt.navigation !== false}
- onChange={(e) => updateButtons('navigation', e.target.checked)}
- onMouseDown={(e) => e.stopPropagation()}
- />
+ <NodeToggle checked={bt.navigation !== false} onChange={(next) => updateButtons('navigation', next)} style={{ fontSize: 11 }}>
  Navigation Buttons
- </label>
+ </NodeToggle>
  </div>
 
  {/* Button preview */}

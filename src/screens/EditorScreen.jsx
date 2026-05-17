@@ -4262,10 +4262,23 @@ function NPanel({ selectedNode, setNodes }) {
  </div>
  <div className="bl-prop-row">
  <span className="bl-prop-label">API</span>
- <label className="bl-embed-toggle" style={{ justifyContent: 'flex-start' }}>
- <input className="nodrag nopan nowheel" type="checkbox" checked={!!d.apiEnabled} onChange={(e) => update('apiEnabled', e.target.checked)} />
+ <button
+ type="button"
+ className="bl-embed-toggle bl-check-toggle nodrag nopan nowheel"
+ role="checkbox"
+ aria-checked={!!d.apiEnabled}
+ style={{ justifyContent: 'flex-start' }}
+ onPointerDown={(e) => e.stopPropagation()}
+ onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+ onClick={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ update('apiEnabled', !d.apiEnabled);
+ }}
+ >
+ <span className={`bl-check-box ${d.apiEnabled ? 'checked' : ''}`} aria-hidden="true" />
  On
- </label>
+ </button>
  </div>
  {d.apiEnabled && (
  <>
@@ -4501,16 +4514,26 @@ function EditorInner() {
  }, [pluginMeta, setNodes]);
 
  // Build combined nodeTypes: builtins + one PluginNode component per plugin type.
- // Existing projects can contain plugin nodes before metadata finishes loading,
- // so map unknown saved node types to PluginNode to avoid React Flow's default white box.
+ // Keep the object stable while users edit node data; rebuilding it on every
+ // keystroke makes React Flow remount nodes and drops focus from inputs.
+ const pluginNodeTypeSignature = useMemo(() => {
+ const types = new Set();
+ for (const p of pluginMeta) {
+ if (p?.type && !builtinNodeTypes[p.type]) types.add(p.type);
+ }
+ for (const n of nodes) {
+ if (n?.type && !builtinNodeTypes[n.type]) types.add(n.type);
+ }
+ return [...types].sort().join('|');
+ }, [pluginMeta, nodes]);
+
  const nodeTypes = useMemo(() => {
  const extra = {};
- for (const p of pluginMeta) extra[p.type] = PluginNode;
- for (const n of nodes) {
- if (n?.type && !builtinNodeTypes[n.type]) extra[n.type] = PluginNode;
+ for (const type of pluginNodeTypeSignature.split('|')) {
+ if (type) extra[type] = PluginNode;
  }
  return { ...builtinNodeTypes, ...extra };
- }, [pluginMeta, nodes]);
+ }, [pluginNodeTypeSignature]);
 
  const { project: rfProject } = useReactFlow();
  const wrapperRef = useRef(null);
@@ -4642,12 +4665,17 @@ function EditorInner() {
  setContextMenu(null);
  }, []);
 
+ const onWrapperContextMenu = useCallback((event) => {
+ if (event.target?.closest?.('.react-flow__node')) return;
+ onPaneContextMenu(event);
+ }, [onPaneContextMenu]);
+
  return (
  <div className="editor-screen">
  <Toolbar nodes={nodes} edges={edges} />
 
  <div className="editor-body">
- <div className="rf-wrapper" ref={wrapperRef}>
+ <div className="rf-wrapper" ref={wrapperRef} onContextMenu={onWrapperContextMenu}>
  <ReactFlow
  nodes={nodes}
  edges={edges}
