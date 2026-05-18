@@ -115,11 +115,11 @@ kiodium/
 
 ## Node Types
 
-### ⚡ Message Event
+###  Message Event
 Trigger node. Fires whenever a message is received in any channel the bot can see.
 No inputs. One output: `message`.
 
-### 💬 Custom Command
+###  Custom Command
 Checks if the incoming message starts with a command string.
 If it matches, optionally sends a reply, then passes the message downstream.
 
@@ -128,14 +128,14 @@ If it matches, optionally sends a reply, then passes the message downstream.
 | Command | e.g. `!hello` |
 | Reply | e.g. `Hello {user}!` |
 
-### 📤 Send Message
+###  Send Message
 Sends a text message to the same channel the trigger came from.
 
 | Field | Description |
 |---|---|
 | Text | Message content (supports variables) |
 
-### 🔀 Condition Branch
+###  Condition Branch
 Evaluates a condition and routes execution down a **True** or **False** path.
 
 | Field | Options |
