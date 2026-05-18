@@ -231,7 +231,7 @@ plugins/
  "version": "1.0.0",
  "description": "Does something cool",
  "author": "You",
- "icon": "🔌"
+ "icon": ""
 }
 ```
 
@@ -266,13 +266,13 @@ module.exports = {
  async execute(node, message) {
  if (message.content.trim().toLowerCase() !== '!ping') return false;
  const latency = Date.now() - message.createdTimestamp;
- await message.channel.send(`🏓 Pong! Latency: **${latency}ms**`);
+ await message.channel.send(` Pong! Latency: **${latency}ms**`);
  return true;
  },
  generateCode(node) {
  return `if (message.content.trim().toLowerCase() === "!ping") {
  const latency = Date.now() - message.createdTimestamp;
- message.channel.send(\`🏓 Pong! Latency: \${latency}ms\`);
+ message.channel.send(\`Pong! Latency: \${latency}ms\`);
 }`;
  }
  }
@@ -285,7 +285,7 @@ module.exports = {
 
 ## Exported Code
 
-Clicking **📦 Export** generates a self-contained `bot.js`:
+Clicking ** Export** generates a self-contained `bot.js`:
 
 ```js
 const { Client, GatewayIntentBits } = require("discord.js");
@@ -299,7 +299,7 @@ const client = new Client({
 });
 
 client.once("ready", () => {
- console.log(`✅ Logged in as ${client.user.tag}`);
+ console.log(`Logged in as ${client.user.tag}`);
 });
 
 client.on("messageCreate", async (message) => {
@@ -338,7 +338,7 @@ node bot.js
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
 2. Create a new application → Bot → add a bot
 3. Under **Privileged Gateway Intents**, enable **Message Content Intent**
-4. Copy the token and paste it in the app via the **🔑 Token** button
+4. Copy the token and paste it in the app via the ** Token** button
 5. Invite the bot to your server using OAuth2 → URL Generator (scopes: `bot`)
 
 ---
