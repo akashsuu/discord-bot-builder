@@ -317,7 +317,7 @@ Run the exported file with:
 
 ```bash
 npm install discord.js
-node bot.js
+npm start
 ```
 
 ---
