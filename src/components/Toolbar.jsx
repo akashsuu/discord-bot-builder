@@ -229,6 +229,15 @@ export default function Toolbar({
               <span className={botRunning ? 'text-emerald-400' : 'text-zinc-500'}>
                 {botRunning ? 'Online' : 'Idle'}
               </span>
+              {botRunning && (
+                <span
+                  className="hidden md:inline-flex items-center gap-1 text-[9px] text-zinc-400 bg-[#161616] border border-[#2a2a2a] px-1.5 py-0.5 rounded ml-1"
+                  title="Auto-sleep active: Bot runs live while you are on the site, and automatically shuts down when you close or leave CoquetteFlow to save server RAM."
+                >
+                  <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                  <span>Auto-sleep on exit</span>
+                </span>
+              )}
             </div>
           </div>
 

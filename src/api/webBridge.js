@@ -5,6 +5,7 @@ class WebBridge {
   constructor() {
     this.ws = null;
     this.reconnectTimer = null;
+    this.heartbeatTimer = null;
     this.currentProjectId = null;
     this.listeners = {
       'bot:log': new Set(),
@@ -14,6 +15,7 @@ class WebBridge {
     };
     this.isWeb = typeof window !== 'undefined' && !window.process?.versions?.electron;
     this.initWebSocket();
+    this.initPresenceLifecycle();
   }
 
   getWsUrl() {
@@ -23,9 +25,58 @@ class WebBridge {
     return `${protocol}//${host}/ws`;
   }
 
+  initPresenceLifecycle() {
+    if (typeof window === 'undefined') return;
+
+    // Send keep-alive heartbeat every 8 seconds while active on the builder
+    this.heartbeatTimer = setInterval(() => {
+      if (this.currentProjectId && this.ws && this.ws.readyState === WebSocket.OPEN) {
+        try {
+          this.ws.send(JSON.stringify({ type: 'heartbeat', projectId: this.currentProjectId }));
+        } catch {}
+      }
+    }, 8000);
+
+    // Rapid shutdown beacon when tab/window closes to free server RAM
+    const handleLeave = () => {
+      if (!this.currentProjectId) return;
+      const payload = JSON.stringify({ projectId: this.currentProjectId });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/bot/leave', new Blob([payload], { type: 'application/json' }));
+      } else {
+        try {
+          fetch('/api/bot/leave', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true,
+          });
+        } catch {}
+      }
+    };
+
+    window.addEventListener('beforeunload', handleLeave);
+    window.addEventListener('pagehide', handleLeave);
+
+    // On tab visibility restore, re-affirm presence immediately
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && this.currentProjectId) {
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+          this.initWebSocket();
+        } else {
+          this.subscribeProject(this.currentProjectId);
+        }
+      }
+    });
+  }
+
   initWebSocket() {
     if (typeof window === 'undefined') return;
     try {
+      if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+        return;
+      }
+
       this.ws = new WebSocket(this.getWsUrl());
 
       this.ws.onopen = () => {
@@ -60,7 +111,7 @@ class WebBridge {
 
       this.ws.onclose = () => {
         clearTimeout(this.reconnectTimer);
-        this.reconnectTimer = setTimeout(() => this.initWebSocket(), 2500);
+        this.reconnectTimer = setTimeout(() => this.initWebSocket(), 2000);
       };
 
       this.ws.onerror = () => {
@@ -72,6 +123,9 @@ class WebBridge {
   }
 
   subscribeProject(projectId) {
+    if (this.currentProjectId && this.currentProjectId !== projectId) {
+      this.unsubscribeProject(this.currentProjectId);
+    }
     this.currentProjectId = projectId;
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'subscribe', projectId }));

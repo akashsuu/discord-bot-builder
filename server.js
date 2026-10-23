@@ -197,6 +197,20 @@ app.post('/api/bot/stop', async (req, res) => {
   }
 });
 
+// Beacon endpoint when user closes/unloads tab (Auto-shutdown trigger)
+app.post('/api/bot/leave', (req, res) => {
+  try {
+    const { projectId } = req.body || {};
+    if (projectId) {
+      logger.info(`User left page for project ${projectId}. Scheduling rapid auto-shutdown (freeing RAM)...`);
+      botManager.checkAndScheduleShutdown(projectId, 4000);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Bot Status
 app.get('/api/bot/status/:projectId', (req, res) => {
   try {
@@ -242,10 +256,18 @@ wss.on('connection', (ws) => {
     try {
       const data = JSON.parse(message.toString());
       if (data.type === 'subscribe' && data.projectId) {
+        ws.projectId = data.projectId;
         botManager.subscribe(data.projectId, ws);
       } else if (data.type === 'unsubscribe' && data.projectId) {
         botManager.unsubscribe(data.projectId, ws);
+      } else if (data.type === 'heartbeat' && data.projectId) {
+        ws.isAlive = true;
+        botManager.keepAlive(data.projectId, ws);
+        if (ws.readyState === 1) {
+          ws.send(JSON.stringify({ type: 'heartbeat:ack', projectId: data.projectId }));
+        }
       } else if (data.type === 'ping') {
+        ws.isAlive = true;
         ws.send(JSON.stringify({ type: 'pong' }));
       }
     } catch {

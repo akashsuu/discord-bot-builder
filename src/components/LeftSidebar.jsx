@@ -270,10 +270,19 @@ export default function LeftSidebar({ isOpen, onToggle, onAddNode, pluginMeta = 
               <span className="text-xs font-mono text-zinc-300">
                 {botRunning ? 'Running on Server' : 'Stopped'}
               </span>
-              {botInfo?.tag && (
+              {botRunning ? (
+                <span className="text-[9px] text-emerald-400/90 bg-emerald-950/40 border border-emerald-800/40 px-1.5 py-0.5 rounded font-mono ml-auto">
+                  Auto-sleep on exit
+                </span>
+              ) : botInfo?.tag ? (
                 <span className="text-[10px] text-zinc-500 ml-auto font-mono">@{botInfo.tag}</span>
-              )}
+              ) : null}
             </div>
+            {botRunning && (
+              <p className="text-[10px] text-zinc-500 leading-relaxed">
+                ⚡ Memory saver: When you close or leave CoquetteFlow, your bot automatically shuts down to preserve server RAM.
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5">

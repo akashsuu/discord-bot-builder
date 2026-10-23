@@ -141,6 +141,7 @@ class BotInstance {
     };
     this.logs.push(logItem);
     if (this.logs.length > 500) this.logs.shift();
+    if (this.manager && typeof this.manager.saveRecentLogs === "function") { this.manager.saveRecentLogs(this.projectId, this.logs); }
     this.manager.broadcast(this.projectId, {
       type: 'bot:log',
       projectId: this.projectId,
@@ -343,6 +344,15 @@ class BotManager {
   constructor() {
     this.bots = new Map(); // projectId -> BotInstance
     this.subscribers = new Map(); // projectId -> Set<ws>
+    this.autoShutdownTimers = new Map(); // projectId -> Timeout
+    this.recentLogs = new Map(); // projectId -> Array<logItem>
+
+    // Periodically sweep to ensure no orphan bots remain running without active users
+    this.sweepInterval = setInterval(() => this.sweepOrphanedBots(), 20000);
+  }
+
+  saveRecentLogs(projectId, logs) {
+    this.recentLogs.set(projectId, logs.slice(-200));
   }
 
   broadcast(projectId, data) {
@@ -361,6 +371,9 @@ class BotManager {
   }
 
   subscribe(projectId, ws) {
+    // If there was an auto-shutdown timer scheduled, cancel it immediately
+    this.cancelAutoShutdown(projectId);
+
     if (!this.subscribers.has(projectId)) {
       this.subscribers.set(projectId, new Set());
     }
@@ -385,33 +398,109 @@ class BotManager {
         })
       );
     }
-    if (bot?.logs?.length) {
+    const logsToSend = bot?.logs?.length ? bot.logs : this.recentLogs.get(projectId);
+    if (logsToSend?.length) {
       ws.send(
         JSON.stringify({
           type: 'bot:logs_history',
           projectId,
-          logs: bot.logs,
+          logs: logsToSend,
         })
       );
     }
+  }
+
+  keepAlive(projectId, ws) {
+    this.cancelAutoShutdown(projectId);
+    if (!this.subscribers.has(projectId)) {
+      this.subscribers.set(projectId, new Set());
+    }
+    this.subscribers.get(projectId).add(ws);
   }
 
   unsubscribe(projectId, ws) {
     const set = this.subscribers.get(projectId);
     if (set) {
       set.delete(ws);
-      if (set.size === 0) this.subscribers.delete(projectId);
+      if (set.size === 0) {
+        this.subscribers.delete(projectId);
+        this.checkAndScheduleShutdown(projectId, 15000);
+      }
     }
   }
 
   removeSocket(ws) {
     for (const [projectId, set] of this.subscribers.entries()) {
       set.delete(ws);
-      if (set.size === 0) this.subscribers.delete(projectId);
+      if (set.size === 0) {
+        this.subscribers.delete(projectId);
+        this.checkAndScheduleShutdown(projectId, 15000);
+      }
+    }
+  }
+
+  checkAndScheduleShutdown(projectId, delayMs = 15000) {
+    const bot = this.bots.get(projectId);
+    if (!bot || (bot.status !== 'online' && bot.status !== 'starting')) {
+      return;
+    }
+
+    const subs = this.subscribers.get(projectId);
+    if (subs && subs.size > 0) {
+      return;
+    }
+
+    if (this.autoShutdownTimers.has(projectId)) {
+      clearTimeout(this.autoShutdownTimers.get(projectId));
+    }
+
+    log.info(`[Auto-Shutdown] No online builders for project "${projectId}". Scheduling shutdown in ${Math.round(delayMs / 1000)}s to free RAM.`);
+
+    const timer = setTimeout(async () => {
+      this.autoShutdownTimers.delete(projectId);
+      const activeSubs = this.subscribers.get(projectId);
+      if (!activeSubs || activeSubs.size === 0) {
+        const runningBot = this.bots.get(projectId);
+        if (runningBot && (runningBot.status === 'online' || runningBot.status === 'starting')) {
+          log.info(`[Auto-Shutdown] Stopping bot "${projectId}" — builder offline (releasing RAM).`);
+          runningBot.addLog('[System] Bot automatically stopped: user closed website or went offline (RAM saved).');
+          await this.stopBot(projectId);
+          this.broadcast(projectId, {
+            type: 'bot:status',
+            projectId,
+            status: { running: false, status: 'stopped' },
+          });
+        }
+      }
+    }, delayMs);
+
+    this.autoShutdownTimers.set(projectId, timer);
+  }
+
+  cancelAutoShutdown(projectId) {
+    if (this.autoShutdownTimers.has(projectId)) {
+      clearTimeout(this.autoShutdownTimers.get(projectId));
+      this.autoShutdownTimers.delete(projectId);
+      log.info(`[Auto-Shutdown] Builder connected to project "${projectId}". Cancelled auto-shutdown.`);
+    }
+  }
+
+  sweepOrphanedBots() {
+    for (const [projectId, bot] of this.bots.entries()) {
+      if (bot.status === 'online' || bot.status === 'starting') {
+        const subs = this.subscribers.get(projectId);
+        if (!subs || subs.size === 0) {
+          if (!this.autoShutdownTimers.has(projectId)) {
+            log.info(`[Sweep] Orphaned running bot "${projectId}" detected. Triggering shutdown in 10s...`);
+            this.checkAndScheduleShutdown(projectId, 10000);
+          }
+        }
+      }
     }
   }
 
   async startBot(projectId, projectData) {
+    this.cancelAutoShutdown(projectId);
     let instance = this.bots.get(projectId);
     if (instance) {
       if (instance.status === 'online' || instance.status === 'starting') {
@@ -420,14 +509,30 @@ class BotManager {
     }
     instance = new BotInstance(projectId, projectData, this);
     this.bots.set(projectId, instance);
-    await instance.start();
+    try {
+      await instance.start();
+    } catch (err) {
+      this.bots.delete(projectId);
+      throw err;
+    }
+
+    // If no active builder is subscribed when bot starts, schedule shutdown
+    const subs = this.subscribers.get(projectId);
+    if (!subs || subs.size === 0) {
+      log.info(`[Auto-Shutdown] Bot "${projectId}" started with no active subscribers. Scheduling auto-shutdown in 15s.`);
+      this.checkAndScheduleShutdown(projectId, 15000);
+    }
+
     return { success: true };
   }
 
   async stopBot(projectId) {
+    this.cancelAutoShutdown(projectId);
     const instance = this.bots.get(projectId);
     if (!instance) return { success: true };
     await instance.stop();
+    this.bots.delete(projectId);
+    log.info(`[BotManager] Bot "${projectId}" stopped and memory freed. Running bots remaining: ${this.bots.size}`);
     return { success: true };
   }
 
@@ -438,12 +543,17 @@ class BotManager {
       running,
       status: instance?.status || 'stopped',
       info: instance?.info || null,
-      logs: instance?.logs || [],
+      logs: instance?.logs || this.recentLogs.get(projectId) || [],
     };
   }
 
   async stopAll() {
     log.info('Stopping all running bots...');
+    clearInterval(this.sweepInterval);
+    for (const timer of this.autoShutdownTimers.values()) {
+      clearTimeout(timer);
+    }
+    this.autoShutdownTimers.clear();
     const promises = [];
     for (const [id, bot] of this.bots.entries()) {
       promises.push(bot.stop().catch(() => {}));
