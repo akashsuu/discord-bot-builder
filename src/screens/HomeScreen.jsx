@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useProject } from '../context/ProjectContext';
 import LoadProjectModal from '../components/LoadProjectModal';
-import CoquetteFlowLogo from '../components/CoquetteFlowLogo';
+import logoIcon from '../assets/coquetteflow-icon.png';
+import logoWordmark from '../assets/coquetteflow-wordmark.png';
 
 const DISCORD_URL = 'https://discord.gg/coquette';
 const HELP_URL = 'https://akashsuu.oops.wtf/';
@@ -20,9 +21,17 @@ export default function HomeScreen() {
   return (
     <div className="home-screen">
       <div className="home-content">
-        <div className="home-logo">
-          <CoquetteFlowLogo size={56} className="mb-4" />
-          <h1 className="home-title">CoquetteFlow</h1>
+        <div className="home-logo flex flex-col items-center">
+          <img
+            src={logoIcon}
+            alt="CoquetteFlow Logo"
+            className="w-16 h-16 rounded-2xl mb-4 object-contain shadow-[0_8px_30px_rgba(0,0,0,0.8)] border border-[#353535]"
+          />
+          <img
+            src={logoWordmark}
+            alt="CoquetteFlow"
+            className="h-10 mb-2 object-contain"
+          />
           <p className="home-subtitle">Minimalist Node-Based Discord Bot Builder</p>
         </div>
 

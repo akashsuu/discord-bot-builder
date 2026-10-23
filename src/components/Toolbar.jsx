@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { useProject } from '../context/ProjectContext';
 import LoadProjectModal from './LoadProjectModal';
-import CoquetteFlowLogo from './CoquetteFlowLogo';
+import logoIcon from '../assets/coquetteflow-icon.png';
+import logoWordmark from '../assets/coquetteflow-wordmark.png';
 
 function serializeNodes(nodes) {
   return nodes.map(({ id, type, position, data }) => ({ id, type, position, data }));
@@ -100,12 +101,10 @@ export default function Toolbar({
               onClick={() => setScreen('home')}
               title="CoquetteFlow Home"
             >
-              <CoquetteFlowLogo size={20} />
+              <img src={logoIcon} alt="CoquetteFlow Logo" className="w-5 h-5 rounded object-contain shrink-0" />
               <div className="flex flex-col text-left leading-none">
-                <span className="text-[12px] font-semibold tracking-tight text-[#F5F5F5]">
-                  CoquetteFlow
-                </span>
-                <span className="text-[10px] text-[#888888] font-mono truncate max-w-[110px]">
+                <img src={logoWordmark} alt="CoquetteFlow" className="h-3.5 object-contain" />
+                <span className="text-[10px] text-[#888888] font-mono truncate max-w-[110px] mt-0.5">
                   {projectData?.name || 'Untitled Bot'}
                 </span>
               </div>

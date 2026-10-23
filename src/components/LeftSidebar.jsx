@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useProject } from '../context/ProjectContext';
 import { NODE_PALETTE } from '../nodes/nodeTypes';
+import logoIcon from '../assets/coquetteflow-icon.png';
+import logoWordmark from '../assets/coquetteflow-wordmark.png';
 
 // Structured categories matching Section 4 & 5
 const SIDEBAR_CATEGORIES = [
@@ -138,8 +140,8 @@ export default function LeftSidebar({ isOpen, onToggle, onAddNode, pluginMeta = 
       {/* Sidebar Header */}
       <div className="cq-sidebar-hdr">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-zinc-400" />
-          <span className="font-semibold text-xs tracking-wider uppercase text-zinc-300">Workspace</span>
+          <img src={logoIcon} alt="CoquetteFlow" className="w-4 h-4 rounded object-contain shrink-0" />
+          <img src={logoWordmark} alt="CoquetteFlow" className="h-3 object-contain opacity-90" />
         </div>
         <button
           className="cq-sidebar-close-btn"

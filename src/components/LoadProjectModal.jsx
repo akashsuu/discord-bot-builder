@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useProject } from '../context/ProjectContext';
+import logoIcon from '../assets/coquetteflow-icon.png';
 
 export default function LoadProjectModal({ isOpen, onClose }) {
   const { openProject, setScreen } = useProject();
@@ -108,7 +109,8 @@ export default function LoadProjectModal({ isOpen, onClose }) {
         <div className="flex items-center justify-between pb-4 border-b border-[#242424]">
           <div>
             <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
-              🤖 Saved Bot Projects
+              <img src={logoIcon} alt="CoquetteFlow" className="w-5 h-5 rounded object-contain shrink-0" />
+              Saved Bot Projects
             </h3>
             <p className="text-xs text-zinc-400 mt-1">
               Select a bot to load into the visual editor or run on your server.

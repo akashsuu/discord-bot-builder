@@ -7,6 +7,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     publicPath: '/',
+    assetModuleFilename: 'assets/[name][ext]',
   },
   module: {
     rules: [
@@ -19,6 +20,10 @@ module.exports = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
+      {
+        test: /\.(png|jpe?g|gif|svg|ico)$/i,
+        type: 'asset/resource',
+      },
     ],
   },
   resolve: {
@@ -27,7 +32,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html',
-      favicon: './kiodium.ico',
+      favicon: './coquetteflow-icon.png',
     }),
   ],
   target: 'web',

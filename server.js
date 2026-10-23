@@ -29,14 +29,21 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
 
-// Favicon and static files fallback
-app.get('/kiodium.ico', (_req, res) => {
-  const icoPath = path.join(__dirname, 'kiodium.ico');
-  if (fs.existsSync(icoPath)) {
-    res.sendFile(icoPath);
-  } else {
-    res.status(404).end();
-  }
+// Favicon and static logo fallbacks
+app.get(['/favicon.ico', '/coquetteflow-icon.png'], (_req, res) => {
+  const iconPath = path.join(__dirname, 'coquetteflow-icon.png');
+  if (fs.existsSync(iconPath)) return res.sendFile(iconPath);
+  const distIcon = path.join(__dirname, 'dist', 'coquetteflow-icon.png');
+  if (fs.existsSync(distIcon)) return res.sendFile(distIcon);
+  res.status(404).end();
+});
+
+app.get('/coquetteflow-wordmark.png', (_req, res) => {
+  const imgPath = path.join(__dirname, 'coquetteflow-wordmark.png');
+  if (fs.existsSync(imgPath)) return res.sendFile(imgPath);
+  const distWordmark = path.join(__dirname, 'dist', 'coquetteflow-wordmark.png');
+  if (fs.existsSync(distWordmark)) return res.sendFile(distWordmark);
+  res.status(404).end();
 });
 
 // ─── REST APIs ─────────────────────────────────────────────────────────────
