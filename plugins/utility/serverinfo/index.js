@@ -87,7 +87,7 @@ module.exports = {
  catch { /* use cached data */ }
  }
  const totalMembers = guild.memberCount;
- const botCount = guild.members.cache.filter((m) => m.user.bot).size;
+ const botCount = guild.members.cache.filter((m) => m.user?.bot).size;
  const humanCount = totalMembers - botCount;
 
  // ── 4. Gather channel stats ─────────────────────────────────────────
@@ -111,11 +111,11 @@ module.exports = {
  } catch { /* owner might not be fetchable */ }
 
  // ── 7. Boost ────────────────────────────────────────────────────────
- const boostLevel = guild.premiumTier;
- const boostCount = guild.premiumSubscriptionCount - 0;
+ const boostLevel = Number(guild.premiumTier ?? 0);
+ const boostCount = Number(guild.premiumSubscriptionCount ?? 0);
 
  // ── 8. Verification & features ──────────────────────────────────────
- const verLabel = VER_LEVEL[guild.verificationLevel] - '❓ Unknown';
+ const verLabel = VER_LEVEL[Number(guild.verificationLevel ?? 0)] || 'Unknown';
  const features = (guild.features || [])
  .map((f) => f.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase()))
  .sort();
@@ -135,7 +135,7 @@ module.exports = {
  owner: ownerName,
  ownerId,
  boostLevel: String(boostLevel),
- boostTier: BOOST_TIER[boostLevel] - 'No Level',
+ boostTier: BOOST_TIER[boostLevel] || 'No Level',
  boostCount: String(boostCount),
  roles: String(roleCount),
  textChannels: String(textChannels),
@@ -153,7 +153,7 @@ module.exports = {
  if (node.data?.embedEnabled !== false) {
  await sendServerEmbed(message, guild, vars, node.data, {
  textChannels, voiceChannels, stageChannels, forumChannels, categories,
- boostLevel, boostCount, boostTier: BOOST_TIER[boostLevel] - 'No Level',
+ boostLevel, boostCount, boostTier: BOOST_TIER[boostLevel] || 'No Level',
  humanCount, botCount, totalMembers, roleCount, verLabel,
  createdTimestamp, features, ownerId, ownerName,
  });
@@ -193,8 +193,8 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  const _vc = _g.channels.cache.filter(c => c.type === 2).size;
  const _cat = _g.channels.cache.filter(c => c.type === 4).size;
  const _roles = _g.roles.cache.size - 1;
- const _boost = ["No Level","Level 1","Level 2","Level 3"][_g.premiumTier] - "No Level";
- const _ver = ["🔓 None","🔒 Low","🔐 Medium","🛡️ High","🔑 Highest"][_g.verificationLevel] - "Unknown";
+ const _boost = ["No Level","Level 1","Level 2","Level 3"][Number(_g.premiumTier ?? 0)] || "No Level";
+ const _ver = ["None","Low","Medium","High","Highest"][Number(_g.verificationLevel ?? 0)] || "Unknown";
  const _ts = Math.floor(_g.createdAt.getTime() / 1000);
 
  const _embed = {
@@ -209,7 +209,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  { name: "👥 Members", value: \`Total: **\${_total.toLocaleString()}**\\n👤 Humans: \${(_total-_bots).toLocaleString()}\\n🤖 Bots: \${_bots.toLocaleString()}\`, inline: true },
  { name: "💬 Channels", value: \`💬 Text: **\${_tc}**\\n🔊 Voice: \${_vc}\\n📂 Categories: \${_cat}\`, inline: true },
  { name: "🎭 Roles", value: \`**\${_roles}** roles\`, inline: true },
- { name: "🚀 Boost", value: \`\${_boost} · \${_g.premiumSubscriptionCount-0} boosts\`, inline: true },
+ { name: "🚀 Boost", value: \`\${_boost} · \${Number(_g.premiumSubscriptionCount ?? 0)} boosts\`, inline: true },
  { name: "🔒 Verification", value: _ver, inline: true },
  ],
  footer: { text: \`Server ID: \${_g.id}\` },
@@ -248,10 +248,10 @@ async function sendServerEmbed(message, guild, vars, nodeData, stats) {
  const color = hexToInt(nodeData?.embedColor || '#5865F2');
 
  const iconURL =
- guild.iconURL({ size: 256, extension: 'png', dynamic: true }) || null;
+ guild.iconURL?.({ size: 256, extension: 'png', dynamic: true }) || null;
 
  const bannerURL =
- guild.bannerURL({ size: 1024, extension: 'png' }) || null;
+ guild.bannerURL?.({ size: 1024, extension: 'png' }) || null;
 
  // ── Boost bar ─────────────────────────────────────────────────────────────
  const boostBar =

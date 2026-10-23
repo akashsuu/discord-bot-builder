@@ -135,8 +135,9 @@ module.exports = {
  try {
  const reason = applyTemplate(data.reason || 'Channel nuked by {user}', vars);
  newChannel = await channel.clone({ name: channel.name, reason });
- if (typeof newChannel.setPosition === 'function' && Number.isFinite(channel.rawPosition - channel.position)) {
- await newChannel.setPosition(channel.rawPosition - channel.position).catch(() => {});
+ const position = Number.isFinite(channel.rawPosition) ? channel.rawPosition : channel.position;
+ if (typeof newChannel.setPosition === 'function' && Number.isFinite(position)) {
+ await newChannel.setPosition(position).catch(() => {});
  }
  await channel.delete(reason);
  } catch (err) {
@@ -172,12 +173,13 @@ module.exports = {
  const cmd = commandWithPrefix(rawCmd, prefix).replace(/"/g, '\\"');
  return `
 // Nuke Channel
-if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _rest = message.content.slice("${cmd}".length).trim().toLowerCase();
  if (_rest !== "confirm") return message.channel.send("Run ${cmd} confirm to delete and recreate this channel.");
  const _old = message.channel;
  const _new = await _old.clone({ name: _old.name, reason: "Channel nuked" });
- await _new.setPosition(_old.rawPosition - _old.position).catch(() => {});
+ const _pos = Number.isFinite(_old.rawPosition) ? _old.rawPosition : _old.position;
+ if (Number.isFinite(_pos)) await _new.setPosition(_pos).catch(() => {});
  await _old.delete("Channel nuked");
  await _new.send("Channel nuked.");
 }`;

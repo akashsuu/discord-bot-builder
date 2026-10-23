@@ -50,7 +50,7 @@ async function getCounts(guild) {
  catch { fresh = guild; }
 
  const total = fresh.memberCount ?? guild.memberCount ?? guild.members?.cache?.size ?? 0;
- let botCount = guild.members?.cache?.filter?.((member) => member.user?.bot).size - 0;
+ let botCount = guild.members?.cache?.filter?.((member) => member.user?.bot)?.size ?? 0;
  let cacheSize = guild.members?.cache?.size ?? 0;
 
  if (cacheSize < total && guild.members?.fetch) {

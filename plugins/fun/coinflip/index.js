@@ -83,7 +83,7 @@ if (message.content.trim().toLowerCase() === "${cmd.toLowerCase()}" && !message.
  const _cf_result = Math.random() < 0.5 ? "Heads" : "Tails";
  const _cf_emoji = _cf_result === "Heads" ? "🪙" : "🎯";
  const _cf_vars = { requester: message.author.username, result: _cf_result, emoji: _cf_emoji };
- const _cf_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_cf_vars[k] - m));
+ const _cf_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_cf_vars, k) && _cf_vars[k] !== null && _cf_vars[k] !== undefined ? String(_cf_vars[k]) : m));
  const _cf_title = _cf_apply(\`${titleTemplate}\`);
  const _cf_desc = _cf_apply(\`${descriptionTemplate}\`);
  const _cf_plain = _cf_apply(\`${plainTextTemplate}\`);

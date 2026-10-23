@@ -75,6 +75,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'lockdown').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
  await message.reply('I need Manage Channels permission.').catch(() => {});
@@ -139,7 +141,7 @@ module.exports = {
 
  return `
 // Lockdown
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _ld_after = message.content.slice("${cmd}".length).trim();
  const _ld_reason = _ld_after || "${reason}";
  let _ld_locked = 0;
@@ -156,7 +158,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  }
  }
  const _ld_vars = { mention: \`<@\${message.author?.id}>\`, reason: _ld_reason, lockedCount: String(_ld_locked), failedCount: String(_ld_failed) };
- const _ld_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _ld_vars[k] - m);
+ const _ld_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_ld_vars[k] ?? m));
  message.channel.send(_ld_apply(\`${output}\`)).catch(() => {});
 }
 `;

@@ -117,7 +117,7 @@ function varsFor(message, channel) {
  topic: channel.topic || 'None',
  nsfw: boolText(channel.nsfw),
  slowmode: formatSlowmode(channel.rateLimitPerUser),
- position: String(channel.rawPosition - channel.position - 'Unknown'),
+ position: String(channel.rawPosition ?? channel.position ?? 'Unknown'),
  createdAt: createdText(channel),
  permissionsSummary: perms.permissionsSummary,
  canView: boolText(perms.canView),

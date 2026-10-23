@@ -70,6 +70,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'roleremove').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageRoles)) {
  await message.reply('I need Manage Roles permission.').catch(() => {});
@@ -140,7 +142,7 @@ module.exports = {
 
  return `
 // Role Remove
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _rr_target = message.mentions.members?.first();
  const _rr_role = message.mentions.roles?.first();
  if (!_rr_target || !_rr_role) {
@@ -154,7 +156,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  targetMention: \`<@\${_rr_target.user?.id}>\`,
  roleMention: \`<@&\${_rr_role.id}>\`
  };
- const _rr_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _rr_vars[k] - m);
+ const _rr_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_rr_vars[k] ?? m));
  message.channel.send(_rr_apply(\`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to remove role: \${e.message}\`).catch(() => {}));
  }

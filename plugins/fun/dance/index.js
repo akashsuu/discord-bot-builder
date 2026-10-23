@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 const DEFAULT_DANCE_API = 'https://nekos.best/api/v2/dance';
 const TIMEOUT_MS = 10_000;
 
@@ -78,7 +89,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'dance').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  const targetUser =
  ctx.flow?.targetUser ||
@@ -109,7 +120,13 @@ module.exports = {
  }
 
  if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
- ctx.vars.danceData = { url: gifUrl, author: message.author.username, target: targetUser.username };
+ ctx.vars.danceData = {
+ url: gifUrl,
+ gif: gifUrl,
+ author: message.author.username,
+ target: targetUser.username,
+ anime: animeName || 'Unknown',
+ };
 
  const embedEnabled = node.data?.embedEnabled !== false;
  const author = message.author.username;
@@ -151,7 +168,10 @@ module.exports = {
  .replace(/`/g, '\\`');
 
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _dance_cmd = "${cmd}";
+var _dance_content = String(message.content || "").trim();
+var _dance_next = _dance_content.charAt(_dance_cmd.length);
+if (_dance_content.toLowerCase().startsWith(_dance_cmd.toLowerCase()) && (!_dance_next || /\\s/.test(_dance_next)) && !message.author.bot) {
  const _dance_target = message.mentions.users.first();
  if (!_dance_target) {
  message.reply(\`❌ Mention someone to dance with! Usage: \\\`${cmd} @user\\\`\`).catch(() => {});
@@ -167,7 +187,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
  const _dance_name = _dance_target.username;
  const _dance_anime = json?.results?.[0]?.anime_name || "Unknown";
  const _dance_vars = { author: _dance_author, target: _dance_name, gif: _dance_gif, anime: _dance_anime };
- const _dance_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_dance_vars[k] - m));
+ const _dance_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_dance_vars, k) && _dance_vars[k] !== null && _dance_vars[k] !== undefined ? String(_dance_vars[k]) : m));
  const _dance_title = _dance_apply(\`${titleTemplate}\`);
  const _dance_desc = _dance_apply(\`${descriptionTemplate}\`);
  const _dance_plain = _dance_apply(\`${plainTextTemplate}\`);

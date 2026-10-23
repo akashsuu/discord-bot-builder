@@ -115,14 +115,14 @@ function buildVars(message, ctx) {
  // ── INTERACTION state (updated per-interaction) ──────────────────────
  selected: flow.selected || '',
  button: flow.button || '',
- page: String(flow.page - 0),
+ page: String(flow.page ?? 0),
 
  // ── FLOW nested object (for {flow.command}, {flow.reason}, etc.) ──────
  flow: {
  command: flow.command || '',
  reason: flow.reason || '',
  target: tgtUser?.tag || '',
- page: String(flow.page - 0),
+ page: String(flow.page ?? 0),
  selected: flow.selected || '',
  button: flow.button || '',
  },

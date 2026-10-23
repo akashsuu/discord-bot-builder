@@ -110,9 +110,9 @@ function buildComponents(nodeData, currentPage, totalPages, sessionId) {
  }))
  : (dd.options || []).map((o, i) => ({
  label: String(o.label || `Option ${i + 1}`).slice(0, 100),
- value: String(o.value - i),
+ value: String(o.value ?? i),
  description: o.description ? String(o.description).slice(0, 100) : undefined,
- default: String(o.value - i) === String(currentPage),
+ default: String(o.value ?? i) === String(currentPage),
  }));
 
  if (rawOptions.length > 0) {
@@ -141,7 +141,7 @@ function buildComponents(nodeData, currentPage, totalPages, sessionId) {
  const b = new ButtonBuilder()
  .setCustomId(encodeId(nodeId, String(btn.id), sessionId))
  .setLabel(String(btn.label || btn.id).slice(0, 80))
- .setStyle(btn.style - ButtonStyle.Secondary);
+ .setStyle(btn.style ?? ButtonStyle.Secondary);
  if (btn.disabled) b.setDisabled(true);
  if (btn.emoji) b.setEmoji(String(btn.emoji));
  return b;

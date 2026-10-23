@@ -69,6 +69,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'massban').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.BanMembers)) {
  await message.reply('I need Ban Members permission.').catch(() => {});
@@ -138,7 +140,7 @@ module.exports = {
 
  return `
 // Mass Ban
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  if (!message.guild.members.me?.permissions.has("BanMembers")) {
  message.reply("I need Ban Members permission.").catch(() => {});
  } else if (!message.member?.permissions.has("BanMembers")) {
@@ -170,7 +172,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  failedCount: String(_mb_failed.length),
  targets: _mb_banned.map((m) => m.user?.tag || m.user?.username || m.id).join(", ") || "None"
  };
- const _mb_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _mb_vars[k] - m);
+ const _mb_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_mb_vars[k] ?? m));
  message.channel.send(_mb_apply(\`${output}\`)).catch(() => {});
  }
  }

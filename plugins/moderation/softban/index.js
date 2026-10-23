@@ -57,6 +57,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'softban').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.BanMembers)) {
  await message.reply('I need Ban Members permission.').catch(() => {});
@@ -125,7 +127,7 @@ module.exports = {
 
  return `
 // Soft Ban
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _sb_target = message.mentions.members?.first();
  if (!_sb_target) {
  message.reply(\`Usage: \\\`${cmd} @user [reason]\\\`\`).catch(() => {});
@@ -135,7 +137,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  .then(() => message.guild.members.unban(_sb_target.user.id, \`Softban cleanup by \${message.author.tag}\`))
  .then(() => {
  const _sb_vars = { mention: \`<@\${message.author?.id}>\`, targetMention: \`<@\${_sb_target.user?.id}>\`, reason: _sb_reason };
- const _sb_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _sb_vars[k] - m);
+ const _sb_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_sb_vars[k] ?? m));
  message.channel.send(_sb_apply(\`${output}\`)).catch(() => {});
  })
  .catch((e) => message.reply(\`Failed to softban: \${e.message}\`).catch(() => {}));

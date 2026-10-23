@@ -45,8 +45,8 @@ function boostTierLabel(tier) {
 }
 
 function varsFor(message, guild) {
- const boostCount = guild.premiumSubscriptionCount - 0;
- const boostTier = guild.premiumTier - 0;
+ const boostCount = Number(guild.premiumSubscriptionCount ?? 0);
+ const boostTier = Number(guild.premiumTier ?? 0);
  return {
  user: message.author?.username || 'Unknown',
  tag: message.author?.tag || message.author?.username || 'Unknown',
@@ -139,8 +139,8 @@ module.exports = {
 if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  const _rest = message.content.slice("${cmd}".length);
  if (!_rest || /^\\s/.test(_rest)) {
- const _boosts = message.guild.premiumSubscriptionCount - 0;
- const _tier = ["No Level", "Level 1", "Level 2", "Level 3"][message.guild.premiumTier - 0] || "No Level";
+ const _boosts = Number(message.guild.premiumSubscriptionCount ?? 0);
+ const _tier = ["No Level", "Level 1", "Level 2", "Level 3"][Number(message.guild.premiumTier ?? 0)] || "No Level";
  message.channel.send(\`\${message.guild.name} has \${_boosts} boosts (\${_tier}).\`);
  }
 }`;

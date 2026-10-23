@@ -56,6 +56,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'lock').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
  await message.reply('I need Manage Channels permission.').catch(() => {});
@@ -110,7 +112,7 @@ module.exports = {
  .replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
 // Channel Lock
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _lk_after = message.content.slice("${cmd}".length).trim();
  const _lk_mentioned = message.mentions.channels?.first();
  const _lk_first = (_lk_after.split(/\\s+/)[0] || "").replace(/[<#>]/g, "");
@@ -120,7 +122,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  _lk_channel.permissionOverwrites.edit(message.guild.roles.everyone, { SendMessages: false, AddReactions: false }, { reason: \`Channel lock by \${message.author.tag}: \${_lk_reason}\` })
  .then(() => {
  const _lk_vars = { mention: \`<@\${message.author?.id}>\`, reason: _lk_reason, channelMention: \`<#\${_lk_channel.id}>\` };
- const _lk_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _lk_vars[k] - m);
+ const _lk_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_lk_vars[k] ?? m));
  message.channel.send(_lk_apply(\`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to lock channel: \${e.message}\`).catch(() => {}));
 }

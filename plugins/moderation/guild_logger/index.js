@@ -133,7 +133,7 @@ module.exports = {
  memberCount: String(_gl_guild?.memberCount ?? 0),
  ownerId: _gl_guild?.ownerId || "0"
  };
- const _gl_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _gl_vars[k] - m);
+ const _gl_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_gl_vars[k] ?? m));
  _gl_chan.send(_gl_apply(_gl_tpl)).catch(() => {});
  }
 }

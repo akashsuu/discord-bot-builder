@@ -44,6 +44,64 @@ cd kiodium
 npm install
 ```
 
+### Run as Website (Hosted Web Edition)
+
+```bash
+# 1. Build frontend & start web server
+npm run start:web
+
+# Or if frontend is already built:
+npm start
+```
+The application will be live at http://localhost:3000.
+
+### Run as Desktop App (Electron)
+
+```bash
+npm run start:electron
+```
+
+---
+
+## 🌐 Web Hosting & Deployment
+
+You can host Kiodium on your website/server so multiple users can build bots in their browsers and run them hosted on your server!
+
+### Option 1: Docker (Recommended)
+
+```bash
+# Build and run with Docker Compose
+docker compose up -d
+```
+Your server will run on port 3000 with automated container restart and persistent volume storage for bot projects in /app/data.
+
+### Option 2: PM2 (Node Process Manager on VPS)
+
+```bash
+npm run build
+pm2 start ecosystem.config.js
+pm2 save
+```
+
+### Option 3: Nginx Reverse Proxy with WebSocket Support
+
+```nginx
+server {
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+---
+
 ### Run (development)
 
 ```bash

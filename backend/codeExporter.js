@@ -4,7 +4,7 @@ const path = require('path');
 
 function generateCode(projectData) {
  const { token = 'YOUR_BOT_TOKEN', name = 'Bot', prefix: rawPrefix = '!' } = projectData || {};
- const prefix = String(rawPrefix - '!').trim() || '!';
+ const prefix = String(rawPrefix || '!').trim() || '!';
  const pluginRoot = path.resolve(__dirname, '..', 'plugins');
  const safeProject = { ...(projectData || {}), token: token || 'YOUR_BOT_TOKEN', prefix };
 
@@ -35,6 +35,38 @@ if (typeof globalThis.File === "undefined") {
 
 const PROJECT = ${JSON.stringify(safeProject, null, 2)};
 const PLUGIN_ROOT = ${JSON.stringify(pluginRoot)};
+
+function projectNeedsMessageContentIntent() {
+ return (PROJECT.nodes || []).some((node) => node.type === "event_message" || node.type === "custom_command");
+}
+
+function projectNeedsGuildMembersIntent() {
+ return (PROJECT.nodes || []).some((node) => node.type === "event_member" || node.type === "moderation_antinuke");
+}
+
+function buildClientIntents() {
+ const intents = [
+ GatewayIntentBits.Guilds,
+ GatewayIntentBits.GuildMessages,
+ GatewayIntentBits.DirectMessages,
+ GatewayIntentBits.GuildEmojisAndStickers,
+ GatewayIntentBits.GuildVoiceStates,
+ GatewayIntentBits.GuildModeration,
+ GatewayIntentBits.GuildWebhooks,
+ GatewayIntentBits.GuildIntegrations,
+ ];
+ if (projectNeedsMessageContentIntent()) intents.push(GatewayIntentBits.MessageContent);
+ if (projectNeedsGuildMembersIntent()) intents.push(GatewayIntentBits.GuildMembers);
+ return intents;
+}
+
+function disallowedIntentsHelp() {
+ const required = [];
+ if (projectNeedsMessageContentIntent()) required.push("Message Content Intent");
+ if (projectNeedsGuildMembersIntent()) required.push("Server Members Intent");
+ const list = required.length ? required.join(" and ") : "the privileged intents used by this bot";
+ return \`Used disallowed intents. Open Discord Developer Portal > Applications > your bot > Bot > Privileged Gateway Intents, enable \${list}, then save changes and run again.\`;
+}
 
 const NODE_EVENT_DEFAULT = {
  event_channel: "channelCreate",
@@ -278,18 +310,7 @@ function makeHelpers(prefix) {
 
 const PLUGINS = loadPluginNodes(PLUGIN_ROOT);
 const client = new Client({
- intents: [
- GatewayIntentBits.Guilds,
- GatewayIntentBits.GuildMessages,
- GatewayIntentBits.MessageContent,
- GatewayIntentBits.DirectMessages,
- GatewayIntentBits.GuildMembers,
- GatewayIntentBits.GuildEmojisAndStickers,
- GatewayIntentBits.GuildVoiceStates,
- GatewayIntentBits.GuildModeration,
- GatewayIntentBits.GuildWebhooks,
- GatewayIntentBits.GuildIntegrations,
- ].filter(Boolean),
+ intents: buildClientIntents(),
  partials: [Partials.Channel],
 });
 
@@ -331,7 +352,13 @@ for (const [eventName, nodeType] of Object.entries(DISCORD_EVENT_TO_NODE)) {
 client.on("error", (err) => console.error("[discord-error]", err));
 client.on("warn", (msg) => console.warn("[discord-warn]", msg));
 
-client.login(PROJECT.token || process.env.DISCORD_TOKEN || "YOUR_BOT_TOKEN");
+client.login(PROJECT.token || process.env.DISCORD_TOKEN || "YOUR_BOT_TOKEN").catch((err) => {
+ const message = String(err?.message || "").toLowerCase().includes("disallowed intents") || err?.code === 4014
+ ? disallowedIntentsHelp()
+ : err.message;
+ console.error("[login-error]", message);
+ process.exitCode = 1;
+});
 `;
 }
 

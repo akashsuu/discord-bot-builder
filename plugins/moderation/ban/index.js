@@ -74,6 +74,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'ban').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.BanMembers)) {
  await message.reply('I need Ban Members permission.').catch(() => {});
@@ -149,7 +151,7 @@ module.exports = {
 
  return `
 // Ban
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  if (!message.guild.members.me?.permissions.has("BanMembers")) {
  message.reply("I need Ban Members permission.").catch(() => {});
  } else if (!message.member?.permissions.has("BanMembers")) {
@@ -169,7 +171,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  target: _bn_t.user?.tag || _bn_t.user?.username,
  reason: _bn_r
  };
- const _bn_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _bn_vars[k] - m);
+ const _bn_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_bn_vars[k] ?? m));
  message.channel.send(_bn_apply(\`${output}\`)).catch(() => {});
  })
  .catch((e) => message.reply(\`Failed to ban: \${e.message}\`).catch(() => {}));

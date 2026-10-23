@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 const DEFAULT_KISS_API = 'https://nekos.best/api/v2/kiss';
 const TIMEOUT_MS = 10_000;
 
@@ -70,7 +81,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'kiss').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  const targetUser = ctx.flow?.targetUser || ctx.flow?.targetMember?.user || message.mentions.users?.first() || null;
  if (!targetUser) {
@@ -90,6 +101,8 @@ module.exports = {
  }
 
  const vars = { author: message.author.username, target: targetUser.username, gif: gifUrl, anime: animeName || 'Unknown' };
+ if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
+ ctx.vars.kissData = { ...vars };
  const embedEnabled = node.data?.embedEnabled !== false;
  const color = parseInt((node.data?.embedColor || '#F43F5E').replace('#', ''), 16) || 0xF43F5E;
  const embed = buildKissEmbed(vars.author, vars.target, gifUrl, color, animeName, node.data?.titleTemplate || '{author} kissed {target}!', node.data?.descriptionTemplate || '**{author}** is kissing **{target}**!');
@@ -113,7 +126,10 @@ module.exports = {
  const descriptionTemplate = (node.data?.descriptionTemplate || '**{author}** is kissing **{target}**!').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  const plainTextTemplate = (node.data?.plainTextTemplate || '**{author}** is kissing **{target}**! {gif}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _kiss_cmd = "${cmd}";
+var _kiss_content = String(message.content || "").trim();
+var _kiss_next = _kiss_content.charAt(_kiss_cmd.length);
+if (_kiss_content.toLowerCase().startsWith(_kiss_cmd.toLowerCase()) && (!_kiss_next || /\\s/.test(_kiss_next)) && !message.author.bot) {
  const _kiss_target = message.mentions.users.first();
  if (!_kiss_target) {
  message.reply(\`❌ Mention someone to kiss! Usage: \\\`${cmd} @user\\\`\`).catch(() => {});
@@ -127,7 +143,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
  if (!_kiss_gif) throw new Error("No GIF");
  const _kiss_anime = json?.results?.[0]?.anime_name || "Unknown";
  const _kiss_vars = { author: message.author.username, target: _kiss_target.username, gif: _kiss_gif, anime: _kiss_anime };
- const _kiss_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_kiss_vars[k] - m));
+ const _kiss_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_kiss_vars, k) && _kiss_vars[k] !== null && _kiss_vars[k] !== undefined ? String(_kiss_vars[k]) : m));
  const _kiss_title = _kiss_apply(\`${titleTemplate}\`);
  const _kiss_desc = _kiss_apply(\`${descriptionTemplate}\`);
  const _kiss_plain = _kiss_apply(\`${plainTextTemplate}\`);

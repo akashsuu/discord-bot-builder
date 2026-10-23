@@ -40,13 +40,14 @@ function hexToInt(hex) {
 
 // Sanitise a single page entry - guarantees required fields are always strings.
 function normalisePage(p, i) {
+ const page = p || {};
  return {
- id: String(p.id - `page${i + 1}`),
- title: String(p.title - `Page ${i + 1}`),
- description: String(p.description - ''),
- content: String(p.content - ''),
- imageUrl: p.imageUrl || null,
- thumbnail: p.thumbnail || null,
+ id: String(page.id ?? `page${i + 1}`),
+ title: String(page.title ?? `Page ${i + 1}`),
+ description: String(page.description ?? ''),
+ content: String(page.content ?? ''),
+ imageUrl: page.imageUrl || null,
+ thumbnail: page.thumbnail || null,
  };
 }
 

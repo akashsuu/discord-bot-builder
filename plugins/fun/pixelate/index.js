@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 let JimpModule = null;
 try {
  JimpModule = require('jimp');
@@ -63,7 +74,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'pixelate').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  if (!getJimpCtor()) {
  try { await message.reply(node.data?.missingModuleMessage || '❌ jimp module is not installed.'); } catch {}
@@ -101,6 +112,8 @@ module.exports = {
 
  const fileName = `pixelated-${targetUser.id || 'user'}.png`;
  const vars = { requester: message.author.username, target: targetUser.username, pixelSize: String(pixelSize) };
+ if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
+ ctx.vars.pixelateData = { ...vars, fileName };
  const embedEnabled = node.data?.embedEnabled !== false;
  const color = parseInt((node.data?.embedColor || '#8B5CF6').replace('#', ''), 16) || 0x8B5CF6;
  const title = applyTemplate(node.data?.titleTemplate || '{target}\'s Pixelated Avatar', vars);
@@ -143,7 +156,10 @@ module.exports = {
  const descriptionTemplate = (node.data?.descriptionTemplate || 'Requested by {requester}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  const plainTextTemplate = (node.data?.plainTextTemplate || '{target} avatar pixelated by {requester}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _px_cmd = "${cmd}";
+var _px_content = String(message.content || "").trim();
+var _px_next = _px_content.charAt(_px_cmd.length);
+if (_px_content.toLowerCase().startsWith(_px_cmd.toLowerCase()) && (!_px_next || /\\s/.test(_px_next)) && !message.author.bot) {
  let _px_jimp = null;
  try { const _m = require("jimp"); _px_jimp = _m.Jimp || _m.default || _m; } catch {}
  if (!_px_jimp) {
@@ -162,7 +178,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
  })
  .then(buf => {
  const _px_vars = { requester: message.author.username, target: _px_target.username, pixelSize: "${pixelSize}" };
- const _px_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_px_vars[k] - m));
+ const _px_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_px_vars, k) && _px_vars[k] !== null && _px_vars[k] !== undefined ? String(_px_vars[k]) : m));
  const _px_title = _px_apply(\`${titleTemplate}\`);
  const _px_desc = _px_apply(\`${descriptionTemplate}\`);
  const _px_plain = _px_apply(\`${plainTextTemplate}\`);

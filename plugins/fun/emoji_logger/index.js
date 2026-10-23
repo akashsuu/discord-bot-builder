@@ -29,12 +29,14 @@ module.exports = {
  .replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
 // ── Emoji Logger ─────────────────────────────────────
-const _eChan = emoji.guild?.systemChannel;
-if (_eChan) {
+{
+ const _eChan = emoji.guild?.systemChannel;
+ if (_eChan) {
  const _msg = \`${tpl}\`
  .replace(/\\{emoji\\}/g, emoji.name || 'unknown')
  .replace(/\\{server\\}/g, emoji.guild.name);
  _eChan.send(_msg);
+ }
 }
 `;
  },

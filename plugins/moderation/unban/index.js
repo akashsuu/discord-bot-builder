@@ -61,6 +61,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'unban').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.BanMembers)) {
  await message.reply('I need Ban Members permission.').catch(() => {});
@@ -115,7 +117,7 @@ module.exports = {
 
  return `
 // Unban
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _ub_after = message.content.slice("${cmd}".length).trim();
  const _ub_parts = _ub_after ? _ub_after.split(/\\s+/) : [];
  const _ub_id = String(_ub_parts[0] || "").replace(/[<@!>]/g, "");
@@ -126,7 +128,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  message.guild.members.unban(_ub_id, \`Unban by \${message.author.tag}: \${_ub_reason}\`)
  .then(() => {
  const _ub_vars = { mention: \`<@\${message.author?.id}>\`, targetId: _ub_id, reason: _ub_reason };
- const _ub_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _ub_vars[k] - m);
+ const _ub_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_ub_vars[k] ?? m));
  message.channel.send(_ub_apply(\`${output}\`)).catch(() => {});
  })
  .catch((e) => message.reply(\`Failed to unban: \${e.message}\`).catch(() => {}));

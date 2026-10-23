@@ -148,7 +148,7 @@ if (message.content.trim().toLowerCase() === "${cmd.toLowerCase()}" && !message.
  punchline: _punch,
  type: String(json?.type || "general"),
  };
- const _apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_vars[k] - m));
+ const _apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_vars, k) && _vars[k] !== null && _vars[k] !== undefined ? String(_vars[k]) : m));
  const _title = _apply(\`${titleTemplate}\`);
  const _desc = _apply(\`${descriptionTemplate}\`);
  const _plain = _apply(\`${plainTextTemplate}\`);

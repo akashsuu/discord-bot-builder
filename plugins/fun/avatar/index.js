@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (m, k) =>
  Object.prototype.hasOwnProperty.call(vars, k) && vars[k] !== null && vars[k] !== undefined ? String(vars[k]) : m
@@ -37,7 +48,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'avatar').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  const targetUser =
  ctx.flow?.targetUser ||
@@ -98,11 +109,14 @@ module.exports = {
  const descriptionTemplate = (node.data?.descriptionTemplate || 'Requested by {requester}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  const plainTextTemplate = (node.data?.plainTextTemplate || '{target} avatar: {avatarUrl}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _av_cmd = "${cmd}";
+var _av_content = String(message.content || "").trim();
+var _av_next = _av_content.charAt(_av_cmd.length);
+if (_av_content.toLowerCase().startsWith(_av_cmd.toLowerCase()) && (!_av_next || /\\s/.test(_av_next)) && !message.author.bot) {
  const _av_target = message.mentions.users.first() || message.author;
  const _av_url = _av_target?.displayAvatarURL ? _av_target.displayAvatarURL({ size: 1024, extension: "png", forceStatic: false }) : "";
  const _av_vars = { requester: message.author.username, target: _av_target?.username || "Unknown", avatarUrl: _av_url };
- const _av_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_av_vars[k] - m));
+ const _av_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_av_vars, k) && _av_vars[k] !== null && _av_vars[k] !== undefined ? String(_av_vars[k]) : m));
  const _av_title = _av_apply(\`${titleTemplate}\`);
  const _av_desc = _av_apply(\`${descriptionTemplate}\`);
  const _av_plain = _av_apply(\`${plainTextTemplate}\`);

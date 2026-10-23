@@ -28,7 +28,7 @@ function matchCommand(content, commands) {
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
- Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key] - '') : match
+ Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
  );
 }
 
@@ -106,7 +106,7 @@ async function fetchGenshinProfile(uid, data) {
  uid,
  nickname: info.nickname || 'Traveler',
  level: info.level || 0,
- worldLevel: info.worldLevel - 'Unavailable',
+ worldLevel: info.worldLevel ?? 'Unavailable',
  signature: info.signature || 'No signature.',
  achievements: info.finishAchievementNum || 0,
  abyss: abyssFloor && abyssChamber ? `${abyssFloor}-${abyssChamber}` : 'Unavailable',

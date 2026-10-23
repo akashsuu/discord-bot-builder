@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 const DEFAULT_PAT_API = 'https://nekos.best/api/v2/pat';
 const TIMEOUT_MS = 10_000;
 
@@ -56,7 +67,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'pat').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  const targetUser = ctx.flow?.targetUser || ctx.flow?.targetMember?.user || message.mentions.users?.first() || null;
  if (!targetUser) {
@@ -76,6 +87,8 @@ module.exports = {
  }
 
  const vars = { author: message.author.username, target: targetUser.username, gif: gifUrl, anime: animeName || 'Unknown' };
+ if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
+ ctx.vars.patData = { ...vars };
  const embedEnabled = node.data?.embedEnabled !== false;
  const color = parseInt((node.data?.embedColor || '#22C55E').replace('#', ''), 16) || 0x22C55E;
  const title = applyTemplate(node.data?.titleTemplate || '{author} patted {target}!', vars);
@@ -112,7 +125,10 @@ module.exports = {
  const descriptionTemplate = (node.data?.descriptionTemplate || '**{author}** is patting **{target}**!').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  const plainTextTemplate = (node.data?.plainTextTemplate || '**{author}** is patting **{target}**! {gif}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _pat_cmd = "${cmd}";
+var _pat_content = String(message.content || "").trim();
+var _pat_next = _pat_content.charAt(_pat_cmd.length);
+if (_pat_content.toLowerCase().startsWith(_pat_cmd.toLowerCase()) && (!_pat_next || /\\s/.test(_pat_next)) && !message.author.bot) {
  const _pat_target = message.mentions.users.first();
  if (!_pat_target) {
  message.reply(\`❌ Mention someone to pat! Usage: \\\`${cmd} @user\\\`\`).catch(() => {});
@@ -126,7 +142,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
  if (!_pat_gif) throw new Error("No GIF");
  const _pat_anime = json?.results?.[0]?.anime_name || "Unknown";
  const _pat_vars = { author: message.author.username, target: _pat_target.username, gif: _pat_gif, anime: _pat_anime };
- const _pat_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_pat_vars[k] - m));
+ const _pat_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_pat_vars, k) && _pat_vars[k] !== null && _pat_vars[k] !== undefined ? String(_pat_vars[k]) : m));
  const _pat_title = _pat_apply(\`${titleTemplate}\`);
  const _pat_desc = _pat_apply(\`${descriptionTemplate}\`);
  const _pat_plain = _pat_apply(\`${plainTextTemplate}\`);

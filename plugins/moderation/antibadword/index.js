@@ -176,7 +176,7 @@ module.exports = {
  date: _abw_now.toISOString().slice(0, 10),
  time: _abw_now.toTimeString().slice(0, 8),
  };
- const _abw_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _abw_vars[k] - m);
+ const _abw_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_abw_vars[k] ?? m));
  message.channel.send(_abw_apply(\`${output}\`)).catch(() => {});
  ` : ''}
  }

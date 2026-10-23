@@ -75,6 +75,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'unlockdown').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
  await message.reply('I need Manage Channels permission.').catch(() => {});
@@ -139,7 +141,7 @@ module.exports = {
 
  return `
 // Unlockdown
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _ud_after = message.content.slice("${cmd}".length).trim();
  const _ud_reason = _ud_after || "${reason}";
  let _ud_unlocked = 0;
@@ -156,7 +158,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  }
  }
  const _ud_vars = { mention: \`<@\${message.author?.id}>\`, reason: _ud_reason, unlockedCount: String(_ud_unlocked), failedCount: String(_ud_failed) };
- const _ud_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _ud_vars[k] - m);
+ const _ud_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_ud_vars[k] ?? m));
  message.channel.send(_ud_apply(\`${output}\`)).catch(() => {});
 }
 `;

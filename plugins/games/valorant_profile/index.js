@@ -28,7 +28,7 @@ function matchCommand(content, commands) {
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
- Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key] - '') : match
+ Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
  );
 }
 
@@ -108,11 +108,11 @@ async function fetchValorantProfile(riotId, data) {
  puuid: account.puuid || mmrAccount.puuid || 'Unavailable',
  region: region.toUpperCase(),
  platform: platform.toUpperCase(),
- accountLevel: account.account_level - account.accountLevel - 'Unavailable',
+ accountLevel: account.account_level ?? account.accountLevel ?? 'Unavailable',
  currentRank: currentTier.name || 'Unrated',
- rr: current.rr - '0',
- elo: current.elo - '0',
- lastChange: current.last_change - '0',
+ rr: current.rr ?? '0',
+ elo: current.elo ?? '0',
+ lastChange: current.last_change ?? '0',
  peakRank: peakTier.name || 'Unavailable',
  leaderboardRank: leaderboard.rank ? `#${Number(leaderboard.rank).toLocaleString('en-US')}` : 'Unranked',
  cardUrl: readCard(account),
@@ -133,9 +133,9 @@ function varsFor(message, data, profile = {}, extra = {}) {
  platform: profile.platform || String(data.platform || 'pc').toUpperCase(),
  account_level: profile.accountLevel || 'Unavailable',
  current_rank: profile.currentRank || 'Unrated',
- rr: profile.rr - '0',
- elo: profile.elo - '0',
- last_change: profile.lastChange - '0',
+ rr: profile.rr ?? '0',
+ elo: profile.elo ?? '0',
+ last_change: profile.lastChange ?? '0',
  peak_rank: profile.peakRank || 'Unavailable',
  leaderboard_rank: profile.leaderboardRank || 'Unranked',
  card_url: profile.cardUrl || '',

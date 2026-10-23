@@ -44,9 +44,10 @@ module.exports = {
  // ── 2. Match command or alias ────────────────────────────────────────
  const content = message.content;
  const allTriggers = [cmd, ...aliases];
- const matched = allTriggers.find((t) =>
- content.toLowerCase().startsWith(t.toLowerCase())
- );
+ const matched = allTriggers.find((t) => {
+ const rest = content.slice(t.length);
+ return content.toLowerCase().startsWith(t.toLowerCase()) && (!rest || /^\s/.test(rest));
+ });
  if (!matched) return false;
 
  // ── 3. Cooldown enforcement ──────────────────────────────────────────
@@ -106,14 +107,17 @@ module.exports = {
  return `
 // ── Flow Command: ${cmd} ${'─'.repeat(Math.max(0, 40 - cmd.length))}
 if (!message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) return;
+const _cmdRest = message.content.slice("${cmd}".length);
+if (_cmdRest && !/^\\s/.test(_cmdRest)) return;
 ${cooldown > 0 ? `
 const _cdKey = \`\${message.guild?.id}:\${message.author.id}:${rawCmd}\`;
-const _cdLast = (_cooldowns - _cooldowns_${rawCmd.replace(/\W/g,'')} -= new Map()).get(_cdKey) || 0;
+globalThis.__flowCommandCooldowns ||= new Map();
+const _cdLast = globalThis.__flowCommandCooldowns.get(_cdKey) || 0;
 if (Date.now() - _cdLast < ${cooldown * 1000}) {
  const _rem = ((${cooldown * 1000} - (Date.now() - _cdLast)) / 1000).toFixed(1);
  message.reply(\`⏱️ Wait \${_rem}s.\`); return;
 }
-(_cooldowns - new Map()).set(_cdKey, Date.now());` : ''}
+globalThis.__flowCommandCooldowns.set(_cdKey, Date.now());` : ''}
 const _args = message.content.slice("${cmd}".length).trim().split(/\\s+/).filter(Boolean);
 const _target = message.mentions.members?.first() || null;
 const _reason = message.content.slice("${cmd}".length).replace(/<@!?\\d+>/g,'').trim() || null;`;

@@ -28,7 +28,7 @@ function matchCommand(content, commands) {
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
- Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key] - '') : match
+ Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
  );
 }
 
@@ -45,6 +45,23 @@ function dashedUuid(uuid) {
 
 function compactUuid(uuid) {
  return String(uuid || '').replace(/-/g, '');
+}
+
+function imageIdentifier(value, fallback = 'MHF_Steve') {
+ const clean = compactUuid(value).trim();
+ return encodeURIComponent(clean || fallback);
+}
+
+function mcHeadsSkinUrl(identifier) {
+ return `https://mc-heads.net/skin/${imageIdentifier(identifier)}.png`;
+}
+
+function mcHeadsBodyUrl(identifier) {
+ return `https://mc-heads.net/body/${imageIdentifier(identifier)}/right.png`;
+}
+
+function mcHeadsAvatarUrl(identifier) {
+ return `https://mc-heads.net/avatar/${imageIdentifier(identifier)}/128.png`;
 }
 
 async function getJson(url, options = {}) {
@@ -95,14 +112,15 @@ async function fetchJavaProfile(username) {
  const session = await getJson(`https://sessionserver.mojang.com/session/minecraft/profile/${compactUuid(uuid)}`);
  const textures = decodeTextures(session);
  const history = await fetchNameHistory(user.name, uuid);
- const skinUrl = textures.SKIN?.url || `https://crafatar.com/skins/${compactUuid(uuid)}`;
+ const imageId = compactUuid(uuid);
+ const skinUrl = textures.SKIN?.url || mcHeadsSkinUrl(imageId);
  return {
  edition: 'Java',
  name: user.name,
  uuid,
  skinUrl,
- renderUrl: `https://minotar.net/armor/body/${encodeURIComponent(user.name)}/100.png`,
- avatarUrl: `https://minotar.net/avatar/${encodeURIComponent(user.name)}/100.png`,
+ renderUrl: mcHeadsBodyUrl(imageId),
+ avatarUrl: mcHeadsAvatarUrl(imageId),
  nameHistory: formatNameHistory(history, user.name),
  nameChangeCount: String(Math.max(0, history.length - 1)),
  };
@@ -118,14 +136,15 @@ async function fetchBedrockProfile(gamertag) {
  } catch {
  skin = null;
  }
- const texture = skin?.texture_id || skin?.hash || String(xuid);
+ const texture = skin?.texture_id || skin?.hash || '';
+ const imageId = texture || String(xuid) || 'MHF_Steve';
  return {
  edition: 'Bedrock',
  name: gamertag,
  uuid: String(xuid),
- skinUrl: skin?.value ? `https://api.geysermc.org/v2/skin/${encodeURIComponent(String(xuid))}` : 'Unavailable',
- renderUrl: `https://mc-heads.net/body/${encodeURIComponent(texture)}/right.png`,
- avatarUrl: `https://mc-heads.net/avatar/${encodeURIComponent(texture)}/100.png`,
+ skinUrl: texture ? mcHeadsSkinUrl(imageId) : 'Unavailable',
+ renderUrl: mcHeadsBodyUrl(imageId),
+ avatarUrl: mcHeadsAvatarUrl(imageId),
  nameHistory: `1. \`${gamertag}\` - Bedrock gamertag.`,
  nameChangeCount: '0',
  };
@@ -147,13 +166,13 @@ function varsFor(message, data, profile = {}, extra = {}) {
  mention: message.author?.id ? `<@${message.author.id}>` : '@user',
  query: extra.query || profile.name || '',
  edition: profile.edition || 'Java',
- mc_name: profile.name || extra.query || 'Google_it',
+ mc_name: profile.name || extra.query || 'akashsuu',
  mc_uuid: profile.uuid || '0362e2fb-bdda-4b49-8608-e0fc8af35cde',
  skin_url: profile.skinUrl || '',
  skin_link: profile.skinUrl && profile.skinUrl !== 'Unavailable' ? `[${data.skinLinkLabel || 'Open Skin'}](${profile.skinUrl})` : 'Unavailable',
  render_url: profile.renderUrl || '',
  avatar_url: profile.avatarUrl || '',
- name_history: profile.nameHistory || '1. `Google_it` - First username.',
+ name_history: profile.nameHistory || '1. `akashsuu` - First username.',
  name_change_count: profile.nameChangeCount || '0',
  error: extra.error || '',
  };

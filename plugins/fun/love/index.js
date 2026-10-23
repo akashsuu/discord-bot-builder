@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 const DEFAULT_LOVE_API = 'https://nekos.best/api/v2/love';
 const TIMEOUT_MS = 10_000;
 
@@ -56,7 +67,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'love').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  const targetUser = ctx.flow?.targetUser || ctx.flow?.targetMember?.user || message.mentions.users?.first() || null;
  if (!targetUser) {
@@ -76,6 +87,8 @@ module.exports = {
  }
 
  const vars = { author: message.author.username, target: targetUser.username, gif: gifUrl, anime: animeName || 'Unknown' };
+ if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
+ ctx.vars.loveData = { ...vars };
  const embedEnabled = node.data?.embedEnabled !== false;
  const color = parseInt((node.data?.embedColor || '#EF4444').replace('#', ''), 16) || 0xEF4444;
  const title = applyTemplate(node.data?.titleTemplate || '{author} sent love to {target}!', vars);
@@ -112,7 +125,10 @@ module.exports = {
  const descriptionTemplate = (node.data?.descriptionTemplate || '**{author}** is showing love to **{target}**!').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  const plainTextTemplate = (node.data?.plainTextTemplate || '**{author}** is showing love to **{target}**! {gif}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _love_cmd = "${cmd}";
+var _love_content = String(message.content || "").trim();
+var _love_next = _love_content.charAt(_love_cmd.length);
+if (_love_content.toLowerCase().startsWith(_love_cmd.toLowerCase()) && (!_love_next || /\\s/.test(_love_next)) && !message.author.bot) {
  const _love_target = message.mentions.users.first();
  if (!_love_target) {
  message.reply(\`❌ Mention someone to love! Usage: \\\`${cmd} @user\\\`\`).catch(() => {});
@@ -126,7 +142,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
  if (!_love_gif) throw new Error("No GIF");
  const _love_anime = json?.results?.[0]?.anime_name || "Unknown";
  const _love_vars = { author: message.author.username, target: _love_target.username, gif: _love_gif, anime: _love_anime };
- const _love_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_love_vars[k] - m));
+ const _love_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_love_vars, k) && _love_vars[k] !== null && _love_vars[k] !== undefined ? String(_love_vars[k]) : m));
  const _love_title = _love_apply(\`${titleTemplate}\`);
  const _love_desc = _love_apply(\`${descriptionTemplate}\`);
  const _love_plain = _love_apply(\`${plainTextTemplate}\`);

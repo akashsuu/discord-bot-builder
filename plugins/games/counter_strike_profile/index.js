@@ -28,7 +28,7 @@ function matchCommand(content, commands) {
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
- Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key] - '') : match
+ Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
  );
 }
 
@@ -99,6 +99,17 @@ function minutesToHours(minutes) {
  return `${Math.round(mins / 60).toLocaleString('en-US')} hours`;
 }
 
+function parseHourText(value) {
+ const cleaned = String(value || '').replace(/,/g, '').match(/[\d.]+/);
+ return cleaned ? Number(cleaned[0]) : 0;
+}
+
+function hoursToText(hours) {
+ const value = Number(hours || 0);
+ if (!value) return 'Unavailable';
+ return `${Math.round(value).toLocaleString('en-US')} hours`;
+}
+
 function personaStateText(value) {
  const states = ['Offline', 'Online', 'Busy', 'Away', 'Snooze', 'Looking to trade', 'Looking to play'];
  return states[Number(value || 0)] || 'Unknown';
@@ -108,11 +119,15 @@ function visibilityText(value) {
  return Number(value) === 3 ? 'Public' : 'Private';
 }
 
-async function fetchSteamXmlProfile(steamId) {
+async function fetchSteamXmlProfile(steamId, appId = '730') {
  const xml = await getText(`https://steamcommunity.com/profiles/${encodeURIComponent(steamId)}/?xml=1`);
  if (!xml) return null;
  const id = xmlValue(xml, 'steamID64') || steamId;
  if (!id) return null;
+ const gameXml = await getText(`https://steamcommunity.com/profiles/${encodeURIComponent(id)}/games/?xml=1`).catch(() => '');
+ const gameBlocks = String(gameXml || '').match(/<game>[\s\S]*?<\/game>/gi) || [];
+ const game = gameBlocks.find((block) => String(xmlValue(block, 'appID') || xmlValue(block, 'appId')) === String(appId)) || '';
+ const playtimeHours = parseHourText(xmlValue(game, 'hoursOnRecord') || xmlValue(game, 'hoursPlayed'));
  return {
  steamId: id,
  name: xmlValue(xml, 'steamID') || 'Steam User',
@@ -120,7 +135,7 @@ async function fetchSteamXmlProfile(steamId) {
  avatarUrl: xmlValue(xml, 'avatarFull') || xmlValue(xml, 'avatarMedium') || xmlValue(xml, 'avatarIcon') || '',
  visibility: xmlValue(xml, 'privacyState') || 'Unavailable',
  personaState: xmlValue(xml, 'onlineState') || 'Unavailable',
- playtime: 'Unavailable',
+ playtime: playtimeHours ? hoursToText(playtimeHours) : 'Unavailable',
  kills: '0',
  deaths: '0',
  kd: '0.00',
@@ -133,10 +148,10 @@ async function fetchSteamXmlProfile(steamId) {
 
 async function fetchCounterStrikeProfile(steamId, data) {
  const apiKey = String(data.apiKey || '').trim();
- if (!apiKey) {
- return fetchSteamXmlProfile(steamId);
- }
  const appId = String(data.appId || '730').trim() || '730';
+ if (!apiKey) {
+ return fetchSteamXmlProfile(steamId, appId);
+ }
  const key = encodeURIComponent(apiKey);
  const id = encodeURIComponent(steamId);
 
@@ -146,7 +161,7 @@ async function fetchCounterStrikeProfile(steamId, data) {
 
  const player = summaryJson?.response?.players?.[0] || {};
  const stats = statMap(statsJson?.playerstats?.stats || []);
- const xmlProfile = !player.steamid ? await fetchSteamXmlProfile(steamId).catch(() => null) : null;
+ const xmlProfile = await fetchSteamXmlProfile(steamId, appId).catch(() => null);
  if (!player.steamid && !stats.size && !xmlProfile) return null;
 
  const kills = stats.get('total_kills') || 0;
@@ -162,7 +177,7 @@ async function fetchCounterStrikeProfile(steamId, data) {
  avatarUrl: player.avatarfull || player.avatarmedium || player.avatar || xmlProfile?.avatarUrl || '',
  visibility: player.communityvisibilitystate !== undefined ? visibilityText(player.communityvisibilitystate) : (xmlProfile?.visibility || 'Unavailable'),
  personaState: player.personastate !== undefined ? personaStateText(player.personastate) : (xmlProfile?.personaState || 'Unavailable'),
- playtime: minutesToHours(game.playtime_forever),
+ playtime: game.playtime_forever ? minutesToHours(game.playtime_forever) : (xmlProfile?.playtime || 'Unavailable'),
  kills: num(kills),
  deaths: num(deaths),
  kd: ratio(kills, deaths),

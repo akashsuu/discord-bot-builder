@@ -1,7 +1,7 @@
 'use strict';
 
 const { PermissionFlagsBits } = require('discord.js');
-const warningsStore = globalThis.__warningsStore - (globalThis.__warningsStore = new Map());
+const warningsStore = globalThis.__warningsStore || (globalThis.__warningsStore = new Map());
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
@@ -69,6 +69,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'warn').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.member?.permissions.has(PermissionFlagsBits.ModerateMembers)) {
  await message.reply('You need Moderate Members permission.').catch(() => {});
@@ -142,7 +144,7 @@ module.exports = {
 
  return `
 // Warn User
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _wr_target = message.mentions.members?.first();
  if (!_wr_target) {
  message.reply(\`Usage: \\\`${cmd} @user [reason]\\\`\`).catch(() => {});
@@ -155,7 +157,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  reason: _wr_reason,
  server: message.guild?.name || "Unknown"
  };
- const _wr_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _wr_vars[k] - m);
+ const _wr_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_wr_vars[k] ?? m));
  ${dmEnabled ? `try { await _wr_target.send(_wr_apply(\`${dmMessage}\`)); } catch {}` : ''}
  message.channel.send(_wr_apply(\`${output}\`)).catch(() => {});
  }

@@ -61,6 +61,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'slowmode').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
  await message.reply('I need Manage Channels permission.').catch(() => { });
@@ -121,7 +123,7 @@ module.exports = {
 
  return `
 // Slowmode
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _sm_parts = message.content.slice("${cmd}".length).trim().split(/\\s+/).filter(Boolean);
  const _sm_chanTok = _sm_parts[0] && (/^<#?\\d{17,20}>?$/.test(_sm_parts[0]) || /^\\d{17,20}$/.test(_sm_parts[0])) ? _sm_parts[0] : null;
  const _sm_secsTok = _sm_chanTok ? _sm_parts[1] : _sm_parts[0];
@@ -131,7 +133,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  const _sm_secs = Math.min(Math.max(_sm_raw, 0), 21600);
  _sm_channel.setRateLimitPerUser(_sm_secs, \`Slowmode set by \${message.author.tag}\`).then(() => {
  const _sm_vars = { mention: \`<@\${message.author?.id}>\`, channelMention: \`<#\${_sm_channel.id}>\`, seconds: String(_sm_secs) };
- const _sm_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _sm_vars[k] - m);
+ const _sm_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_sm_vars[k] ?? m));
  message.channel.send(_sm_apply(\`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to set slowmode: \${e.message}\`).catch(() => {}));
 }

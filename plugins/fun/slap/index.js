@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const DEFAULT_SLAP_API = 'https://nekos.best/api/v2/slap';
@@ -85,7 +96,7 @@ module.exports = {
  const rawCmd = (node.data?.command || 'slap').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
 
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  // ── 2. Resolve target ─────────────────────────────────────────────────
  const targetUser =
@@ -119,7 +130,13 @@ module.exports = {
 
  // ── 4. Store in ctx.vars for downstream nodes ─────────────────────────
  if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
- ctx.vars.slapData = { url: gifUrl, author: message.author.username, target: targetUser.username };
+ ctx.vars.slapData = {
+ url: gifUrl,
+ gif: gifUrl,
+ author: message.author.username,
+ target: targetUser.username,
+ isSelf: String(isSelf),
+ };
 
  // ── 5. Build and send embed ───────────────────────────────────────────
  const color = parseInt((node.data?.embedColor || '#7B2FBE').replace('#', ''), 16) || 0x7B2FBE;
@@ -146,7 +163,10 @@ module.exports = {
 
  return `
 // ── Anime Slap: ${cmd} ${'─'.repeat(Math.max(0, 40 - cmd.length))}
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _slap_cmd = "${cmd}";
+var _slap_content = String(message.content || "").trim();
+var _slap_next = _slap_content.charAt(_slap_cmd.length);
+if (_slap_content.toLowerCase().startsWith(_slap_cmd.toLowerCase()) && (!_slap_next || /\\s/.test(_slap_next)) && !message.author.bot) {
  const _slap_target = message.mentions.users.first();
  if (!_slap_target) {
  message.reply(\`❌ Mention someone to slap! Usage: \\\`${cmd} @user\\\`\`).catch(() => {});

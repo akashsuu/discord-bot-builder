@@ -163,7 +163,7 @@ module.exports = {
  return `
 // Anti Spam
 {
- const _as_buckets = globalThis.__antiSpamBuckets -= new Map();
+ const _as_buckets = (globalThis.__antiSpamBuckets ||= new Map());
  const _as_key = \`\${message.guild?.id}:\${message.channel?.id}:\${message.author?.id}\`;
  const _as_now = Date.now();
  const _as_recent = (_as_buckets.get(_as_key) || []).filter((time) => _as_now - time <= ${intervalSeconds * 1000});
@@ -190,7 +190,7 @@ module.exports = {
  date: new Date().toISOString().slice(0, 10),
  time: new Date().toTimeString().slice(0, 8),
  };
- const _as_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _as_vars[k] - m);
+ const _as_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_as_vars[k] ?? m));
  message.channel.send(_as_apply(\`${output}\`)).catch(() => {});
  ` : ''}
  }

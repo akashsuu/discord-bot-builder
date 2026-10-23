@@ -56,6 +56,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'unlock').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
  await message.reply('I need Manage Channels permission.').catch(() => {});
@@ -110,7 +112,7 @@ module.exports = {
  .replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
 // Channel Unlock
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _ul_after = message.content.slice("${cmd}".length).trim();
  const _ul_mentioned = message.mentions.channels?.first();
  const _ul_first = (_ul_after.split(/\\s+/)[0] || "").replace(/[<#>]/g, "");
@@ -120,7 +122,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  _ul_channel.permissionOverwrites.edit(message.guild.roles.everyone, { SendMessages: null, AddReactions: null }, { reason: \`Channel unlock by \${message.author.tag}: \${_ul_reason}\` })
  .then(() => {
  const _ul_vars = { mention: \`<@\${message.author?.id}>\`, reason: _ul_reason, channelMention: \`<#\${_ul_channel.id}>\` };
- const _ul_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _ul_vars[k] - m);
+ const _ul_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_ul_vars[k] ?? m));
  message.channel.send(_ul_apply(\`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to unlock channel: \${e.message}\`).catch(() => {}));
 }

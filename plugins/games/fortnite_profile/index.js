@@ -28,7 +28,7 @@ function matchCommand(content, commands) {
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
- Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key] - '') : match
+ Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
  );
 }
 
@@ -50,8 +50,13 @@ async function getJson(url, options = {}) {
 
 function readStat(stats, names) {
  for (const name of names) {
- const value = stats?.all?.overall?.[name] - stats?.overall?.[name] - stats?.[name];
- if (value !== undefined && value !== null) return value;
+ const candidates = [
+ stats?.all?.overall?.[name],
+ stats?.overall?.[name],
+ stats?.[name],
+ ];
+ const value = candidates.find((item) => item !== undefined && item !== null && item !== '');
+ if (value !== undefined) return value;
  }
  return 0;
 }

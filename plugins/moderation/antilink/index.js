@@ -196,7 +196,7 @@ module.exports = {
  date: _al_now.toISOString().slice(0, 10),
  time: _al_now.toTimeString().slice(0, 8),
  };
- const _al_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _al_vars[k] - m);
+ const _al_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_al_vars[k] ?? m));
  message.channel.send(_al_apply(\`${output}\`)).catch(() => {});
  ` : ''}
  }

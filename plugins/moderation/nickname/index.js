@@ -61,6 +61,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'nickname').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageNicknames)) {
  await message.reply('I need Manage Nicknames permission.').catch(() => {});
@@ -137,7 +139,7 @@ module.exports = {
 
  return `
 // Nickname
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _nn_target = message.mentions.members?.first();
  if (!_nn_target) {
  message.reply(\`Usage: \\\`${cmd} @user <new nickname>\\\` or \\\`${cmd} @user reset\\\`\`).catch(() => {});
@@ -157,7 +159,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  targetMention: \`<@\${_nn_target.user?.id}>\`,
  nickname: _nn_new || _nn_target.displayName || _nn_target.user?.username
  };
- const _nn_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _nn_vars[k] - m);
+ const _nn_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_nn_vars[k] ?? m));
  message.channel.send(_nn_apply(_nn_reset ? \`${resetOutput}\` : \`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to change nickname: \${e.message}\`).catch(() => {}));
  }

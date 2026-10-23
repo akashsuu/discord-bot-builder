@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 const DEFAULT_CRY_API = 'https://nekos.best/api/v2/cry';
 const TIMEOUT_MS = 10_000;
 
@@ -78,7 +89,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'cry').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  const targetUser =
  ctx.flow?.targetUser ||
@@ -109,7 +120,13 @@ module.exports = {
  }
 
  if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
- ctx.vars.cryData = { url: gifUrl, author: message.author.username, target: targetUser.username };
+ ctx.vars.cryData = {
+ url: gifUrl,
+ gif: gifUrl,
+ author: message.author.username,
+ target: targetUser.username,
+ anime: animeName || 'Unknown',
+ };
 
  const embedEnabled = node.data?.embedEnabled !== false;
  const author = message.author.username;
@@ -151,7 +168,10 @@ module.exports = {
  .replace(/`/g, '\\`');
 
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _cry_cmd = "${cmd}";
+var _cry_content = String(message.content || "").trim();
+var _cry_next = _cry_content.charAt(_cry_cmd.length);
+if (_cry_content.toLowerCase().startsWith(_cry_cmd.toLowerCase()) && (!_cry_next || /\\s/.test(_cry_next)) && !message.author.bot) {
  const _cry_target = message.mentions.users.first();
  if (!_cry_target) {
  message.reply(\`❌ Mention someone to cry with! Usage: \\\`${cmd} @user\\\`\`).catch(() => {});
@@ -167,7 +187,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
  const _cry_name = _cry_target.username;
  const _cry_anime = json?.results?.[0]?.anime_name || "Unknown";
  const _cry_vars = { author: _cry_author, target: _cry_name, gif: _cry_gif, anime: _cry_anime };
- const _cry_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_cry_vars[k] - m));
+ const _cry_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_cry_vars, k) && _cry_vars[k] !== null && _cry_vars[k] !== undefined ? String(_cry_vars[k]) : m));
  const _cry_title = _cry_apply(\`${titleTemplate}\`);
  const _cry_desc = _cry_apply(\`${descriptionTemplate}\`);
  const _cry_plain = _cry_apply(\`${plainTextTemplate}\`);

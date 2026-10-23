@@ -76,6 +76,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'channelunmute').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
  await message.reply('I need Manage Channels permission.').catch(() => {});
@@ -153,7 +155,7 @@ module.exports = {
 
  return `
 // Channel Unmute
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  if (!message.guild.members.me?.permissions.has("ManageChannels")) {
  message.reply("I need Manage Channels permission.").catch(() => {});
  } else if (!message.member?.permissions.has("ManageChannels")) {
@@ -175,7 +177,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  reason: _cu_reason,
  channelMention: \`<#\${_cu_channel.id}>\`
  };
- const _cu_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _cu_vars[k] - m);
+ const _cu_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_cu_vars[k] ?? m));
  message.channel.send(_cu_apply(\`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to unmute channel: \${e.message}\`).catch(() => {}));
  }

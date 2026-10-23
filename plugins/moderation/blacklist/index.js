@@ -151,7 +151,7 @@ module.exports = {
  const _bl_vars = {
  mention: \`<@\${message.author?.id}>\`
  };
- const _bl_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _bl_vars[k] - m);
+ const _bl_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_bl_vars[k] ?? m));
  message.reply(_bl_apply(\`${output}\`)).catch(() => {});
  ` : ''}
  return;

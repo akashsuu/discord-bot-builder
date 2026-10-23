@@ -166,7 +166,7 @@ module.exports = {
  const rawCmd = String(node.data?.command || 'voiceban').replace(/"/g, '\\"');
  const cmd = commandWithPrefix(rawCmd, prefix).replace(/"/g, '\\"');
  return `// Voice Ban command
-if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  message.channel.send("Voice Ban runs through the Kiodium plugin runtime and denies the target Connect permission in their voice channel.");
 }`;
  },

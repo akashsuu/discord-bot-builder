@@ -10,7 +10,7 @@ module.exports = {
  if (message.content.trim().toLowerCase() !== cmd.toLowerCase()) return false;
 
  const latency = Date.now() - message.createdTimestamp;
- const template = node.data.output || '🏓 Pong! Latency: {latency}ms';
+ const template = node.data.output || 'Pong! Latency: {latency}ms';
  const text = template
  .replace(/\{latency\}/g, latency)
  .replace(/\{command\}/g, cmd)
@@ -27,10 +27,10 @@ module.exports = {
  generateCode(node, prefix = '') {
  const rawCmd = (node.data.command || 'ping').replace(/"/g, '\\"');
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- const tpl = (node.data.output || '🏓 Pong! Latency: {latency}ms')
+ const tpl = (node.data.output || 'Pong! Latency: {latency}ms')
  .replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
-// ── Ping Command ──────────────────────────────────
+// Ping Command
 if (message.content.trim().toLowerCase() === "${cmd}".toLowerCase()) {
  const _lat = Date.now() - message.createdTimestamp;
  const _msg = \`${tpl}\`

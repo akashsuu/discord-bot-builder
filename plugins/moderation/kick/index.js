@@ -74,6 +74,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'kick').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  // ── 2. Bot permission check ────────────────────────────────────────
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.KickMembers)) {
@@ -165,7 +167,7 @@ module.exports = {
  .replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
 // ── Kick ──────────────────────────────────────────────────────────
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  if (!message.guild.members.me?.permissions.has("KickMembers")) {
  message.reply("❌ I do not have Kick Members permission.");
  } else if (!message.member?.permissions.has("KickMembers")) {
@@ -189,7 +191,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  memberCount: String((message.guild?.memberCount ?? 1) - 1),
  date: _now.toISOString().slice(0,10), time: _now.toTimeString().slice(0,8),
  };
- const _kt_apply = (t) => t.replace(/\\{(\\w+)\\}/g, (m, k) => _kv[k] - m);
+ const _kt_apply = (t) => t.replace(/\\{(\\w+)\\}/g, (m, k) => (_kv[k] ?? m));
  ${dmEnabled ? `try { await _kt.send(_kt_apply(\`${dmMsg}\`)); } catch {}` : ''}
  _kt.kick(_kr).then(() => {
  message.channel.send(_kt_apply(\`${output}\`));

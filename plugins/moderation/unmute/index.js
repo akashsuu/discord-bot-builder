@@ -56,6 +56,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'unmute').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ModerateMembers)) {
  await message.reply('I need Moderate Members permission.').catch(() => {});
@@ -113,7 +115,7 @@ module.exports = {
 
  return `
 // Unmute User
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _um_target = message.mentions.members?.first();
  if (!_um_target) {
  message.reply(\`Usage: \\\`${cmd} @user [reason]\\\`\`).catch(() => {});
@@ -121,7 +123,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  const _um_reason = message.content.slice("${cmd}".length).trim().replace(/<@!?\\d+>/g, "").replace(/\\s+/g, " ").trim() || "${reason}";
  _um_target.timeout(null, \`Unmute by \${message.author.tag}: \${_um_reason}\`).then(() => {
  const _um_vars = { mention: \`<@\${message.author?.id}>\`, targetMention: \`<@\${_um_target.user?.id}>\`, reason: _um_reason };
- const _um_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _um_vars[k] - m);
+ const _um_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_um_vars[k] ?? m));
  message.channel.send(_um_apply(\`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to unmute: \${e.message}\`).catch(() => {}));
  }

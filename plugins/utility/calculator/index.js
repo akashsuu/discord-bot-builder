@@ -22,7 +22,7 @@ function matchCommand(content, commands) {
  if (!cmd) continue;
  if (!text.toLowerCase().startsWith(cmd.toLowerCase())) continue;
  const rest = text.slice(cmd.length);
- if (!rest || /^\s/.test(rest) || /^[\d.(+\-πpiexX]/.test(rest)) return { args: rest.trim() };
+ if (!rest || /^\s/.test(rest)) return { args: rest.trim() };
  }
  return null;
 }
@@ -264,7 +264,7 @@ function applyButton(expression, action) {
  };
  if (action === 'clear') return '0';
  if (action === 'back') return expression.length <= 1 ? '0' : expression.slice(0, -1);
- const next = values[action] - (/[0-9]/.test(action) ? action : '');
+ const next = values[action] ?? (/[0-9]/.test(action) ? action : '');
  return expression === '0' && /[0-9πe(]/.test(next) ? next : `${expression}${next}`;
 }
 

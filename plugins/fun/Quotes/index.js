@@ -135,7 +135,7 @@ if (message.content.trim().toLowerCase() === "${cmd.toLowerCase()}" && !message.
  author: String(json?.author || "Unknown"),
  tags: Array.isArray(json?.tags) ? json.tags.join(", ") : "",
  };
- const _quote_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_quote_vars[k] - m));
+ const _quote_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_quote_vars, k) && _quote_vars[k] !== null && _quote_vars[k] !== undefined ? String(_quote_vars[k]) : m));
  const _quote_title = _quote_apply(\`${titleTemplate}\`);
  const _quote_desc = _quote_apply(\`${descriptionTemplate}\`);
  const _quote_plain = _quote_apply(\`${plainTextTemplate}\`);

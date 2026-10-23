@@ -28,7 +28,7 @@ function matchCommand(content, commands) {
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
- Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key] - '') : match
+ Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
  );
 }
 
@@ -63,10 +63,18 @@ async function resolveRobloxUser(query) {
  return getJson(`https://users.roblox.com/v1/users/${encodeURIComponent(match.id)}`);
 }
 
-async function getAvatarUrl(userId) {
- const json = await getJson(`https://thumbnails.roblox.com/v1/users/avatar?userIds=${encodeURIComponent(userId)}&size=420x420&format=Png&isCircular=false`);
+async function getThumbnailUrl(url) {
+ const json = await getJson(url);
  const first = Array.isArray(json?.data) ? json.data[0] : null;
  return first?.imageUrl || '';
+}
+
+async function getAvatarUrl(userId) {
+ const id = encodeURIComponent(userId);
+ const avatar = await getThumbnailUrl(`https://thumbnails.roblox.com/v1/users/avatar?userIds=${id}&size=420x420&format=Png&isCircular=false`).catch(() => '');
+ if (avatar) return avatar;
+ const headshot = await getThumbnailUrl(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${id}&size=420x420&format=Png&isCircular=false`).catch(() => '');
+ return headshot || `https://www.roblox.com/headshot-thumbnail/image?userId=${id}&width=420&height=420&format=png`;
 }
 
 async function getCount(url) {

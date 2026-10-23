@@ -140,7 +140,7 @@ if (message.content.trim().toLowerCase() === "${cmd.toLowerCase()}" && !message.
  line: _pickup_line,
  category: String(json?.category || json?.type || "random"),
  };
- const _pickup_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_pickup_vars[k] - m));
+ const _pickup_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_pickup_vars, k) && _pickup_vars[k] !== null && _pickup_vars[k] !== undefined ? String(_pickup_vars[k]) : m));
  const _pickup_title = _pickup_apply(\`${titleTemplate}\`);
  const _pickup_desc = _pickup_apply(\`${descriptionTemplate}\`);
  const _pickup_plain = _pickup_apply(\`${plainTextTemplate}\`);

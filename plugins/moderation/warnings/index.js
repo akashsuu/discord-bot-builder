@@ -1,6 +1,6 @@
 'use strict';
 
-const warningsStore = globalThis.__warningsStore - (globalThis.__warningsStore = new Map());
+const warningsStore = globalThis.__warningsStore || (globalThis.__warningsStore = new Map());
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
@@ -58,6 +58,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'warnings').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  const afterCmd = message.content.slice(cmd.length).trim();
  const parts = afterCmd.split(/\s+/).filter(Boolean);
@@ -89,8 +91,8 @@ module.exports = {
 
  return `
 // Warnings
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
- const _ws = globalThis.__warningsStore -= new Map();
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
+ const _ws = (globalThis.__warningsStore ||= new Map());
  const _wg = _ws.get(message.guild.id) || new Map();
  _ws.set(message.guild.id, _wg);
  const _after = message.content.slice("${cmd}".length).trim();
@@ -101,7 +103,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  } else {
  const _arr = _wg.get(_id) || [];
  const _v = { targetMention: \`<@\${_id}>\`, count: String(_arr.length) };
- const _ap = (t) => t.replace(/\\{(\\w+)\\}/g, (m, k) => _v[k] - m);
+ const _ap = (t) => t.replace(/\\{(\\w+)\\}/g, (m, k) => (_v[k] ?? m));
  message.channel.send(_ap(\`${output}\`)).catch(() => {});
  }
 }

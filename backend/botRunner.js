@@ -64,6 +64,51 @@ const DISCORD_EVENT_TO_NODE = {
  roleUpdate: 'event_role',
 };
 
+function projectNeedsMessageContentIntent(nodes) {
+ return nodes.some((node) => node.type === 'event_message' || node.type === 'custom_command');
+}
+
+function projectNeedsGuildMembersIntent(nodes) {
+ return nodes.some((node) => node.type === 'event_member' || node.type === 'moderation_antinuke');
+}
+
+function projectNeedsAntinukeIntents(nodes) {
+ return nodes.some((node) => node.type === 'moderation_antinuke');
+}
+
+function buildClientIntents(nodes) {
+ const intents = [
+ GatewayIntentBits.Guilds,
+ GatewayIntentBits.GuildMessages,
+ GatewayIntentBits.DirectMessages,
+ GatewayIntentBits.GuildEmojisAndStickers,
+ GatewayIntentBits.GuildVoiceStates,
+ ];
+ if (projectNeedsMessageContentIntent(nodes)) intents.push(GatewayIntentBits.MessageContent);
+ if (projectNeedsGuildMembersIntent(nodes)) intents.push(GatewayIntentBits.GuildMembers);
+ if (projectNeedsAntinukeIntents(nodes)) {
+ intents.push(
+ GatewayIntentBits.GuildModeration,
+ GatewayIntentBits.GuildWebhooks,
+ GatewayIntentBits.GuildIntegrations
+ );
+ }
+ return intents;
+}
+
+function isDisallowedIntentsError(err) {
+ const message = String(err?.message || '').toLowerCase();
+ return message.includes('disallowed intents') || err?.code === 4014;
+}
+
+function disallowedIntentsHelp(nodes) {
+ const required = [];
+ if (projectNeedsMessageContentIntent(nodes)) required.push('Message Content Intent');
+ if (projectNeedsGuildMembersIntent(nodes)) required.push('Server Members Intent');
+ const list = required.length ? required.join(' and ') : 'the privileged intents used by this bot';
+ return `Used disallowed intents. Open Discord Developer Portal > Applications > your bot > Bot > Privileged Gateway Intents, enable ${list}, then save changes and run again.`;
+}
+
 // ── Embed builder (shared with plugins via builtinHelpers) ────────────────────
 function buildEmbed(data, text) {
  const embed = {};
@@ -155,7 +200,7 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
  }
 
  const { nodes = [], edges = [], token, prefix: rawPrefix = '!' } = projectData;
- const prefix = String(rawPrefix - '!').trim() || '!';
+ const prefix = String(rawPrefix || '!').trim() || '!';
  lastProjectData = projectData;
  lastLegacyPlugins = _legacyPlugins;
  lastIpcLog = ipcLog;
@@ -188,15 +233,7 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
  }
 
  client = new Client({
- intents: [
- GatewayIntentBits.Guilds,
- GatewayIntentBits.GuildMessages,
- GatewayIntentBits.MessageContent,
- GatewayIntentBits.DirectMessages,
- GatewayIntentBits.GuildMembers,
- GatewayIntentBits.GuildEmojisAndStickers,
- GatewayIntentBits.GuildVoiceStates,
- ],
+ intents: buildClientIntents(nodes),
  partials: [Partials.Channel],
  });
 
@@ -241,7 +278,7 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
  // ── All other Discord events ────────────────────────────────────────────────
  for (const [discordEvent, nodeType] of Object.entries(DISCORD_EVENT_TO_NODE)) {
  client.on(discordEvent, async (...args) => {
- const eventData = discordEvent.endsWith('Update') ? (args[1] - args[0]) : args[0];
+ const eventData = discordEvent.endsWith('Update') ? (args[1] || args[0]) : args[0];
  const defaultEv = NODE_EVENT_DEFAULT[nodeType];
  const matching = nodes.filter(
  (n) => n.type === nodeType && (n.data?.event || defaultEv) === discordEvent
@@ -273,7 +310,16 @@ async function start(projectData, _legacyPlugins = {}, ipcLog = null, onInfo = (
  client.on('error', (err) => log.error(`Discord error: ${err.message}`));
  client.on('warn', (w) => log.warn(`Discord warn: ${w}`));
 
+ try {
  await client.login(token.trim());
+ } catch (err) {
+ const message = isDisallowedIntentsError(err) ? disallowedIntentsHelp(nodes) : err.message;
+ log.error(message);
+ await client.destroy().catch(() => {});
+ client = null;
+ detach();
+ throw new Error(message);
+ }
 }
 
 async function stop() {

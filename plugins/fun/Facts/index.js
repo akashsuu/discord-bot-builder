@@ -135,7 +135,7 @@ if (message.content.trim().toLowerCase() === "${cmd.toLowerCase()}" && !message.
  source: String(json?.source || "Useless Facts"),
  sourceUrl: String(json?.source_url || ""),
  };
- const _fact_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_fact_vars[k] - m));
+ const _fact_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_fact_vars, k) && _fact_vars[k] !== null && _fact_vars[k] !== undefined ? String(_fact_vars[k]) : m));
  const _fact_title = _fact_apply(\`${titleTemplate}\`);
  const _fact_desc = _fact_apply(\`${descriptionTemplate}\`);
  const _fact_plain = _fact_apply(\`${plainTextTemplate}\`);

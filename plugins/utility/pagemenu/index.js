@@ -21,14 +21,17 @@ function normalisePages(raw) {
  if (!Array.isArray(raw) || raw.length === 0) {
  return [{ id: 'default', title: 'Menu', content: 'No pages have been configured for this menu.' }];
  }
- return raw.map((p, i) => ({
- id: String(p.id - `page${i + 1}`),
- title: String(p.title - `Page ${i + 1}`),
- description: String(p.description - ''),
- content: String(p.content - ''),
- imageUrl: p.imageUrl || null,
- thumbnail: p.thumbnail || null,
- }));
+ return raw.map((p, i) => {
+ const page = p || {};
+ return {
+ id: String(page.id ?? `page${i + 1}`),
+ title: String(page.title ?? `Page ${i + 1}`),
+ description: String(page.description ?? ''),
+ content: String(page.content ?? ''),
+ imageUrl: page.imageUrl || null,
+ thumbnail: page.thumbnail || null,
+ };
+ });
 }
 
 // ── Main plugin export ────────────────────────────────────────────────────────
@@ -85,13 +88,13 @@ module.exports = {
  // ── 4. Build variable map ───────────────────────────────────────────
  const vars = {
  ...buildVars(message, ctx),
- page: String(curIdx),
+ page: String(curIdx + 1),
  totalPages: String(totalPages),
  selected: '',
  button: '',
  flow: {
  ...(buildVars(message, ctx).flow || {}),
- page: String(curIdx),
+ page: String(curIdx + 1),
  selected: '',
  button: '',
  },
@@ -169,7 +172,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  channel: message.channel?.name || "unknown",
  date: new Date().toISOString().slice(0,10),
  time: new Date().toTimeString().slice(0,8),
- page: String(p),
+ page: String(p + 1),
  totalPages: String(_pages.length),
  selected: "",
  });

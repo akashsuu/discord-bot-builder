@@ -89,6 +89,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'clear').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageMessages)) {
  await message.reply('I need Manage Messages permission.').catch(() => {});
@@ -121,7 +123,7 @@ module.exports = {
 
  const defaultAmount = Math.min(Math.max(Number(node.data?.defaultAmount ?? 10), 1), 100);
  const maxAmount = Math.min(Math.max(Number(node.data?.maxAmount ?? 100), 1), 100);
- const requestedAmount = parsed.amount - defaultAmount;
+ const requestedAmount = parsed.amount ?? defaultAmount;
  const amount = Math.min(Math.max(requestedAmount, 1), maxAmount);
 
  let deletedCount = 0;
@@ -158,7 +160,7 @@ module.exports = {
 
  return `
 // Clear Chat
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  if (!message.guild.members.me?.permissions.has("ManageMessages")) {
  message.reply("I need Manage Messages permission.").catch(() => {});
  } else if (!message.member?.permissions.has("ManageMessages")) {
@@ -185,7 +187,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  deleted: String(deleted?.size || 0),
  channelMention: \`<#\${_cl_target.id}>\`
  };
- const _cl_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _cl_vars[k] - m);
+ const _cl_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_cl_vars[k] ?? m));
  message.channel.send(_cl_apply(\`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to clear messages: \${e.message}\`).catch(() => {}));
  }

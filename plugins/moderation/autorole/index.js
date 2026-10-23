@@ -186,7 +186,7 @@ module.exports = {
  date: _ar_now.toISOString().slice(0, 10),
  time: _ar_now.toTimeString().slice(0, 8),
  };
- const _ar_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _ar_vars[k] - m);
+ const _ar_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_ar_vars[k] ?? m));
  member.guild.systemChannel?.send(_ar_apply(\`${output}\`)).catch(() => {});
  ` : ''}
  }

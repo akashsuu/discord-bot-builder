@@ -88,6 +88,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'mute').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ModerateMembers)) {
  await message.reply('I need Moderate Members permission.').catch(() => {});
@@ -170,7 +172,7 @@ module.exports = {
 
  return `
 // Mute User
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\\s/.test(message.content.slice("${cmd}".length)))) {
  const _mu_target = message.mentions.members?.first();
  if (!_mu_target) {
  message.reply(\`Usage: \\\`${cmd} @user [duration] [reason]\\\`\`).catch(() => {});
@@ -206,7 +208,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  reason: _mu_reason,
  duration: _mu_h
  };
- const _mu_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _mu_vars[k] - m);
+ const _mu_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_mu_vars[k] ?? m));
  message.channel.send(_mu_apply(\`${output}\`)).catch(() => {});
  }).catch((e) => message.reply(\`Failed to mute: \${e.message}\`).catch(() => {}));
  }

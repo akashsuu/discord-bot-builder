@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 const DEFAULT_HUG_API = 'https://nekos.best/api/v2/hug';
 const TIMEOUT_MS = 10_000;
 
@@ -78,7 +89,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'hug').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  const targetUser =
  ctx.flow?.targetUser ||
@@ -109,7 +120,13 @@ module.exports = {
  }
 
  if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
- ctx.vars.hugData = { url: gifUrl, author: message.author.username, target: targetUser.username };
+ ctx.vars.hugData = {
+ url: gifUrl,
+ gif: gifUrl,
+ author: message.author.username,
+ target: targetUser.username,
+ anime: animeName || 'Unknown',
+ };
 
  const embedEnabled = node.data?.embedEnabled !== false;
  const author = message.author.username;
@@ -151,7 +168,10 @@ module.exports = {
  .replace(/`/g, '\\`');
 
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _hug_cmd = "${cmd}";
+var _hug_content = String(message.content || "").trim();
+var _hug_next = _hug_content.charAt(_hug_cmd.length);
+if (_hug_content.toLowerCase().startsWith(_hug_cmd.toLowerCase()) && (!_hug_next || /\\s/.test(_hug_next)) && !message.author.bot) {
  const _hug_target = message.mentions.users.first();
  if (!_hug_target) {
  message.reply(\`❌ Mention someone to hug! Usage: \\\`${cmd} @user\\\`\`).catch(() => {});
@@ -167,7 +187,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
  const _hug_name = _hug_target.username;
  const _hug_anime = json?.results?.[0]?.anime_name || "Unknown";
  const _hug_vars = { author: _hug_author, target: _hug_name, gif: _hug_gif, anime: _hug_anime };
- const _hug_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_hug_vars[k] - m));
+ const _hug_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_hug_vars, k) && _hug_vars[k] !== null && _hug_vars[k] !== undefined ? String(_hug_vars[k]) : m));
  const _hug_title = _hug_apply(\`${titleTemplate}\`);
  const _hug_desc = _hug_apply(\`${descriptionTemplate}\`);
  const _hug_plain = _hug_apply(\`${plainTextTemplate}\`);

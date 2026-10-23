@@ -1,5 +1,16 @@
 'use strict';
 
+function commandMatches(content, cmd) {
+ const text = String(content || '').trim();
+ const needle = String(cmd || '').trim();
+ if (!needle) return false;
+ const lowerText = text.toLowerCase();
+ const lowerNeedle = needle.toLowerCase();
+ if (!lowerText.startsWith(lowerNeedle)) return false;
+ const nextChar = text.charAt(needle.length);
+ return !nextChar || /\s/.test(nextChar);
+}
+
 const path = require('path');
 
 let JimpModule = null;
@@ -66,7 +77,7 @@ module.exports = {
  const prefix = ctx?.prefix || '';
  const rawCmd = (node.data?.command || 'blur').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
- if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ if (!commandMatches(message.content, cmd)) return false;
 
  if (!getJimpCtor()) {
  try { await message.reply(node.data?.missingModuleMessage || '❌ jimp module is not installed.'); } catch {}
@@ -104,6 +115,8 @@ module.exports = {
 
  const fileName = `blurred-${targetUser.id || 'user'}.png`;
  const vars = { requester: message.author.username, target: targetUser.username, blurAmount: String(blurAmount) };
+ if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
+ ctx.vars.blurData = { ...vars, fileName };
  const embedEnabled = node.data?.embedEnabled !== false;
  const color = parseInt((node.data?.embedColor || '#64748B').replace('#', ''), 16) || 0x64748B;
  const title = applyTemplate(node.data?.titleTemplate || '{target}\'s Blurred Avatar', vars);
@@ -146,7 +159,10 @@ module.exports = {
  const descriptionTemplate = (node.data?.descriptionTemplate || 'Requested by {requester}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  const plainTextTemplate = (node.data?.plainTextTemplate || '{target} avatar blurred by {requester}').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
  return `
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message.author.bot) {
+var _blur_cmd = "${cmd}";
+var _blur_content = String(message.content || "").trim();
+var _blur_next = _blur_content.charAt(_blur_cmd.length);
+if (_blur_content.toLowerCase().startsWith(_blur_cmd.toLowerCase()) && (!_blur_next || /\\s/.test(_blur_next)) && !message.author.bot) {
  let _blur_jimp = null;
  try { const _m = require("jimp"); _blur_jimp = _m.Jimp || _m.default || _m; } catch {}
  if (!_blur_jimp) {
@@ -165,7 +181,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && !message
  })
  .then(buf => {
  const _blur_vars = { requester: message.author.username, target: _blur_target.username, blurAmount: "${blurAmount}" };
- const _blur_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_blur_vars[k] - m));
+ const _blur_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_blur_vars, k) && _blur_vars[k] !== null && _blur_vars[k] !== undefined ? String(_blur_vars[k]) : m));
  const _blur_title = _blur_apply(\`${titleTemplate}\`);
  const _blur_desc = _blur_apply(\`${descriptionTemplate}\`);
  const _blur_plain = _blur_apply(\`${plainTextTemplate}\`);

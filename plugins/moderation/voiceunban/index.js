@@ -185,7 +185,7 @@ module.exports = {
  const rawCmd = String(node.data?.command || 'voiceunban').replace(/"/g, '\\"');
  const cmd = commandWithPrefix(rawCmd, prefix).replace(/"/g, '\\"');
  return `// Voice Unban command
-if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  message.channel.send("Voice Unban runs through the Kiodium plugin runtime and clears the target Connect deny in a voice channel.");
 }`;
  },

@@ -28,7 +28,7 @@ function matchCommand(content, commands) {
 
 function applyTemplate(template, vars) {
  return String(template || '').replace(/\{(\w+)\}/g, (match, key) =>
- Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key] - '') : match
+ Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match
  );
 }
 
@@ -80,6 +80,17 @@ function minutesToHours(minutes) {
  return `${Math.round(mins / 60).toLocaleString('en-US')} hours`;
 }
 
+function parseHourText(value) {
+ const cleaned = String(value || '').replace(/,/g, '').match(/[\d.]+/);
+ return cleaned ? Number(cleaned[0]) : 0;
+}
+
+function hoursToText(hours) {
+ const value = Number(hours || 0);
+ if (!value) return 'Unavailable';
+ return `${Math.round(value).toLocaleString('en-US')} hours`;
+}
+
 function parseManualStats(value) {
  const map = new Map();
  for (const line of String(value || '').split(/\r?\n/)) {
@@ -93,24 +104,29 @@ function parseManualStats(value) {
  return map;
 }
 
-async function fetchSteamXmlProfile(steamId) {
+async function fetchSteamXmlProfile(steamId, appId = '739630') {
  const xml = await getText(`https://steamcommunity.com/profiles/${encodeURIComponent(steamId)}/?xml=1`);
  if (!xml) return null;
  const id = xmlValue(xml, 'steamID64') || steamId;
  if (!id) return null;
+ const gameXml = await getText(`https://steamcommunity.com/profiles/${encodeURIComponent(id)}/games/?xml=1`).catch(() => '');
+ const gameBlocks = String(gameXml || '').match(/<game>[\s\S]*?<\/game>/gi) || [];
+ const game = gameBlocks.find((block) => String(xmlValue(block, 'appID') || xmlValue(block, 'appId')) === String(appId)) || '';
+ const playtimeHours = parseHourText(xmlValue(game, 'hoursOnRecord') || xmlValue(game, 'hoursPlayed'));
  return {
  steamId: id,
  name: xmlValue(xml, 'steamID') || 'Steam User',
  profileUrl: xmlValue(xml, 'profileURL') || `https://steamcommunity.com/profiles/${id}`,
  avatarUrl: xmlValue(xml, 'avatarFull') || xmlValue(xml, 'avatarMedium') || xmlValue(xml, 'avatarIcon') || '',
  personaState: xmlValue(xml, 'onlineState') || 'Unavailable',
+ playtime: playtimeHours ? hoursToText(playtimeHours) : 'Unavailable',
  };
 }
 
 async function fetchPhasmophobiaProfile(steamId, data) {
  const apiKey = String(data.apiKey || '').trim();
  const appId = String(data.appId || '739630').trim() || '739630';
- const xmlProfile = await fetchSteamXmlProfile(steamId).catch(() => null);
+ const xmlProfile = await fetchSteamXmlProfile(steamId, appId).catch(() => null);
  let apiPlayer = {};
  let game = {};
  let achievements = [];
@@ -138,7 +154,7 @@ async function fetchPhasmophobiaProfile(steamId, data) {
  profileUrl: apiPlayer.profileurl || xmlProfile?.profileUrl || `https://steamcommunity.com/profiles/${steamId}`,
  avatarUrl: apiPlayer.avatarfull || apiPlayer.avatarmedium || apiPlayer.avatar || xmlProfile?.avatarUrl || '',
  personaState: apiPlayer.personastate !== undefined ? personaStateText(apiPlayer.personastate) : (xmlProfile?.personaState || 'Unavailable'),
- playtime: minutesToHours(game.playtime_forever),
+ playtime: game.playtime_forever ? minutesToHours(game.playtime_forever) : (xmlProfile?.playtime || 'Unavailable'),
  achievements: total ? `${unlocked}/${total}` : 'Unavailable',
  level: manual.level || 'Set in node',
  prestige: manual.prestige || 'Set in node',

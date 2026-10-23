@@ -161,7 +161,7 @@ module.exports = {
  const rawCmd = String(node.data?.command || 'voiceunmute').replace(/"/g, '\\"');
  const cmd = commandWithPrefix(rawCmd, prefix).replace(/"/g, '\\"');
  return `// Voice Unmute command
-if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  message.channel.send("Voice Unmute runs through the Kiodium plugin runtime and server unmutes the target in voice.");
 }`;
  },

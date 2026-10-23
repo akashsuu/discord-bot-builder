@@ -218,7 +218,8 @@ async function recover(eventName, payload) {
  if (!item) return;
  if (eventName === 'channelDelete' && typeof item.clone === 'function') {
  const clone = await item.clone({ reason: 'Antinuke auto recovery' }).catch(() => null);
- if (clone?.setPosition) await clone.setPosition(item.rawPosition - item.position).catch(() => {});
+ const position = Number.isFinite(item.rawPosition) ? item.rawPosition : item.position;
+ if (clone?.setPosition && Number.isFinite(position)) await clone.setPosition(position).catch(() => {});
  }
  if (eventName === 'roleDelete' && item.guild?.roles?.create) {
  await item.guild.roles.create({
@@ -513,7 +514,7 @@ module.exports = {
  const rawCmd = String(node.data?.command || 'antinuke').replace(/"/g, '\\"');
  const cmd = commandWithPrefix(rawCmd, prefix).replace(/"/g, '\\"');
  return `// Anti Nuke command
-if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.guild && message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  message.channel.send("Anti Nuke runs through the Kiodium plugin runtime with event monitoring.");
 }`;
  },

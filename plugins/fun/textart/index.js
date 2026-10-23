@@ -86,6 +86,8 @@ module.exports = {
  }
 
  const formatted = '```' + '\n' + ascii.trimEnd() + '\n' + '```';
+ if (!ctx.vars || typeof ctx.vars !== 'object') ctx.vars = {};
+ ctx.vars.textArtData = { input: inputText, ascii };
  try {
  await message.channel.send(formatted);
  } catch {
@@ -110,7 +112,8 @@ module.exports = {
  try { _ta_figlet = require("figlet"); } catch {}
  const _ta_cmd = "${cmd}";
  const _ta_content = String(message.content || "").trim();
- if (_ta_content.toLowerCase().startsWith(_ta_cmd.toLowerCase()) && !message.author.bot) {
+ const _ta_next = _ta_content.charAt(_ta_cmd.length);
+ if (_ta_content.toLowerCase().startsWith(_ta_cmd.toLowerCase()) && (!_ta_next || /\\s/.test(_ta_next)) && !message.author.bot) {
  const _ta_text = String(_ta_content.slice(_ta_cmd.length) || "").trim();
  if (!_ta_text) {
  message.reply("${usageMessage}".replace("{command}", _ta_cmd)).catch(() => {});

@@ -127,7 +127,8 @@ module.exports = {
 {
  const _8b_cmd = "${cmd}";
  const _8b_content = String(message.content || "").trim();
- if (_8b_content.toLowerCase().startsWith(_8b_cmd.toLowerCase()) && !message.author.bot) {
+ const _8b_next = _8b_content.charAt(_8b_cmd.length);
+ if (_8b_content.toLowerCase().startsWith(_8b_cmd.toLowerCase()) && (!_8b_next || /\\s/.test(_8b_next)) && !message.author.bot) {
  const _8b_question = String(_8b_content.slice(_8b_cmd.length) || "").trim();
  if (!_8b_question) {
  message.reply("❌ Usage: \\\`${cmd} <question>\\\`").catch(() => {});
@@ -135,7 +136,7 @@ module.exports = {
  const _8b_list = ${responsesArrayLiteral};
  const _8b_answer = _8b_list[Math.floor(Math.random() * _8b_list.length)];
  const _8b_vars = { requester: message.author.username, question: _8b_question, answer: _8b_answer };
- const _8b_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (_8b_vars[k] - m));
+ const _8b_apply = (tpl) => String(tpl || "").replace(/\\{(\\w+)\\}/g, (m, k) => (Object.prototype.hasOwnProperty.call(_8b_vars, k) && _8b_vars[k] !== null && _8b_vars[k] !== undefined ? String(_8b_vars[k]) : m));
  const _8b_title = _8b_apply(\`${titleTemplate}\`);
  const _8b_desc = _8b_apply(\`${descriptionTemplate}\`);
  const _8b_plain = _8b_apply(\`${plainTextTemplate}\`);

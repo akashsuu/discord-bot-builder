@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  kiodium-bot-builder:
+    build: .
+    container_name: kiodium-web
+    restart: unless-stopped
+    ports:
+      - "44556:44556"
+    environment:
+      - PORT=44556
+      - HOST=0.0.0.0
+      - NODE_ENV=production
+    volumes:
+      - kiodium-data:/app/data
+
+volumes:
+  kiodium-data:
+    driver: local

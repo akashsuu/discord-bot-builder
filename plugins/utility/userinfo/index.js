@@ -101,7 +101,7 @@ async function varsFor(message, member) {
 
  const roles = member?.roles?.cache;
  const roleList = roles
- ? roles
+ ? [...roles.values()]
  .filter((role) => role.id !== message.guild?.id)
  .sort((a, b) => (b.position || 0) - (a.position || 0))
  .map((role) => role.toString?.() || role.name)

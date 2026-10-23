@@ -69,6 +69,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'purge').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.guild.members.me?.permissions.has(PermissionFlagsBits.ManageMessages)) {
  await message.reply('I need Manage Messages permission.').catch(() => {});
@@ -134,7 +136,7 @@ module.exports = {
 
  return `
 // Purge Chat
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
  const _pg_after = message.content.slice("${cmd}".length).trim();
  const _pg_tok = (_pg_after.split(/\\s+/).filter(Boolean)[0] || "");
  const _pg_id = _pg_tok.replace(/[<#>]/g, "");
@@ -151,7 +153,7 @@ if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
  channelMention: \`<#\${_pg_target.id}>\`,
  deleted: String(_pg_total)
  };
- const _pg_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => _pg_vars[k] - m);
+ const _pg_apply = (tpl) => tpl.replace(/\\{(\\w+)\\}/g, (m, k) => (_pg_vars[k] ?? m));
  message.channel.send(_pg_apply(\`${output}\`)).catch(() => {});
 }
 `;

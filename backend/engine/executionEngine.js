@@ -134,9 +134,10 @@ async function runCustomCommandApi(node, eventObj, prefix, cmd, rawArgs) {
  const contentType = response.headers.get('content-type') || '';
  const body = contentType.includes('application/json') ? await response.json() : await response.text();
  const extracted = deepGet(body, d.apiResultPath || '');
- const apiResult = extracted && typeof extracted === 'object'
- ? JSON.stringify(extracted, null, 2)
- : String(extracted - (typeof body === 'string' ? body : JSON.stringify(body)));
+ const value = extracted === undefined ? body : extracted;
+ const apiResult = value && typeof value === 'object'
+ ? JSON.stringify(value, null, 2)
+ : String(value ?? '');
 
  if (!response.ok) {
  const err = new Error(`HTTP ${response.status} ${response.statusText}`);

@@ -61,6 +61,8 @@ module.exports = {
  const rawCmd = (node.data?.command || 'whitelist').trim();
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  if (!message.content.toLowerCase().startsWith(cmd.toLowerCase())) return false;
+ const commandRest = message.content.slice(cmd.length);
+ if (commandRest && !/^\s/.test(commandRest)) return false;
 
  if (!message.member?.permissions.has(PermissionFlagsBits.Administrator)) {
  await message.reply('You need Administrator permission.').catch(() => {});
@@ -120,8 +122,8 @@ module.exports = {
  const cmd = (prefix && !rawCmd.startsWith(prefix)) ? prefix + rawCmd : rawCmd;
  return `
 // Whitelist Manager
-if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}")) {
- const _wl_store = globalThis.__whitelistStore -= new Map();
+if (message.content.toLowerCase().startsWith("${cmd.toLowerCase()}") && (!message.content.slice("${cmd}".length) || /^\s/.test(message.content.slice("${cmd}".length)))) {
+ const _wl_store = (globalThis.__whitelistStore ||= new Map());
  const _wl_get = (g) => { if (!_wl_store.has(g)) _wl_store.set(g, new Set()); return _wl_store.get(g); };
  const _wl_args = message.content.slice("${cmd}".length).trim().split(/\\s+/).filter(Boolean);
  const _wl_action = (_wl_args[0] || "").toLowerCase();
