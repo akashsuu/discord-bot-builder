@@ -3,32 +3,45 @@
 </p>
 
 <p align="center">
-  <strong>Minimalist, dark-canvas visual Discord bot builder.</strong><br>
+  <strong>Minimalist visual Discord bot builder.</strong><br>
   Build, test, run, and export full-featured Discord.js v14 bots using interactive node graphs.
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
+  <strong>Live Demo / Test Link:</strong> <a href="https://coquetteflow.bot.nu"><strong>https://coquetteflow.bot.nu</strong></a>
+</p>
+
+<p align="center">
+  <a href="#live-demo">Live Demo</a> •
   <a href="#screenshots">Screenshots</a> •
+  <a href="#features">Features</a> •
   <a href="#getting-started">Getting Started</a> •
   <a href="#web-hosting--deployment">Deployment</a> •
-  <a href="#node-types">Node Types</a> •
   <a href="#memory-saver--auto-sleep">Memory Saver</a>
 </p>
 
 ---
 
-##  Screenshots
+## Live Demo
 
-### 1. Minimalist Node Canvas & Live Preview
-Build bot workflows with floating charcoal nodes, clean handles, live Discord embed previews, and real-time event logs.
+Test the live web edition of CoquetteFlow directly in your browser:
+
+- **URL:** [https://coquetteflow.bot.nu](https://coquetteflow.bot.nu)
+- **Status:** Hosted & Online
+
+---
+
+## Screenshots
+
+### 1. Node Canvas & Live Preview
+Build bot workflows with floating nodes, clean handles, live Discord embed previews, and real-time event logs.
 
 ![CoquetteFlow Node Editor Canvas](assets/screenshots/coquetteflow-editor.png)
 
 ---
 
-### 2. Smooth Curved Connections & Minimized Nodes
-Connect triggers to commands, moderation filters, and actions with elegant curved bezier wires. Minimize nodes to maximize canvas focus.
+### 2. Curved Connections & Minimized Nodes
+Connect triggers to commands, moderation filters, and actions with smooth curved bezier wires. Minimize nodes to maximize canvas focus.
 
 ![CoquetteFlow Connections & Minimized Nodes](assets/screenshots/coquetteflow-connections.png)
 
@@ -44,9 +57,8 @@ Right-click anywhere or click **+ Add Node** in the floating toolbar to browse c
 
 ---
 
-##  Features
+## Features
 
-- **Dark Minimalist Aesthetic** — Strict charcoal, gray, and white monochrome palette (`#080808` / `#171717` / `#1d1d1d`) designed like a professional creative workstation.
 - **Visual Node Editor** — Drag, drop, connect, minimize, and organize nodes on an infinite dot-grid canvas.
 - **117+ Modular Plugins** — Built-in moderation (Anti-Spam, Anti-BadWord, Anti-Link, Ban, Kick, Mute), economy, music, utility, and custom command nodes.
 - **Live Server Bot Runner** — Test and run your bot in real-time directly on your server or desktop.
@@ -57,7 +69,7 @@ Right-click anywhere or click **+ Add Node** in the floating toolbar to browse c
 
 ---
 
-##  Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -71,7 +83,7 @@ Right-click anywhere or click **+ Add Node** in the floating toolbar to browse c
 
 ---
 
-##  Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -106,7 +118,7 @@ npm run start:electron
 
 ---
 
-##  Web Hosting & Deployment
+## Web Hosting & Deployment
 
 CoquetteFlow can be hosted on any VPS, cloud server, or container platform.
 
@@ -130,7 +142,7 @@ docker compose up -d
 
 ### Option 3: Nginx Reverse Proxy with WebSockets
 
-To point your custom domain (e.g. `coquetteflow.bot.nu`) to your instance:
+To point your custom domain (`coquetteflow.bot.nu`) to your instance:
 
 ```nginx
 server {
@@ -150,7 +162,7 @@ server {
 
 ---
 
-##  Memory Saver & Auto-Sleep
+## Memory Saver & Auto-Sleep
 
 When hosting for users online, multiple running bots can quickly consume server RAM. CoquetteFlow features a presence-aware auto-sleep architecture:
 
@@ -161,7 +173,7 @@ When hosting for users online, multiple running bots can quickly consume server 
 
 ---
 
-##  Keyboard Shortcuts
+## Keyboard Shortcuts
 
 | Shortcut | Action |
 |---|---|
@@ -176,7 +188,7 @@ When hosting for users online, multiple running bots can quickly consume server 
 
 ---
 
-##  Exported Code Example
+## Exported Code Example
 
 Clicking **Export > Export bot.js** produces clean Discord.js v14 code:
 
@@ -208,7 +220,7 @@ client.login("YOUR_BOT_TOKEN");
 
 ---
 
-##  Plugin System
+## Plugin System
 
 You can add custom node types by creating a subfolder in `/plugins/`:
 
@@ -249,6 +261,6 @@ module.exports = {
 
 ---
 
-## 📄 License
+## License
 
 CoquetteFlow. All rights reserved.
