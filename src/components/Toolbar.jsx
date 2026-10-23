@@ -1,17 +1,35 @@
 import React, { useState, useCallback } from 'react';
 import { useProject } from '../context/ProjectContext';
 import LoadProjectModal from './LoadProjectModal';
+import CoquetteFlowLogo from './CoquetteFlowLogo';
 
 function serializeNodes(nodes) {
   return nodes.map(({ id, type, position, data }) => ({ id, type, position, data }));
 }
 
-export default function Toolbar({ nodes, edges }) {
+export default function Toolbar({
+  nodes = [],
+  edges = [],
+  onUndo,
+  onRedo,
+  canUndo = false,
+  canRedo = false,
+  onZoomIn,
+  onZoomOut,
+  onFitView,
+  onAddNode,
+  onClearCanvas,
+  showLeftSidebar = true,
+  onToggleLeftSidebar,
+  showNPanel = true,
+  onToggleNPanel,
+}) {
   const { projectData, projectPath, updateProject, botRunning, botInfo, addLog, setScreen } = useProject();
   const [tokenModal, setTokenModal] = useState(false);
   const [prefixModal, setPrefixModal] = useState(false);
   const [projectsModalOpen, setProjectsModalOpen] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
   const [saveState, setSaveState] = useState('idle');
   const [runLoading, setRunLoading] = useState(false);
 
@@ -33,7 +51,7 @@ export default function Toolbar({ nodes, edges }) {
   const handleRun = useCallback(async () => {
     if (botRunning || runLoading) return;
     if (!projectData?.token) {
-      addLog('[Error] No token set. Click Token button.');
+      addLog('[Error] No token set. Click Token in Settings.');
       setTokenModal(true);
       return;
     }
@@ -68,107 +86,180 @@ export default function Toolbar({ nodes, edges }) {
     window.electronAPI?.toggleMaximizeWindow?.();
   }, []);
 
-  const saveLabel = saveState === 'saving' ? '...' : saveState === 'saved' ? '✓ Saved' : '💾 Save';
+  const saveLabel = saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? '✓ Saved' : 'Save';
 
   return (
     <>
-      <div className="h-14 flex items-center px-4 gap-3 bg-black/50 backdrop-blur-md border-b border-purple-900/40 z-50 select-none shadow-sm">
-        {/* Logo & Project Title */}
-        <div className="flex items-center gap-2 mr-2">
-          <img className="w-6 h-6 rounded shadow-[0_0_10px_rgba(139,92,246,0.2)] cursor-pointer" src="./kiodium.ico" alt="" onClick={() => setScreen('home')} title="Home" />
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-zinc-100 tracking-tight flex items-center gap-1.5">
-              {projectData?.name || 'Kiodium Bot'}
-              {botInfo?.tag && (
-                <span className="text-[10px] text-purple-400 font-mono font-normal">
-                  (@{botInfo.tag})
+      <header className="cq-floating-toolbar-wrapper nodrag" onContextMenu={(e) => e.stopPropagation()}>
+        <div className="cq-floating-toolbar">
+          {/* Left section: Logo & Project Brand */}
+          <div className="flex items-center gap-2.5 pr-2 border-r border-[#2d2d2d]">
+            <button
+              type="button"
+              className="flex items-center gap-2 bg-transparent border-0 cursor-pointer p-0 text-inherit hover:opacity-85 transition"
+              onClick={() => setScreen('home')}
+              title="CoquetteFlow Home"
+            >
+              <CoquetteFlowLogo size={20} />
+              <div className="flex flex-col text-left leading-none">
+                <span className="text-[12px] font-semibold tracking-tight text-[#F5F5F5]">
+                  CoquetteFlow
                 </span>
-              )}
-            </span>
+                <span className="text-[10px] text-[#888888] font-mono truncate max-w-[110px]">
+                  {projectData?.name || 'Untitled Bot'}
+                </span>
+              </div>
+            </button>
+
+            {/* Save Status Button */}
+            <button
+              className={`cq-pill-btn ${saveState === 'saved' ? 'border-zinc-500 text-zinc-100' : ''}`}
+              onClick={handleSave}
+              title="Save Project (Ctrl+S)"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${saveState === 'saving' ? 'bg-amber-400 animate-ping' : saveState === 'saved' ? 'bg-emerald-400' : 'bg-zinc-500'}`} />
+              <span className="text-[11px]">{saveLabel}</span>
+            </button>
           </div>
-        </div>
 
-        <button
-          className="h-8 px-2.5 flex items-center gap-1.5 rounded-lg text-[11px] font-medium transition-all border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 active:scale-95"
-          onClick={() => setProjectsModalOpen(true)}
-          title="Switch or manage projects"
-        >
-          📂 Projects
-        </button>
+          {/* Sidebar Toggles */}
+          <div className="flex items-center gap-1 px-1 border-r border-[#2d2d2d]">
+            <button
+              className={`cq-icon-btn ${showLeftSidebar ? 'active' : ''}`}
+              onClick={onToggleLeftSidebar}
+              title={showLeftSidebar ? 'Collapse Left Sidebar' : 'Open Left Sidebar (Library)'}
+            >
+              ◨
+            </button>
+            <button
+              className={`cq-icon-btn ${showNPanel ? 'active' : ''}`}
+              onClick={onToggleNPanel}
+              title={showNPanel ? 'Collapse Inspector (Press N)' : 'Open Inspector (Press N)'}
+            >
+              ◧
+            </button>
+          </div>
 
-        <div className="w-px h-5 bg-zinc-800 mx-1" />
+          {/* Undo / Redo */}
+          <div className="flex items-center gap-1 px-1 border-r border-[#2d2d2d]">
+            <button
+              className="cq-icon-btn"
+              onClick={onUndo}
+              disabled={!canUndo}
+              title="Undo (Ctrl+Z)"
+            >
+              ↺
+            </button>
+            <button
+              className="cq-icon-btn"
+              onClick={onRedo}
+              disabled={!canRedo}
+              title="Redo (Ctrl+Y)"
+            >
+              ↻
+            </button>
+          </div>
 
-        {/* Bot Controls */}
-        <button
-          className="h-8 px-4 flex items-center gap-2 rounded-lg text-[11px] font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-900/50 bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/60 hover:border-emerald-700/60 active:scale-95"
-          onClick={handleRun}
-          disabled={botRunning || runLoading}
-          title="Start Bot on Server"
-        >
-          ▶ {runLoading ? 'Starting...' : 'Run'}
-        </button>
+          {/* Zoom & View Controls */}
+          <div className="flex items-center gap-1 px-1 border-r border-[#2d2d2d]">
+            <button
+              className="cq-icon-btn text-xs font-mono"
+              onClick={onZoomOut}
+              title="Zoom Out"
+            >
+              −
+            </button>
+            <button
+              className="cq-icon-btn text-xs font-mono"
+              onClick={onZoomIn}
+              title="Zoom In"
+            >
+              +
+            </button>
+            <button
+              className="cq-icon-btn text-[11px]"
+              onClick={onFitView}
+              title="Fit / Reset View"
+            >
+              ⊡
+            </button>
+          </div>
 
-        <button
-          className="h-8 px-4 flex items-center gap-2 rounded-lg text-[11px] font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed border border-rose-900/50 bg-rose-950/40 text-rose-400 hover:bg-rose-900/60 hover:border-rose-700/60 active:scale-95"
-          onClick={handleStop}
-          disabled={!botRunning}
-          title="Stop Bot on Server"
-        >
-          ⏹ Stop
-        </button>
+          {/* Add Node & Clear Canvas */}
+          <div className="flex items-center gap-1.5 px-1 border-r border-[#2d2d2d]">
+            <button
+              className="cq-pill-btn cq-pill-accent"
+              onClick={onAddNode}
+              title="Add Node (or right-click canvas)"
+            >
+              <span className="text-xs">+</span>
+              <span>Add Node</span>
+            </button>
+            <button
+              className="cq-icon-btn hover:text-rose-400"
+              onClick={onClearCanvas}
+              title="Clear Canvas"
+            >
+              🗑
+            </button>
+          </div>
 
-        <div className="w-px h-5 bg-purple-900/40 mx-1" />
+          {/* Bot Execution Controls */}
+          <div className="flex items-center gap-1.5 px-1 border-r border-[#2d2d2d]">
+            {botRunning ? (
+              <button
+                className="cq-btn-stop"
+                onClick={handleStop}
+                title="Stop Discord Bot"
+              >
+                ⏹ Stop
+              </button>
+            ) : (
+              <button
+                className="cq-btn-run"
+                onClick={handleRun}
+                disabled={runLoading}
+                title="Run Discord Bot on Server"
+              >
+                ▶ {runLoading ? 'Starting...' : 'Run'}
+              </button>
+            )}
 
-        {/* Bot Status Indicator */}
-        <span className={`text-[10px] flex items-center gap-2 font-medium ${botRunning ? 'text-emerald-400' : 'text-zinc-500'}`}>
-          <span className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] ${botRunning ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-600 shadow-none'}`} />
-          {botRunning ? 'Online (Hosted)' : 'Offline'}
-        </span>
-
-        <div className="flex-1" />
-
-        {/* Actions */}
-        <div className="flex items-center gap-2">
-          <button
-            className="h-8 px-3 flex items-center justify-center rounded-lg text-[11px] font-medium transition-all border border-purple-900/40 bg-black/60 text-zinc-300 hover:bg-purple-900/20 hover:text-zinc-100 hover:border-purple-500/40 active:scale-95 shadow-[0_0_10px_rgba(139,92,246,0.05)]"
-            onClick={handleSave}
-            title="Save changes to server (Ctrl+S)"
-          >
-            {saveLabel}
-          </button>
+            <div className="flex items-center gap-1.5 px-2 text-[10px] font-mono">
+              <span className={`w-2 h-2 rounded-full ${botRunning ? 'bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse' : 'bg-zinc-600'}`} />
+              <span className={botRunning ? 'text-emerald-400' : 'text-zinc-500'}>
+                {botRunning ? 'Online' : 'Idle'}
+              </span>
+            </div>
+          </div>
 
           {/* Export Dropdown */}
-          <div className="relative">
+          <div className="relative px-1">
             <button
-              className="h-8 px-3 flex items-center gap-1 rounded-lg text-[11px] font-medium transition-all border border-purple-900/40 bg-black/60 text-zinc-300 hover:bg-purple-900/20 hover:text-zinc-100 hover:border-purple-500/40 active:scale-95 shadow-[0_0_10px_rgba(139,92,246,0.05)]"
+              className="cq-pill-btn"
               onClick={() => setExportMenuOpen((o) => !o)}
-              title="Export Options"
+              title="Export source code or project data"
             >
-              📥 Export ▾
+              <span>Export</span>
+              <span className="text-[8px] text-zinc-500">▾</span>
             </button>
 
             {exportMenuOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setExportMenuOpen(false)} />
-                <div className="absolute right-0 top-10 w-48 bg-zinc-900 border border-purple-900/60 rounded-xl shadow-2xl p-1.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
-                  <button
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-purple-900/30 text-zinc-200 hover:text-purple-200 transition flex items-center gap-2"
-                    onClick={handleExportCode}
-                  >
+                <div className="cq-dropdown-menu right-0 top-9 w-48">
+                  <button className="cq-dropdown-item" onClick={handleExportCode}>
                     <span>📜</span>
                     <div>
-                      <div className="font-medium">Export bot.js</div>
-                      <div className="text-[10px] text-zinc-500">Standalone JS code</div>
+                      <div className="font-semibold text-zinc-200">Export bot.js</div>
+                      <div className="text-[10px] text-zinc-500">Standard Discord.js v14 code</div>
                     </div>
                   </button>
-                  <button
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-purple-900/30 text-zinc-200 hover:text-purple-200 transition flex items-center gap-2"
-                    onClick={handleExportJson}
-                  >
+                  <button className="cq-dropdown-item" onClick={handleExportJson}>
                     <span>💾</span>
                     <div>
-                      <div className="font-medium">Export project.json</div>
-                      <div className="text-[10px] text-zinc-500">Complete bot backup</div>
+                      <div className="font-semibold text-zinc-200">Export project.json</div>
+                      <div className="text-[10px] text-zinc-500">Node graph backup</div>
                     </div>
                   </button>
                 </div>
@@ -176,41 +267,77 @@ export default function Toolbar({ nodes, edges }) {
             )}
           </div>
 
-          <button
-            className="h-8 px-3 flex items-center justify-center rounded-lg text-[11px] font-medium transition-all border border-amber-900/40 bg-amber-950/20 text-amber-500 hover:bg-amber-900/40 hover:text-amber-400 active:scale-95 shadow-sm"
-            onClick={() => setTokenModal(true)}
-            title="Bot Token"
-          >
-            🔑 Token
-          </button>
+          {/* Settings Menu */}
+          <div className="relative pl-1">
+            <button
+              className="cq-icon-btn"
+              onClick={() => setSettingsMenuOpen((o) => !o)}
+              title="Settings & Tools"
+            >
+              ⚙
+            </button>
 
-          <button
-            className="h-8 px-3 flex items-center justify-center rounded-lg text-[11px] font-medium transition-all border border-purple-900/40 bg-black/60 text-zinc-300 hover:bg-purple-900/20 hover:text-zinc-100 hover:border-purple-500/40 active:scale-95 shadow-[0_0_10px_rgba(139,92,246,0.05)]"
-            onClick={() => setPrefixModal(true)}
-            title="Global command prefix"
-          >
-            Prefix ({projectData?.prefix || '!'})
-          </button>
+            {settingsMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setSettingsMenuOpen(false)} />
+                <div className="cq-dropdown-menu right-0 top-9 w-44">
+                  <button
+                    className="cq-dropdown-item"
+                    onClick={() => {
+                      setSettingsMenuOpen(false);
+                      setTokenModal(true);
+                    }}
+                  >
+                    <span>🔑</span>
+                    <span>Bot Token</span>
+                  </button>
+                  <button
+                    className="cq-dropdown-item"
+                    onClick={() => {
+                      setSettingsMenuOpen(false);
+                      setPrefixModal(true);
+                    }}
+                  >
+                    <span>⚡</span>
+                    <span>Prefix ({projectData?.prefix || '!'})</span>
+                  </button>
+                  <button
+                    className="cq-dropdown-item"
+                    onClick={() => {
+                      setSettingsMenuOpen(false);
+                      setProjectsModalOpen(true);
+                    }}
+                  >
+                    <span>📂</span>
+                    <span>Switch Project</span>
+                  </button>
+                  <button
+                    className="cq-dropdown-item"
+                    onClick={() => {
+                      setSettingsMenuOpen(false);
+                      toggleFullscreen();
+                    }}
+                  >
+                    <span>⛶</span>
+                    <span>Toggle Fullscreen</span>
+                  </button>
+                  <div className="h-px bg-[#262626] my-1" />
+                  <button
+                    className="cq-dropdown-item"
+                    onClick={() => {
+                      setSettingsMenuOpen(false);
+                      setScreen('home');
+                    }}
+                  >
+                    <span>🏠</span>
+                    <span>Exit to Home</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-
-        {/* Web Utilities */}
-        <div className="ml-2 flex items-center gap-1.5">
-          <button
-            className="w-9 h-8 flex items-center justify-center rounded-lg text-[12px] font-semibold transition-all border border-zinc-800 bg-black/50 text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-100 active:scale-95"
-            onClick={toggleFullscreen}
-            title="Toggle Fullscreen"
-          >
-            ⛶
-          </button>
-          <button
-            className="w-9 h-8 flex items-center justify-center rounded-lg text-[12px] font-semibold transition-all border border-zinc-800 bg-black/50 text-zinc-400 hover:bg-purple-950/40 hover:border-purple-800 hover:text-purple-300 active:scale-95"
-            onClick={() => setScreen('home')}
-            title="Go to Home"
-          >
-            🏠
-          </button>
-        </div>
-      </div>
+      </header>
 
       {tokenModal && <TokenModal onClose={() => setTokenModal(false)} />}
       {prefixModal && <PrefixModal onClose={() => setPrefixModal(false)} />}
@@ -238,16 +365,15 @@ function PrefixModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[2000] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
-      <div className="w-full max-w-sm glass-panel p-6" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-sm font-semibold text-purple-100 mb-2">⚡ Command Prefix</h3>
-        <p className="text-[11px] text-purple-200/60 mb-4 leading-relaxed">
-          A global prefix prepended to all command names (e.g. <code className="bg-purple-900/30 border border-purple-800/30 px-1 py-0.5 rounded text-purple-300 font-mono text-[10px]">!</code> turns <code className="bg-purple-900/30 border border-purple-800/30 px-1 py-0.5 rounded text-purple-300 font-mono text-[10px]">ping</code> into <code className="bg-purple-900/30 border border-purple-800/30 px-1 py-0.5 rounded text-purple-300 font-mono text-[10px]">!ping</code>).
-          Leave blank to use full command strings per node.
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[2000] flex items-center justify-center p-4 animate-in fade-in duration-150" onClick={onClose}>
+      <div className="w-full max-w-sm cq-modal-panel p-6" onClick={(e) => e.stopPropagation()}>
+        <h3 className="text-sm font-semibold text-zinc-100 mb-2">⚡ Command Prefix</h3>
+        <p className="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+          A global prefix prepended to all command names (e.g. <code className="bg-[#191919] border border-[#353535] px-1 py-0.5 rounded text-zinc-200 font-mono text-[10px]">!</code> turns <code className="bg-[#191919] border border-[#353535] px-1 py-0.5 rounded text-zinc-200 font-mono text-[10px]">ping</code> into <code className="bg-[#191919] border border-[#353535] px-1 py-0.5 rounded text-zinc-200 font-mono text-[10px]">!ping</code>).
         </p>
         <div className="mb-6">
           <input
-            className="w-full bg-black/50 border border-purple-900/40 rounded-xl px-4 py-2.5 text-xs text-zinc-200 outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all placeholder:text-zinc-600 shadow-inner"
+            className="cq-field-input font-mono"
             type="text"
             value={prefix}
             onChange={(e) => setPrefix(e.target.value)}
@@ -258,8 +384,8 @@ function PrefixModal({ onClose }) {
           />
         </div>
         <div className="flex items-center justify-end gap-3">
-          <button className="px-4 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors" onClick={onClose}>Cancel</button>
-          <button className="px-4 py-2 text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all active:scale-95 disabled:opacity-50" onClick={handleSave} disabled={saving}>
+          <button className="cq-btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="cq-btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Saving...' : 'Save Prefix'}
           </button>
         </div>
@@ -284,15 +410,15 @@ function TokenModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[2000] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
-      <div className="w-full max-w-[400px] glass-panel p-6" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-sm font-semibold text-purple-100 mb-2">🔑 Bot Token</h3>
-        <p className="text-[11px] text-purple-200/60 mb-4 leading-relaxed">
-          Stored securely in your bot project on the server. Used by the server to run your bot.
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[2000] flex items-center justify-center p-4 animate-in fade-in duration-150" onClick={onClose}>
+      <div className="w-full max-w-[420px] cq-modal-panel p-6" onClick={(e) => e.stopPropagation()}>
+        <h3 className="text-sm font-semibold text-zinc-100 mb-2">🔑 Bot Token</h3>
+        <p className="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+          Stored securely on your server instance. CoquetteFlow uses this token to run your Discord bot.
         </p>
         <div className="relative mb-6">
           <input
-            className="w-full bg-black/50 border border-purple-900/40 rounded-xl pl-4 pr-10 py-2.5 text-xs text-zinc-200 outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all placeholder:text-zinc-600 font-mono shadow-inner"
+            className="cq-field-input font-mono pr-14"
             type={show ? 'text' : 'password'}
             value={token}
             onChange={(e) => setToken(e.target.value)}
@@ -300,13 +426,17 @@ function TokenModal({ onClose }) {
             spellCheck={false}
             autoFocus
           />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-purple-300 hover:bg-purple-900/30 rounded-lg transition-colors" onClick={() => setShow((s) => !s)}>
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-[10px] text-zinc-400 hover:text-zinc-200 bg-[#222222] rounded border border-[#353535]"
+            onClick={() => setShow((s) => !s)}
+          >
             {show ? 'Hide' : 'Show'}
           </button>
         </div>
         <div className="flex items-center justify-end gap-3">
-          <button className="px-4 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors" onClick={onClose}>Cancel</button>
-          <button className="px-4 py-2 text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all active:scale-95 disabled:opacity-50" onClick={handleSave} disabled={saving}>
+          <button className="cq-btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="cq-btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Saving...' : 'Save Token'}
           </button>
         </div>

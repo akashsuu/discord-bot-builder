@@ -19,6 +19,7 @@ import { useProject } from '../context/ProjectContext';
 import builtinNodeTypes, { DEFAULT_NODE_DATA, NODE_PALETTE } from '../nodes/nodeTypes';
 import PluginNode from '../nodes/PluginNode';
 import Toolbar from '../components/Toolbar';
+import LeftSidebar from '../components/LeftSidebar';
 import LogPanel from '../components/LogPanel';
 import { demoSub, varHint, BUILTIN_VARS, PLUGIN_VARS } from '../utils/variables';
 
@@ -2891,7 +2892,7 @@ function DiscordPreviewBotLeave({ node }) {
  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
  const d = node?.data || {};
  const botName = botInfo?.username || 'Bot';
- const vars = { botName, server: 'Kiodium Server', serverId: '123456789012345678', command: '!botleave', confirmKeyword: d.confirmKeyword || 'CONFIRM' };
+ const vars = { botName, server: 'CoquetteFlow Server', serverId: '123456789012345678', command: '!botleave', confirmKeyword: d.confirmKeyword || 'CONFIRM' };
  const title = restartPreviewText(d.titleTemplate || 'Leaving Server', d, vars);
  const text = restartPreviewText(d.descriptionTemplate || '{botName} is leaving **{server}** now.', d, vars);
  const plain = restartPreviewText(d.plainTextTemplate || '{botName} is leaving {server} now.', d, vars);
@@ -4088,8 +4089,8 @@ function TicketPanelEditor({ d, update }) {
  );
 }
 
-function NPanel({ selectedNode, setNodes }) {
- const [openSections, setOpenSections] = useState({ node: true, props: true, embed: true, preview: true });
+function NPanel({ selectedNode, setNodes, edges = [] }) {
+ const [openSections, setOpenSections] = useState({ node: true, connections: true, props: true, embed: true, preview: true });
 
  const toggle = (k) => setOpenSections((s) => ({ ...s, [k]: !s[k] }));
 
@@ -4163,7 +4164,7 @@ function NPanel({ selectedNode, setNodes }) {
  animate={{ x: 0, opacity: 1 }}
  exit={{ x: 300, opacity: 0 }}
  transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
- className={`${isTicketPanel ? 'w-[420px] min-w-[420px]' : 'w-80 min-w-[320px]'} bg-zinc-900/60 backdrop-blur-2xl border border-zinc-800 rounded-2xl flex flex-col overflow-y-auto bl-scroll-invisible text-xs absolute right-4 top-4 bottom-4 z-50 shadow-2xl shadow-black/50`}
+ className={`${isTicketPanel ? 'w-[420px] min-w-[420px]' : 'w-80 min-w-[320px]'} bg-[#141414] backdrop-blur-2xl border border-[#353535] rounded-2xl flex flex-col overflow-y-auto bl-scroll-invisible text-xs absolute right-4 top-16 bottom-4 z-50 shadow-2xl`}
  onPointerDown={stopCheckboxGesture}
  onMouseDown={stopCheckboxGesture}
  onClick={stopCheckboxGesture}

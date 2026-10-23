@@ -2824,7 +2824,7 @@ export default function PluginNode({ id, type, data, selected }) {
  { key: 'panelDescription', label: 'Panel Description', fallback: 'Prevent harmful activities with active monitoring.', rows: 2 },
  { key: 'statusLine', label: 'Status Line', fallback: 'Current Status: {status}', rows: 1 },
  { key: 'featuresTitle', label: 'Features Title', fallback: 'Antinuke Features Enabled', rows: 1 },
- { key: 'featuresFooter', label: 'Footer', fallback: 'Powered by Kiodium Development', rows: 1 },
+ { key: 'featuresFooter', label: 'Footer', fallback: 'Powered by CoquetteFlow Development', rows: 1 },
  { key: 'enabledMessage', label: 'Enabled Message', fallback: 'Antinuke is now enabled.', rows: 2 },
  { key: 'disabledMessage', label: 'Disabled Message', fallback: 'Antinuke is now disabled.', rows: 2 },
  { key: 'permissionMessage', label: 'Permission Message', fallback: 'You need Administrator permission to configure antinuke.', rows: 2 },

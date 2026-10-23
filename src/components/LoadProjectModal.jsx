@@ -98,14 +98,14 @@ export default function LoadProjectModal({ isOpen, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-md z-[3000] flex items-center justify-center p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 bg-black/80 backdrop-blur-md z-[3000] flex items-center justify-center p-4 animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl bg-zinc-900 border border-purple-900/40 rounded-2xl p-6 shadow-2xl flex flex-col max-h-[85vh]"
+        className="w-full max-w-xl bg-[#141414] border border-[#353535] rounded-2xl p-6 shadow-2xl flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between pb-4 border-b border-[#242424]">
           <div>
             <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
               🤖 Saved Bot Projects
@@ -116,7 +116,7 @@ export default function LoadProjectModal({ isOpen, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="text-zinc-500 hover:text-zinc-200 text-lg px-2 py-1 rounded-lg hover:bg-zinc-800 transition"
+            className="text-zinc-500 hover:text-zinc-200 text-lg px-2 py-1 rounded-lg hover:bg-[#222222] transition"
           >
             ✕
           </button>
@@ -134,13 +134,13 @@ export default function LoadProjectModal({ isOpen, onClose }) {
               Loading projects from server...
             </div>
           ) : projects.length === 0 ? (
-            <div className="text-center py-12 px-4 border border-dashed border-zinc-800 rounded-xl">
+            <div className="text-center py-12 px-4 border border-dashed border-[#2a2a2a] rounded-xl">
               <p className="text-sm text-zinc-400 font-medium">No projects found</p>
               <p className="text-xs text-zinc-600 mt-1 mb-4">
                 Create a new bot or import an existing project.json file to get started.
               </p>
               <button
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl transition"
+                className="cq-btn-primary"
                 onClick={() => {
                   onClose();
                   setScreen('create');
@@ -154,15 +154,15 @@ export default function LoadProjectModal({ isOpen, onClose }) {
               <div
                 key={proj.id}
                 onClick={() => handleSelect(proj.id)}
-                className="group flex items-center justify-between p-3.5 rounded-xl border border-zinc-800/80 bg-zinc-950/60 hover:bg-zinc-800/40 hover:border-purple-600/50 cursor-pointer transition-all"
+                className="group flex items-center justify-between p-3.5 rounded-xl border border-[#262626] bg-[#111111] hover:bg-[#1a1a1a] hover:border-[#454545] cursor-pointer transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-950/50 border border-purple-800/40 flex items-center justify-center text-purple-300 font-bold text-sm">
+                  <div className="w-10 h-10 rounded-xl bg-[#1c1c1c] border border-[#333333] flex items-center justify-center text-zinc-200 font-bold text-sm">
                     {proj.name?.charAt(0)?.toUpperCase() || 'B'}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-zinc-200 group-hover:text-purple-300 transition-colors">
+                      <span className="text-sm font-semibold text-zinc-200 group-hover:text-white transition-colors">
                         {proj.name}
                       </span>
                       {proj.botRunning ? (
@@ -176,8 +176,8 @@ export default function LoadProjectModal({ isOpen, onClose }) {
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] text-zinc-500 mt-0.5 flex items-center gap-3">
-                      <span>Prefix: <code className="text-zinc-400 font-mono">{proj.prefix || '!'}</code></span>
+                    <div className="text-[11px] text-zinc-500 mt-0.5 flex items-center gap-3 font-mono">
+                      <span>Prefix: <code className="text-zinc-400">{proj.prefix || '!'}</code></span>
                       <span>•</span>
                       <span>{proj.nodeCount || 0} nodes</span>
                       {proj.updatedAt && (
@@ -199,7 +199,7 @@ export default function LoadProjectModal({ isOpen, onClose }) {
                   >
                     🗑️
                   </button>
-                  <span className="text-xs text-purple-400 font-medium group-hover:translate-x-0.5 transition-transform">
+                  <span className="text-xs text-zinc-400 font-medium group-hover:translate-x-0.5 transition-transform">
                     Open →
                   </span>
                 </div>
@@ -208,7 +208,7 @@ export default function LoadProjectModal({ isOpen, onClose }) {
           )}
         </div>
 
-        <div className="pt-4 border-t border-zinc-800 flex items-center justify-between gap-3">
+        <div className="pt-4 border-t border-[#242424] flex items-center justify-between gap-3">
           <input
             type="file"
             ref={fileInputRef}
@@ -220,7 +220,7 @@ export default function LoadProjectModal({ isOpen, onClose }) {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={actionLoading}
-            className="px-3.5 py-2 text-xs font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition flex items-center gap-2"
+            className="cq-btn-secondary text-xs"
           >
             📁 Import project.json
           </button>
@@ -229,7 +229,7 @@ export default function LoadProjectModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition"
+              className="cq-btn-secondary text-xs"
             >
               Cancel
             </button>
@@ -239,7 +239,7 @@ export default function LoadProjectModal({ isOpen, onClose }) {
                 onClose();
                 setScreen('create');
               }}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl shadow-lg transition active:scale-95"
+              className="cq-btn-primary text-xs"
             >
               + New Project
             </button>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useProject } from '../context/ProjectContext';
 import LoadProjectModal from '../components/LoadProjectModal';
+import CoquetteFlowLogo from '../components/CoquetteFlowLogo';
 
 const DISCORD_URL = 'https://discord.gg/coquette';
 const HELP_URL = 'https://akashsuu.oops.wtf/';
@@ -20,29 +21,29 @@ export default function HomeScreen() {
     <div className="home-screen">
       <div className="home-content">
         <div className="home-logo">
-          <img className="logo-icon-img" src="./kiodium.ico" alt="" aria-hidden="true" />
-          <h1 className="home-title">Kiodium</h1>
-          <p className="home-subtitle">Visual Discord Bot Builder — Web Edition</p>
+          <CoquetteFlowLogo size={56} className="mb-4" />
+          <h1 className="home-title">CoquetteFlow</h1>
+          <p className="home-subtitle">Minimalist Node-Based Discord Bot Builder</p>
         </div>
 
         <div className="home-actions">
           <div className="home-buttons">
-            <button className="btn-primary" type="button" onClick={handleCreate}>
-              <span className="btn-icon">+</span>
-              Create Project
+            <button className="cq-btn-primary flex-1 justify-center py-2.5" type="button" onClick={handleCreate}>
+              <span className="text-sm">+</span>
+              Create Bot Project
             </button>
-            <button className="btn-secondary" type="button" onClick={() => setLoadModalOpen(true)}>
-              <span className="btn-icon">📂</span>
+            <button className="cq-btn-secondary flex-1 justify-center py-2.5" type="button" onClick={() => setLoadModalOpen(true)}>
+              <span>📂</span>
               My Projects
             </button>
           </div>
 
           <div className="home-link-buttons">
-            <button className="btn-secondary" type="button" onClick={() => handleOpenExternal(DISCORD_URL)}>
-              Discord
+            <button className="cq-btn-secondary flex-1 justify-center text-xs py-2" type="button" onClick={() => handleOpenExternal(DISCORD_URL)}>
+              Discord Community
             </button>
-            <button className="btn-secondary" type="button" onClick={() => handleOpenExternal(HELP_URL)}>
-              Help Website
+            <button className="cq-btn-secondary flex-1 justify-center text-xs py-2" type="button" onClick={() => handleOpenExternal(HELP_URL)}>
+              Documentation
             </button>
           </div>
         </div>
@@ -53,8 +54,8 @@ export default function HomeScreen() {
         onClose={() => setLoadModalOpen(false)}
       />
 
-      <footer className="home-footer">
-        Kiodium Bot Builder • Hosted Online
+      <footer className="home-footer font-mono">
+        CoquetteFlow • Visual Discord Bot Development Platform
       </footer>
     </div>
   );
