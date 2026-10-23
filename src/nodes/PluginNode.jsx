@@ -298,7 +298,7 @@ const EPICGAMES_PROFILE_KEYS = new Set([
  'titleTemplate', 'descriptionTemplate', 'notFoundMessage', 'errorMessage', 'profileLinkLabel',
 ]);
 
-const PLUGIN_HEADER_PURPLE = '#7c3aed';
+const PLUGIN_HEADER_BG = '#1d1d1d';
 
 function splitCsv(value) {
  return String(value || '')
@@ -977,7 +977,7 @@ export default function PluginNode({ id, type, data, selected }) {
  <div
  ref={menuRef}
  className="bl-node-hdr"
- style={{ background: PLUGIN_HEADER_PURPLE }}
+ style={{ background: PLUGIN_HEADER_BG }}
  onDoubleClick={handleHeaderDoubleClick}
  title="Double-click to open node options"
  >
@@ -1772,7 +1772,7 @@ export default function PluginNode({ id, type, data, selected }) {
  {type === 'util_stats' && (
  <>
  <div className="bl-node-divider" />
- <SectionHead color="#8B5CF6">Stats Text</SectionHead>
+ <SectionHead color="#a0a0a0">Stats Text</SectionHead>
  <div className="bl-field">
  <span className="bl-field-lbl">Aliases</span>
  <input
@@ -1807,7 +1807,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
- <span style={{ color: '#8B5CF6' }}>{'{botName} {serverCount} {userCount} {channelCount}'}</span>
+ <span style={{ color: '#a0a0a0' }}>{'{botName} {serverCount} {userCount} {channelCount}'}</span>
  {' - '}
  <span style={{ color: '#7EB8F7' }}>{'{ping} {uptime} {memoryUsed} {memoryTotal}'}</span>
  {' - '}
@@ -2487,7 +2487,7 @@ export default function PluginNode({ id, type, data, selected }) {
  {type === 'moderation_voiceban' && (
  <>
  <div className="bl-node-divider" />
- <SectionHead color="#8B5CF6">Voice Ban Text</SectionHead>
+ <SectionHead color="#a0a0a0">Voice Ban Text</SectionHead>
  <div className="bl-field">
  <span className="bl-field-lbl">Aliases</span>
  <input
@@ -2532,12 +2532,12 @@ export default function PluginNode({ id, type, data, selected }) {
  <div className="bl-field">
  <span className="bl-field-lbl">Embed Color</span>
  <div className="bl-color-field">
- <input type="color" className="bl-color-pick" value={data.embedColor || '#8B5CF6'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
- <input className="bl-node-input" value={data.embedColor || '#8B5CF6'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
+ <input type="color" className="bl-color-pick" value={data.embedColor || '#a0a0a0'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} />
+ <input className="bl-node-input" value={data.embedColor || '#a0a0a0'} onChange={(e) => update('embedColor', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} spellCheck={false} style={{ flex: 1 }} />
  </div>
  </div>
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
- <span style={{ color: '#A78BFA' }}>{'{targetMention} {target} {targetId} {voiceChannel} {voiceChannelId}'}</span>
+ <span style={{ color: '#e8e8e8' }}>{'{targetMention} {target} {targetId} {voiceChannel} {voiceChannelId}'}</span>
  {' '}
  <span style={{ color: '#888' }}>{'{reason} {command} {user} {mention} {server} {channel} {error}'}</span>
  </span>
@@ -2902,7 +2902,7 @@ export default function PluginNode({ id, type, data, selected }) {
  Secure Lavalink
  </NodeToggle>
  <div className="bl-node-divider" />
- <SectionHead color="#A78BFA">Player Text</SectionHead>
+ <SectionHead color="#e8e8e8">Player Text</SectionHead>
  {[
  { key: 'nowPlayingTitle', label: 'Song Title', fallback: '{title}', rows: 1 },
  { key: 'artistTemplate', label: 'Artist Text', fallback: '{author}', rows: 1 },
@@ -3011,7 +3011,7 @@ export default function PluginNode({ id, type, data, selected }) {
  {type === 'game_fortnite_profile' && (
  <>
  <div className="bl-node-divider" />
- <SectionHead color="#8B5CF6">Fortnite Profile</SectionHead>
+ <SectionHead color="#a0a0a0">Fortnite Profile</SectionHead>
  <div className="bl-field">
  <span className="bl-field-lbl">Aliases</span>
  <input className="bl-node-input" value={data.aliases || ''} onChange={(e) => update('aliases', e.target.value)} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} placeholder="fprofile,fnprofile,fortniteprofile" spellCheck={false} />
@@ -3057,7 +3057,7 @@ export default function PluginNode({ id, type, data, selected }) {
  </div>
  ))}
  <span className="bl-field-hint" style={{ lineHeight: 1.7 }}>
- <span style={{ color: '#8B5CF6' }}>{'{fortnite_name} {account_id} {platform} {time_window} {wins} {kills}'}</span>
+ <span style={{ color: '#a0a0a0' }}>{'{fortnite_name} {account_id} {platform} {time_window} {wins} {kills}'}</span>
  {' '}
  <span style={{ color: '#888' }}>{'{matches} {kd} {win_rate} {score} {profile_link} {error}'}</span>
  </span>

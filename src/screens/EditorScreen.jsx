@@ -95,17 +95,17 @@ function serialize(nodes) {
 
 // ── Category definitions — all plugin folders shown in the right-click menu ──
 const CATEGORY_LIST = [
- { key: 'moderation', label: 'Moderation', color: '#C0392B', eventType: null },
- { key: 'fun', label: 'Fun', color: '#F39C12', eventType: null },
- { key: 'utility', label: 'Utility', color: '#2980B9', eventType: null },
- { key: 'music', label: 'Music', color: '#8E44AD', eventType: null },
- { key: 'economy', label: 'Economy', color: '#27AE60', eventType: null },
- { key: 'games', label: 'Games', color: '#D35400', eventType: null },
- { key: 'giveaway', label: 'Giveaway', color: '#E84393', eventType: null },
- { key: 'admin', label: 'Admin', color: '#7F8C8D', eventType: null },
- { key: 'info', label: 'Info', color: '#16A085', eventType: null },
- { key: 'tickets', label: 'Tickets', color: '#1ABC9C', eventType: null },
- { key: 'ai', label: 'AI', color: '#3498DB', eventType: null },
+ { key: 'moderation', label: 'Moderation', color: '#a0a0a0', eventType: null },
+ { key: 'fun', label: 'Fun', color: '#a0a0a0', eventType: null },
+ { key: 'utility', label: 'Utility', color: '#a0a0a0', eventType: null },
+ { key: 'music', label: 'Music', color: '#a0a0a0', eventType: null },
+ { key: 'economy', label: 'Economy', color: '#a0a0a0', eventType: null },
+ { key: 'games', label: 'Games', color: '#a0a0a0', eventType: null },
+ { key: 'giveaway', label: 'Giveaway', color: '#a0a0a0', eventType: null },
+ { key: 'admin', label: 'Admin', color: '#a0a0a0', eventType: null },
+ { key: 'info', label: 'Info', color: '#a0a0a0', eventType: null },
+ { key: 'tickets', label: 'Tickets', color: '#a0a0a0', eventType: null },
+ { key: 'ai', label: 'AI', color: '#a0a0a0', eventType: null },
 ];
 
 // Derived maps kept for botRunner / codeExporter compatibility
@@ -335,7 +335,7 @@ function ContextMenu({ menu, palette, pluginMeta, onAdd, onClose }) {
 
 // ── Discord embed block ───────────────────────────────────────────────────────
 function DiscordEmbed({ data, text }) {
- const color = data.embedColor || '#5865F2';
+ const color = data.embedColor || '#242424';
  // built-in nodes: thumbnail = top-right square, image = bottom rect
  // plugin nodes: logoUrl = top-left author icon, imageUrl = bottom rect
  const isThumb = data.imageUrl && data.imagePosition === 'thumbnail';
@@ -503,7 +503,7 @@ function DiscordPreview({ node }) {
  onClick={() => setNPanelPage(i)}
  style={{
  background: safePgIdx === i ? '#2A2A5A' : '#1A1A2A',
- border: `1px solid ${safePgIdx === i ? '#5865F2' : '#2A2A3A'}`,
+ border: `1px solid ${safePgIdx === i ? '#242424' : '#2A2A3A'}`,
  color: safePgIdx === i ? '#7EB8F7' : '#555',
  borderRadius: 3, cursor: 'pointer',
  padding: '1px 8px', fontSize: 10,
@@ -581,8 +581,8 @@ function EmbedFields({ d, update }) {
  <div className="bl-prop-row">
  <span className="bl-prop-label">Color</span>
  <div className="bl-color-field">
- <input type="color" className="bl-color-pick" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} />
- <input type="text" className="bl-field-input" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
+ <input type="color" className="bl-color-pick" value={d.embedColor || '#242424'} onChange={(e) => update('embedColor', e.target.value)} />
+ <input type="text" className="bl-field-input" value={d.embedColor || '#242424'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
  </div>
  </div>
 
@@ -659,17 +659,17 @@ function getTicketPanelOptions(data) {
 }
 
 const DISCORD_BUTTON_STYLES = {
- Primary: { background: '#5865F2', border: '#5865F2', color: '#FFFFFF' },
- Secondary: { background: '#4E5058', border: '#4E5058', color: '#FFFFFF' },
- Success: { background: '#248046', border: '#248046', color: '#FFFFFF' },
- Danger: { background: '#DA373C', border: '#DA373C', color: '#FFFFFF' },
+ Primary: { background: '#242424', border: '#242424', color: '#a0a0a0' },
+ Secondary: { background: '#4E5058', border: '#4E5058', color: '#a0a0a0' },
+ Success: { background: '#248046', border: '#248046', color: '#a0a0a0' },
+ Danger: { background: '#DA373C', border: '#DA373C', color: '#a0a0a0' },
 };
 
 function DiscordPreviewTicketPanel({ data }) {
  const { botInfo } = useProject();
  const now = new Date();
  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
- const color = data.embedColor || '#5865F2';
+ const color = data.embedColor || '#242424';
  const options = getTicketPanelOptions(data).slice(0, 25);
  const mode = String(data.panelMode || 'buttons').toLowerCase();
  const buttonStyle = DISCORD_BUTTON_STYLES[data.buttonStyle] || DISCORD_BUTTON_STYLES.Primary;
@@ -732,7 +732,7 @@ function DiscordPreviewTicketPanel({ data }) {
  background: '#1E1F22',
  border: '1px solid #3F4147',
  borderRadius: 3,
- color: '#B5BAC1',
+ color: '#a0a0a0',
  display: 'flex',
  alignItems: 'center',
  justifyContent: 'space-between',
@@ -740,7 +740,7 @@ function DiscordPreviewTicketPanel({ data }) {
  fontSize: 13,
  }}>
  <span>{data.dropdownPlaceholder || 'Select a ticket category'}</span>
- <span style={{ color: '#80848E' }}>v</span>
+ <span style={{ color: '#a0a0a0' }}>v</span>
  </div>
  ) : (
  options.map((option, index) => (
@@ -764,7 +764,7 @@ function DiscordPreviewTicketPanel({ data }) {
  )}
  </div>
  {mode === 'dropdown' && (
- <div style={{ display: 'grid', gap: 2, marginTop: 4, color: '#949BA4', fontSize: 11 }}>
+ <div style={{ display: 'grid', gap: 2, marginTop: 4, color: '#a0a0a0', fontSize: 11 }}>
  {options.slice(0, 5).map((option, index) => (
  <span key={`${option.category}_preview_${index}`}>{option.label || ticketTitleCase(option.category)}</span>
  ))}
@@ -948,7 +948,7 @@ function DiscordPreviewAfk({ node }) {
  <div className="dc-wrap" style={{ display: 'grid', gap: 10 }}>
  {previews.map((preview) => (
  <div key={preview.label}>
- <div style={{ color: '#7D8590', fontSize: 10, margin: '0 0 4px 42px', textTransform: 'uppercase', fontWeight: 700 }}>
+ <div style={{ color: '#a0a0a0', fontSize: 10, margin: '0 0 4px 42px', textTransform: 'uppercase', fontWeight: 700 }}>
  {preview.label}
  </div>
  <div className="dc-msg">
@@ -960,7 +960,7 @@ function DiscordPreviewAfk({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#5865F2' }}>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#242424' }}>
  {preview.avatar}
  </div>
  <div className="dc-msg-body">
@@ -1030,7 +1030,7 @@ function DiscordPreviewAvatar({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#3B82F6' }}>AV</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#303030' }}>AV</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -1058,7 +1058,7 @@ function DiscordPreviewAvatar({ node }) {
  key={`${label}_${index}`}
  type="button"
  style={{
- background: '#5865F2',
+ background: '#242424',
  border: '1px solid #4752C4',
  color: '#FFF',
  borderRadius: 3,
@@ -1073,7 +1073,7 @@ function DiscordPreviewAvatar({ node }) {
  ))}
  </div>
  )}
- <div style={{ color: '#72767D', fontSize: 10, marginTop: 6 }}>
+ <div style={{ color: '#a0a0a0', fontSize: 10, marginTop: 6 }}>
  Preview uses the Image URL field as the sample avatar.
  </div>
  </div>
@@ -1129,7 +1129,7 @@ function DiscordPreviewSetBoost({ node }) {
 
  const renderMessage = (label, avatar, content, titleOverride) => (
  <div key={label}>
- <div style={{ color: '#7D8590', fontSize: 10, margin: '0 0 4px 42px', textTransform: 'uppercase', fontWeight: 700 }}>
+ <div style={{ color: '#a0a0a0', fontSize: 10, margin: '0 0 4px 42px', textTransform: 'uppercase', fontWeight: 700 }}>
  {label}
  </div>
  <div className="dc-msg">
@@ -1167,7 +1167,7 @@ function DiscordPreviewSetBoost({ node }) {
  key={`${button}_${index}`}
  type="button"
  style={{
- background: index === 0 && d.enabledByDefault !== false ? '#248046' : index === 2 ? '#DA373C' : '#5865F2',
+ background: index === 0 && d.enabledByDefault !== false ? '#248046' : index === 2 ? '#DA373C' : '#242424',
  border: '1px solid rgba(255,255,255,0.12)',
  color: '#FFF',
  borderRadius: 3,
@@ -1379,7 +1379,7 @@ function DiscordPreviewEmbedBuilder({ node }) {
  logoUrl: d.defaultAuthorIcon || d.logoUrl || '',
  imageUrl: d.defaultImage || d.imageUrl || '',
  imagePosition: 'bottom',
- embedColor: d.defaultColor || d.embedColor || '#5865F2',
+ embedColor: d.defaultColor || d.embedColor || '#242424',
  };
  const description = d.defaultDescription || 'Embed description goes here.';
 
@@ -1394,7 +1394,7 @@ function DiscordPreviewEmbedBuilder({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.defaultColor || d.embedColor || '#5865F2' }}>E</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.defaultColor || d.embedColor || '#242424' }}>E</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -1406,7 +1406,7 @@ function DiscordPreviewEmbedBuilder({ node }) {
  style={{
  background: '#2F3136',
  border: '1px solid #4B4D55',
- color: '#DCDDDE',
+ color: '#a0a0a0',
  borderRadius: 3,
  padding: '10px 16px',
  fontSize: 14,
@@ -1428,7 +1428,7 @@ function DiscordPreviewEmbedBuilder({ node }) {
  key={label}
  type="button"
  style={{
- background: isSend ? '#248046' : (isReset || isAbort) ? '#DA373C' : '#5865F2',
+ background: isSend ? '#248046' : (isReset || isAbort) ? '#DA373C' : '#242424',
  border: '1px solid rgba(255,255,255,0.12)',
  color: '#FFF',
  borderRadius: 8,
@@ -1505,7 +1505,7 @@ function DiscordPreviewGiveawayCreate({ node }) {
  return (
  <div className="dc-wrap" style={{ display: 'grid', gap: 14 }}>
  <div>
- <div style={{ color: '#B5BAC1', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', margin: '0 0 6px 44px' }}>
+ <div style={{ color: '#a0a0a0', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', margin: '0 0 6px 44px' }}>
  Admin setup preview
  </div>
  <div className="dc-msg">
@@ -1524,7 +1524,7 @@ function DiscordPreviewGiveawayCreate({ node }) {
  <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
  {setupButtons.map((label) => (
- <button key={label} type="button" style={{ background: label === (d.sendButtonLabel || 'Send Giveaway') ? '#248046' : label === (d.abortButtonLabel || 'Abort') ? '#DA373C' : '#5865F2', border: '1px solid rgba(255,255,255,0.12)', color: '#FFF', borderRadius: 8, padding: '9px 12px', fontSize: 12, fontWeight: 700 }}>
+ <button key={label} type="button" style={{ background: label === (d.sendButtonLabel || 'Send Giveaway') ? '#248046' : label === (d.abortButtonLabel || 'Abort') ? '#DA373C' : '#242424', border: '1px solid rgba(255,255,255,0.12)', color: '#FFF', borderRadius: 8, padding: '9px 12px', fontSize: 12, fontWeight: 700 }}>
  {label}
  </button>
  ))}
@@ -1536,7 +1536,7 @@ function DiscordPreviewGiveawayCreate({ node }) {
  </button>
  ))}
  </div>
- <div style={{ background: '#2B2D31', border: '1px solid #3F4147', color: '#B5BAC1', borderRadius: 6, padding: '10px 12px', fontSize: 13, overflowWrap: 'anywhere' }}>
+ <div style={{ background: '#2B2D31', border: '1px solid #3F4147', color: '#a0a0a0', borderRadius: 6, padding: '10px 12px', fontSize: 13, overflowWrap: 'anywhere' }}>
  # {d.channelSelectPlaceholder || 'Select giveaway channel'}
  </div>
  </div>
@@ -1545,7 +1545,7 @@ function DiscordPreviewGiveawayCreate({ node }) {
  </div>
 
  <div>
- <div style={{ color: '#B5BAC1', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', margin: '0 0 6px 44px' }}>
+ <div style={{ color: '#a0a0a0', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', margin: '0 0 6px 44px' }}>
  User participation preview
  </div>
  <div className="dc-msg">
@@ -1557,17 +1557,17 @@ function DiscordPreviewGiveawayCreate({ node }) {
  <span className="dc-bot-badge">BOT</span>
  <span className="dc-timestamp">Today at {time}</span>
  </div>
- <div style={{ color: '#F59E0B', fontSize: 17, fontWeight: 800, marginBottom: 8, overflowWrap: 'anywhere' }}>
+ <div style={{ color: '#a0a0a0', fontSize: 17, fontWeight: 800, marginBottom: 8, overflowWrap: 'anywhere' }}>
  {d.panelTitle || `${emoji} GIVEAWAY ${emoji}`}
  </div>
  <div style={{ borderLeft: `5px solid ${d.embedColor || '#B45309'}`, background: '#2B2D31', borderRadius: 6, padding: '16px 18px', width: '100%', maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
- <div style={{ color: '#F2F3F5', fontSize: 18, fontWeight: 800, marginBottom: 14, overflowWrap: 'anywhere' }}>{d.prize || 'Example Prize'}</div>
- <div style={{ color: '#DCDDDE', fontSize: 14, lineHeight: 1.45, overflowWrap: 'anywhere' }}>
- Click <span style={{ color: '#F59E0B' }}>{emoji}</span> to enter!<br />
+ <div style={{ color: '#a0a0a0', fontSize: 18, fontWeight: 800, marginBottom: 14, overflowWrap: 'anywhere' }}>{d.prize || 'Example Prize'}</div>
+ <div style={{ color: '#a0a0a0', fontSize: 14, lineHeight: 1.45, overflowWrap: 'anywhere' }}>
+ Click <span style={{ color: '#a0a0a0' }}>{emoji}</span> to enter!<br />
  <strong style={{ textDecoration: 'underline' }}>Duration: {duration}</strong> <span>(Ends {relativeEnd})</span><br />
  {hostedBy}
  </div>
- <div style={{ color: '#DCDDDE', fontSize: 12, fontWeight: 700, marginTop: 16, overflowWrap: 'anywhere' }}>
+ <div style={{ color: '#a0a0a0', fontSize: 12, fontWeight: 700, marginTop: 16, overflowWrap: 'anywhere' }}>
  {footer}
  </div>
  </div>
@@ -1626,7 +1626,7 @@ function DiscordPreviewGiveawayStop({ node }) {
  text={text}
  />
  )}
- <div style={{ color: '#80848e', fontSize: 11, marginTop: 8 }}>
+ <div style={{ color: '#a0a0a0', fontSize: 11, marginTop: 8 }}>
  Stops giveaways from every channel in the current server.
  </div>
  </div>
@@ -1681,7 +1681,7 @@ function DiscordPreviewInvite({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#5865F2' }}>I</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#242424' }}>I</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -1707,7 +1707,7 @@ function DiscordPreviewInvite({ node }) {
  key={label}
  type="button"
  style={{
- background: '#5865F2',
+ background: '#242424',
  border: '1px solid #4752C4',
  color: '#FFF',
  borderRadius: 3,
@@ -1843,7 +1843,7 @@ function DiscordPreviewServerIcon({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#3B82F6' }}>SI</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#303030' }}>SI</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -1871,7 +1871,7 @@ function DiscordPreviewServerIcon({ node }) {
  key={label}
  type="button"
  style={{
- background: '#5865F2',
+ background: '#242424',
  border: '1px solid #4752C4',
  color: '#FFF',
  borderRadius: 3,
@@ -1947,7 +1947,7 @@ function DiscordPreviewStats({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#8B5CF6' }}>ST</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#353535' }}>ST</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -2106,7 +2106,7 @@ function DiscordPreviewUserInfo({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#3B82F6' }}>UI</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#303030' }}>UI</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -2230,27 +2230,27 @@ function CalculatorButtonGrid() {
  ['⌫', '#2B2D31'],
  ['(', '#2B2D31'],
  [')', '#2B2D31'],
- ['÷', '#5865F2'],
+ ['÷', '#242424'],
  ],
  [
  ['7', '#2B2D31'],
  ['8', '#2B2D31'],
  ['9', '#2B2D31'],
- ['×', '#5865F2'],
- ['^', '#5865F2'],
+ ['×', '#242424'],
+ ['^', '#242424'],
  ],
  [
  ['4', '#2B2D31'],
  ['5', '#2B2D31'],
  ['6', '#2B2D31'],
- ['-', '#5865F2'],
- ['%', '#5865F2'],
+ ['-', '#242424'],
+ ['%', '#242424'],
  ],
  [
  ['1', '#2B2D31'],
  ['2', '#2B2D31'],
  ['3', '#2B2D31'],
- ['+', '#5865F2'],
+ ['+', '#242424'],
  ['=', '#0A8F54'],
  ],
  [
@@ -2313,7 +2313,7 @@ function DiscordPreviewCalculator({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#5865F2' }}>CA</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#242424' }}>CA</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -2470,25 +2470,25 @@ function DiscordPreviewBotInfo({ node }) {
  return (
  <div className="dc-wrap">
  <div className="dc-msg">
- {avatar ? <img src={avatar} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: d.embedColor || '#5865F2' }}>B</div>}
+ {avatar ? <img src={avatar} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: d.embedColor || '#242424' }}>B</div>}
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
  <span className="dc-bot-badge">BOT</span>
  <span className="dc-timestamp">Today at 00:12</span>
  </div>
- <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#5865F2', background: '#2B2D31', maxWidth: '100%', overflow: 'hidden' }}>
+ <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#242424', background: '#2B2D31', maxWidth: '100%', overflow: 'hidden' }}>
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={avatar} alt="Bot avatar" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 8 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
  </div>
  </div>
  {banner && <img src={banner} alt="Bot banner" style={{ marginTop: 10, width: '100%', maxHeight: 115, objectFit: 'cover', borderRadius: 6 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
- <div style={{ color: '#B5BAC1', fontSize: 10, marginTop: 8 }}>{footer}</div>
+ <div style={{ color: '#a0a0a0', fontSize: 10, marginTop: 8 }}>{footer}</div>
  </div>
  </div>
  </div>
@@ -2547,27 +2547,27 @@ function DiscordPreviewWelcome({ node }) {
  <span className="dc-bot-badge">BOT</span>
  <span className="dc-timestamp">Today at 00:12</span>
  </div>
- {d.mentionUser !== false && <div style={{ color: '#DCDDDE', marginBottom: 6 }}>@Akashsuu</div>}
+ {d.mentionUser !== false && <div style={{ color: '#a0a0a0', marginBottom: 6 }}>@Akashsuu</div>}
  {d.embedEnabled === false ? (
- <div style={{ color: '#DCDDDE', whiteSpace: 'pre-wrap', lineHeight: 1.45 }}>{plain}</div>
+ <div style={{ color: '#a0a0a0', whiteSpace: 'pre-wrap', lineHeight: 1.45 }}>{plain}</div>
  ) : (
  <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#22C55E', background: '#2B2D31', maxWidth: '100%', overflow: 'hidden' }}>
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  {authorName && <div style={{ color: '#fff', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>{authorName}</div>}
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={thumb} alt="Welcome thumbnail" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
  </div>
  </div>
  {image && <img src={image} alt="Welcome banner" style={{ marginTop: 10, width: '100%', maxHeight: 130, objectFit: 'cover', borderRadius: 6 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
- {footer && <div style={{ color: '#B5BAC1', fontSize: 10, marginTop: 8 }}>{footer}</div>}
+ {footer && <div style={{ color: '#a0a0a0', fontSize: 10, marginTop: 8 }}>{footer}</div>}
  </div>
  )}
  {hasButton && (
- <div style={{ marginTop: 8, display: 'inline-flex', padding: '7px 12px', borderRadius: 4, background: '#2B2D31', color: '#F2F3F5', border: '1px solid #3F4147', fontWeight: 700 }}>
+ <div style={{ marginTop: 8, display: 'inline-flex', padding: '7px 12px', borderRadius: 4, background: '#2B2D31', color: '#a0a0a0', border: '1px solid #3F4147', fontWeight: 700 }}>
  {buttonLabel}
  </div>
  )}
@@ -2919,7 +2919,7 @@ function DiscordPreviewBotLeave({ node }) {
  />
  )}
  {d.confirmRequired !== false && (
- <div className="dc-plain" style={{ marginTop: 6, color: '#FCA5A5' }}>
+ <div className="dc-plain" style={{ marginTop: 6, color: '#a0a0a0' }}>
  {restartPreviewText(d.confirmMessage || 'Type `{command} CONFIRM` to make me leave this server.', d, vars)}
  </div>
  )}
@@ -3045,7 +3045,7 @@ function DiscordPreviewVoiceBan({ node }) {
  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
  />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#8B5CF6' }}>VB</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#353535' }}>VB</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -3058,7 +3058,7 @@ function DiscordPreviewVoiceBan({ node }) {
  <DiscordEmbed
  data={{
  ...d,
- embedColor: d.embedColor || '#8B5CF6',
+ embedColor: d.embedColor || '#353535',
  embedTitle: d.embedTitle || 'Voice Ban',
  embedFooter: voiceBanPreviewText(d.embedFooter || 'Connect denied in {voiceChannel}', d),
  }}
@@ -3292,7 +3292,7 @@ function DiscordPreviewAntiNuke({ node }) {
  {botInfo?.avatarURL ? (
  <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
  ) : null}
- <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#3B82F6' }}>AN</div>
+ <div className="dc-avatar" style={{ display: botInfo?.avatarURL ? 'none' : 'flex', background: d.embedColor || '#303030' }}>AN</div>
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -3300,16 +3300,16 @@ function DiscordPreviewAntiNuke({ node }) {
  <span className="dc-timestamp">Today at {time}</span>
  </div>
  <DiscordEmbed
- data={{ ...d, embedColor: d.embedColor || '#3B82F6', embedTitle: antinukePreviewText(d.panelTitle || 'Configure Antinuke', d), embedFooter: antinukePreviewText(d.featuresFooter || 'Powered by Kiodium Development', d) }}
+ data={{ ...d, embedColor: d.embedColor || '#303030', embedTitle: antinukePreviewText(d.panelTitle || 'Configure Antinuke', d), embedFooter: antinukePreviewText(d.featuresFooter || 'Powered by Kiodium Development', d) }}
  text={panelDescription}
  />
  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 10, marginBottom: 14 }}>
  <Button color="#058F52">{d.enableButtonLabel || 'Enable'}</Button>
  <Button color="#DA373C">{d.disableButtonLabel || 'Disable'}</Button>
- <Button color="#5865F2">{d.featuresButtonLabel || 'Features'}</Button>
+ <Button color="#242424">{d.featuresButtonLabel || 'Features'}</Button>
  </div>
  <DiscordEmbed
- data={{ ...d, embedColor: d.embedColor || '#3B82F6', embedTitle: antinukePreviewText(d.featuresTitle || 'Antinuke Features Enabled', d), embedFooter: antinukePreviewText(d.featuresFooter || 'Powered by Kiodium Development', d) }}
+ data={{ ...d, embedColor: d.embedColor || '#303030', embedTitle: antinukePreviewText(d.featuresTitle || 'Antinuke Features Enabled', d), embedFooter: antinukePreviewText(d.featuresFooter || 'Powered by Kiodium Development', d) }}
  text={`${firstBlock}\n\n${secondBlock}`}
  />
  </div>
@@ -3389,7 +3389,7 @@ function DiscordPreviewMusicPlay({ node }) {
  <div className="dc-music-complete-card">
  <div className="dc-music-complete-text">{completed}</div>
  <div className="dc-music-complete-row">
- <MusicButton color="#5865F2" wide>∞ {d.autoplayButtonLabel || 'Start Autoplay'}</MusicButton>
+ <MusicButton color="#242424" wide>∞ {d.autoplayButtonLabel || 'Start Autoplay'}</MusicButton>
  <MusicButton wide>↻ {d.restartButtonLabel || 'Restart Queue'}</MusicButton>
  <MusicButton color="#DA373C" wide>↷ {d.disconnectButtonLabel || 'Disconnect bot'}</MusicButton>
  </div>
@@ -3451,7 +3451,7 @@ function DiscordPreviewMinecraftProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 64px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 64, minHeight: 112, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={render} alt="Minecraft skin render" style={{ width: 58, maxWidth: '100%', maxHeight: 112, objectFit: 'contain' }} onError={(e) => { e.currentTarget.src = avatar; e.currentTarget.style.width = '50px'; }} />
@@ -3513,7 +3513,7 @@ function DiscordPreviewRobloxProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 72, minHeight: 82, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={avatar} alt="Roblox avatar" style={{ width: 68, maxWidth: '100%', maxHeight: 82, objectFit: 'contain', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -3564,18 +3564,18 @@ function DiscordPreviewFortniteProfile({ node }) {
  return (
  <div className="dc-wrap">
  <div className="dc-msg">
- {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#8B5CF6' }}>FN</div>}
+ {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#353535' }}>FN</div>}
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
  <span className="dc-bot-badge">BOT</span>
  <span className="dc-timestamp">Today at 00:12</span>
  </div>
- <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#8B5CF6', background: '#2B2D31', position: 'relative', minHeight: 245, maxWidth: '100%', overflow: 'hidden' }}>
+ <div className="dc-embed" style={{ borderLeftColor: d.embedColor || '#353535', background: '#2B2D31', position: 'relative', minHeight: 245, maxWidth: '100%', overflow: 'hidden' }}>
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 74px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 74, minHeight: 74, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={image} alt="Fortnite outfit" style={{ width: 70, maxWidth: '100%', maxHeight: 84, objectFit: 'contain', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -3639,7 +3639,7 @@ function DiscordPreviewValorantProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 82px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 82, minHeight: 82, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={card} alt="Valorant player card" style={{ width: 80, maxWidth: '100%', maxHeight: 96, objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -3703,7 +3703,7 @@ function DiscordPreviewCounterStrikeProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={avatar} alt="Steam avatar" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -3769,7 +3769,7 @@ function DiscordPreviewPubgProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={logo} alt="PUBG logo" style={{ width: 68, maxWidth: '100%', maxHeight: 68, objectFit: 'contain', borderRadius: 4, background: '#111827' }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -3822,7 +3822,7 @@ function DiscordPreviewGenshinProfile({ node }) {
  return (
  <div className="dc-wrap">
  <div className="dc-msg">
- {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#67E8F9', color: '#083344' }}>GI</div>}
+ {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#67E8F9', color: '#a0a0a0' }}>GI</div>}
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -3833,7 +3833,7 @@ function DiscordPreviewGenshinProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={icon} alt="Genshin profile icon" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -3885,7 +3885,7 @@ function DiscordPreviewPhasmophobiaProfile({ node }) {
  return (
  <div className="dc-wrap">
  <div className="dc-msg">
- {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#A3E635', color: '#1A2E05' }}>PH</div>}
+ {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#A3E635', color: '#a0a0a0' }}>PH</div>}
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -3896,7 +3896,7 @@ function DiscordPreviewPhasmophobiaProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={avatar} alt="Steam avatar" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -3947,7 +3947,7 @@ function DiscordPreviewSteamProfile({ node }) {
  return (
  <div className="dc-wrap">
  <div className="dc-msg">
- {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#66C0F4', color: '#0E2433' }}>ST</div>}
+ {botInfo?.avatarURL ? <img src={botInfo.avatarURL} className="dc-avatar-img" alt={botName} /> : <div className="dc-avatar" style={{ background: '#66C0F4', color: '#a0a0a0' }}>ST</div>}
  <div className="dc-msg-body">
  <div className="dc-msg-hdr">
  <span className="dc-bot-name">{botName}</span>
@@ -3958,7 +3958,7 @@ function DiscordPreviewSteamProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 72px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 72, minHeight: 72, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden' }}>
  <img src={avatar} alt="Steam avatar" style={{ width: 68, height: 68, maxWidth: '100%', objectFit: 'cover', borderRadius: 4 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -4015,7 +4015,7 @@ function DiscordPreviewEpicGamesProfile({ node }) {
  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 66px', gap: 8, alignItems: 'start', width: '100%' }}>
  <div style={{ minWidth: 0, overflow: 'hidden' }}>
  <div style={{ color: '#fff', fontWeight: 800, marginBottom: 10 }}>{title}</div>
- <div style={{ whiteSpace: 'pre-wrap', color: '#F2F3F5', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
+ <div style={{ whiteSpace: 'pre-wrap', color: '#a0a0a0', lineHeight: 1.32, fontSize: 12, overflowWrap: 'anywhere' }}>{description}</div>
  </div>
  <div style={{ width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, background: '#111827', color: '#fff', fontWeight: 900, fontSize: 18, border: '1px solid #3F4147' }}>
  EG
@@ -4065,8 +4065,8 @@ function TicketPanelEditor({ d, update }) {
  <div className="bl-prop-row">
  <span className="bl-prop-label">Color</span>
  <div className="bl-color-field">
- <input type="color" className="bl-color-pick" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} />
- <input type="text" className="bl-field-input" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
+ <input type="color" className="bl-color-pick" value={d.embedColor || '#242424'} onChange={(e) => update('embedColor', e.target.value)} />
+ <input type="text" className="bl-field-input" value={d.embedColor || '#242424'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
  </div>
  </div>
  <div className="bl-prop-row">
@@ -4103,7 +4103,7 @@ function NPanel({ selectedNode, setNodes, edges = [] }) {
 
  if (!selectedNode) {
  return (
- <div className="w-72 min-w-[288px] bg-zinc-950/40 backdrop-blur-3xl border-l border-zinc-800/50 flex flex-col overflow-y-auto bl-scroll-invisible text-xs text-zinc-400 absolute right-0 top-12 bottom-0 z-50 shadow-2xl">
+ <div className="w-72 min-w-[288px] bg-[#121212] border border-[#303030] rounded-xl flex flex-col overflow-y-auto bl-scroll-invisible text-xs text-zinc-400 absolute right-4 top-16 bottom-4 z-50 shadow-2xl">
  <div className="flex items-center justify-center flex-1 text-center p-6 leading-relaxed">
  Select a node<br />to see properties
  </div>
@@ -4164,7 +4164,7 @@ function NPanel({ selectedNode, setNodes, edges = [] }) {
  animate={{ x: 0, opacity: 1 }}
  exit={{ x: 300, opacity: 0 }}
  transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
- className={`${isTicketPanel ? 'w-[420px] min-w-[420px]' : 'w-80 min-w-[320px]'} bg-[#141414] backdrop-blur-2xl border border-[#353535] rounded-2xl flex flex-col overflow-y-auto bl-scroll-invisible text-xs absolute right-4 top-16 bottom-4 z-50 shadow-2xl`}
+ className={`${isTicketPanel ? 'w-[420px] min-w-[420px]' : 'w-80 min-w-[320px]'} bg-[#121212] border border-[#303030] rounded-xl flex flex-col overflow-y-auto bl-scroll-invisible text-xs absolute right-4 top-16 bottom-4 z-50 shadow-2xl`}
  onPointerDown={stopCheckboxGesture}
  onMouseDown={stopCheckboxGesture}
  onClick={stopCheckboxGesture}
@@ -4231,8 +4231,8 @@ function NPanel({ selectedNode, setNodes, edges = [] }) {
  <div className="bl-prop-row">
  <span className="bl-prop-label">Embed Color</span>
  <div className="bl-color-field">
- <input type="color" className="bl-color-pick" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} />
- <input type="text" className="bl-field-input" value={d.embedColor || '#5865F2'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
+ <input type="color" className="bl-color-pick" value={d.embedColor || '#242424'} onChange={(e) => update('embedColor', e.target.value)} />
+ <input type="text" className="bl-field-input" value={d.embedColor || '#242424'} onChange={(e) => update('embedColor', e.target.value)} spellCheck={false} style={{ flex: 1 }} />
  </div>
  </div>
  <div className="bl-prop-row">
@@ -4488,294 +4488,408 @@ function NPanel({ selectedNode, setNodes, edges = [] }) {
 
 // ── Main editor ───────────────────────────────────────────────────────────────
 function EditorInner() {
- const { projectData, projectPath, addLog } = useProject();
+  const { projectData, projectPath, addLog } = useProject();
 
- const [nodes, setNodes, onNodesChange] = useNodesState(projectData?.nodes || []);
- const [edges, setEdges, onEdgesChange] = useEdgesState(projectData?.edges || []);
- const [contextMenu, setContextMenu] = useState(null);
- const [showNPanel, setShowNPanel] = useState(true);
- const [pluginMeta, setPluginMeta] = useState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(projectData?.nodes || []);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(projectData?.edges || []);
+  const [contextMenu, setContextMenu] = useState(null);
+  const [showNPanel, setShowNPanel] = useState(true);
+  const [showLeftSidebar, setShowLeftSidebar] = useState(false);
+  const [pluginMeta, setPluginMeta] = useState([]);
 
- // Load plugin node types registered in the main process
- useEffect(() => {
- if (!window.electronAPI) return;
- window.electronAPI.getPluginNodeTypes().then((types) => {
- setPluginMeta(types || []);
- }).catch(() => {});
- }, []);
+  // Undo / Redo history state
+  const [history, setHistory] = useState(() => [{ nodes: projectData?.nodes || [], edges: projectData?.edges || [] }]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const isApplyingHistory = useRef(false);
 
- // Keep existing plugin nodes visually in sync with latest plugin metadata
- // (e.g. when a plugin color/icon/label is changed on disk).
- useEffect(() => {
- if (!pluginMeta.length) return;
- const pluginByType = new Map(pluginMeta.map((p) => [p.type, p]));
- setNodes((prev) => prev.map((n) => {
- const meta = pluginByType.get(n.type);
- if (!meta) return n;
- return {
- ...n,
- data: {
- ...n.data,
- _color: meta.color || n.data?._color,
- _icon: meta.icon || n.data?._icon,
- _label: meta.label || n.data?._label,
- },
- };
- }));
- }, [pluginMeta, setNodes]);
+  const recordHistory = useCallback((nextNodes, nextEdges) => {
+    if (isApplyingHistory.current) return;
+    setHistory((prev) => {
+      const sliced = prev.slice(0, historyIndex + 1);
+      return [...sliced, { nodes: serialize(nextNodes), edges: [...nextEdges] }];
+    });
+    setHistoryIndex((prev) => prev + 1);
+  }, [historyIndex]);
 
- // Build combined nodeTypes: builtins + one PluginNode component per plugin type.
- // Keep the object stable while users edit node data; rebuilding it on every
- // keystroke makes React Flow remount nodes and drops focus from inputs.
- const pluginNodeTypeSignature = useMemo(() => {
- const types = new Set();
- for (const p of pluginMeta) {
- if (p?.type && !builtinNodeTypes[p.type]) types.add(p.type);
- }
- for (const n of nodes) {
- if (n?.type && !builtinNodeTypes[n.type]) types.add(n.type);
- }
- return [...types].sort().join('|');
- }, [pluginMeta, nodes]);
+  const handleUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      isApplyingHistory.current = true;
+      const target = history[historyIndex - 1];
+      setNodes(target.nodes);
+      setEdges(target.edges);
+      setHistoryIndex((i) => i - 1);
+      setTimeout(() => { isApplyingHistory.current = false; }, 60);
+    }
+  }, [history, historyIndex, setNodes, setEdges]);
 
- const nodeTypes = useMemo(() => {
- const extra = {};
- for (const type of pluginNodeTypeSignature.split('|')) {
- if (type) extra[type] = PluginNode;
- }
- return { ...builtinNodeTypes, ...extra };
- }, [pluginNodeTypeSignature]);
+  const handleRedo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      isApplyingHistory.current = true;
+      const target = history[historyIndex + 1];
+      setNodes(target.nodes);
+      setEdges(target.edges);
+      setHistoryIndex((i) => i + 1);
+      setTimeout(() => { isApplyingHistory.current = false; }, 60);
+    }
+  }, [history, historyIndex, setNodes, setEdges]);
 
- const { project: rfProject } = useReactFlow();
- const wrapperRef = useRef(null);
- const autoSaveRef = useRef(null);
+  // Load plugin node types registered in the main process
+  useEffect(() => {
+    if (!window.electronAPI) return;
+    window.electronAPI.getPluginNodeTypes().then((types) => {
+      setPluginMeta(types || []);
+    }).catch(() => {});
+  }, []);
 
- const selectedNode = nodes.find((n) => n.selected) || null;
+  // Keep existing plugin nodes visually in sync with latest plugin metadata
+  useEffect(() => {
+    if (!pluginMeta.length) return;
+    const pluginByType = new Map(pluginMeta.map((p) => [p.type, p]));
+    setNodes((prev) => prev.map((n) => {
+      const meta = pluginByType.get(n.type);
+      if (!meta) return n;
+      return {
+        ...n,
+        data: {
+          ...n.data,
+          _color: '#a0a0a0',
+          _icon: meta.icon || n.data?._icon,
+          _label: meta.label || n.data?._label,
+        },
+      };
+    }));
+  }, [pluginMeta, setNodes]);
 
- // ── Auto-save ──────────────────────────────────────────────────────────
- useEffect(() => {
- if (!projectPath) return;
- clearTimeout(autoSaveRef.current);
- autoSaveRef.current = setTimeout(async () => {
- await window.electronAPI.saveProject({
- projectPath,
- projectData: { ...projectData, nodes: serialize(nodes), edges },
- });
- }, 2000);
- return () => clearTimeout(autoSaveRef.current);
- }, [nodes, edges]);
+  const pluginNodeTypeSignature = useMemo(() => {
+    const types = new Set();
+    for (const p of pluginMeta) {
+      if (p?.type && !builtinNodeTypes[p.type]) types.add(p.type);
+    }
+    for (const n of nodes) {
+      if (n?.type && !builtinNodeTypes[n.type]) types.add(n.type);
+    }
+    return [...types].sort().join('|');
+  }, [pluginMeta, nodes]);
 
- // ── Ctrl+S ─────────────────────────────────────────────────────────────
- useEffect(() => {
- const onKey = async (e) => {
- if ((e.ctrlKey || e.metaKey) && e.key === 's') {
- e.preventDefault();
- if (!projectPath) return;
- await window.electronAPI.saveProject({
- projectPath,
- projectData: { ...projectData, nodes: serialize(nodes), edges },
- });
- addLog('[System] Saved (Ctrl+S).');
- }
- // N = toggle N-panel (only when not in an input)
- if (e.key === 'n' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
- setShowNPanel((p) => !p);
- }
- };
- window.addEventListener('keydown', onKey);
- return () => window.removeEventListener('keydown', onKey);
- }, [nodes, edges, projectPath, projectData, addLog]);
+  const nodeTypes = useMemo(() => {
+    const extra = {};
+    for (const type of pluginNodeTypeSignature.split('|')) {
+      if (type) extra[type] = PluginNode;
+    }
+    return { ...builtinNodeTypes, ...extra };
+  }, [pluginNodeTypeSignature]);
 
- // ── Connect ────────────────────────────────────────────────────────────
- const onConnect = useCallback((params) => {
- setEdges((eds) => addEdge({
- ...params,
- type: 'default',
- style: {
- stroke: '#a855f7',
- strokeWidth: 2,
- filter: 'drop-shadow(0 0 6px rgba(168,85,247,0.85))',
- },
- }, eds));
- }, [setEdges]);
+  const { project: rfProject, zoomIn, zoomOut, fitView } = useReactFlow();
+  const wrapperRef = useRef(null);
+  const autoSaveRef = useRef(null);
 
- // ── Right-click to add node ─────────────────────────────────────────────
- const onPaneContextMenu = useCallback((e) => {
- e.preventDefault();
- if (!wrapperRef.current) return;
- const bounds = wrapperRef.current.getBoundingClientRect();
- const flowPos = rfProject({ x: e.clientX - bounds.left, y: e.clientY - bounds.top });
- setContextMenu({ x: e.clientX, y: e.clientY, flowPos });
- }, [rfProject]);
+  const selectedNode = nodes.find((n) => n.selected) || null;
 
- const getNodeData = useCallback((type) => {
- const builtin = DEFAULT_NODE_DATA[type];
- if (builtin) {
- // Deep-clone so we don't share array/object references between nodes
- return JSON.parse(JSON.stringify(builtin));
- }
+  // Auto-save
+  useEffect(() => {
+    if (!projectPath) return;
+    clearTimeout(autoSaveRef.current);
+    autoSaveRef.current = setTimeout(async () => {
+      await window.electronAPI.saveProject({
+        projectPath,
+        projectData: { ...projectData, nodes: serialize(nodes), edges },
+      });
+    }, 2000);
+    return () => clearTimeout(autoSaveRef.current);
+  }, [nodes, edges]);
 
- // Plugin node — seed embed fields first so they're always present,
- // then plugin defaults override anything they define
- const pm = pluginMeta.find((p) => p.type === type) || {};
- return {
- _label: pm.label || type,
- _icon: pm.icon || 'Plugin',
- _color: pm.color || '#2A2A3A',
- _hasInput: pm.hasInput !== false,
- _hasOutput: pm.hasOutput !== false,
- // embed defaults (always present so PluginNode renders the section)
- embedEnabled: false,
- embedColor: '#5865F2',
- logoUrl: '',
- logoName: '',
- imageUrl: '',
- embedFooter: '',
- ...JSON.parse(JSON.stringify(pm.defaults || {})),
- };
- }, [pluginMeta]);
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const onKey = async (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) {
+        e.preventDefault();
+        if (e.shiftKey) handleRedo();
+        else handleUndo();
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || e.key === 'Y')) {
+        e.preventDefault();
+        handleRedo();
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (!projectPath) return;
+        await window.electronAPI.saveProject({
+          projectPath,
+          projectData: { ...projectData, nodes: serialize(nodes), edges },
+        });
+        addLog('[System] Saved (Ctrl+S).');
+        return;
+      }
+      if (e.key === 'n' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        setShowNPanel((p) => !p);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [nodes, edges, projectPath, projectData, addLog, handleUndo, handleRedo]);
 
- const addNode = useCallback((type, position) => {
- if (!type || !position) return;
- const id = `${type}_${Date.now()}_${_nc++}`;
- const data = getNodeData(type);
- setNodes((prev) => [...prev, { id, type, position, data }]);
- }, [getNodeData, setNodes]);
+  // Connect (Section 4: Default wire #777777, Hover #c8c8c8, Selected #ffffff)
+  const onConnect = useCallback((params) => {
+    setEdges((eds) => {
+      const next = addEdge({
+        ...params,
+        type: 'default',
+        style: {
+          stroke: '#777777',
+          strokeWidth: 2,
+        },
+      }, eds);
+      recordHistory(nodes, next);
+      return next;
+    });
+  }, [setEdges, nodes, recordHistory]);
 
- const addNodeAtPos = useCallback((type) => {
- if (!contextMenu) return;
- addNode(type, contextMenu.flowPos);
- }, [addNode, contextMenu]);
+  const onPaneContextMenu = useCallback((e) => {
+    e.preventDefault();
+    if (!wrapperRef.current) return;
+    const bounds = wrapperRef.current.getBoundingClientRect();
+    const flowPos = rfProject({ x: e.clientX - bounds.left, y: e.clientY - bounds.top });
+    setContextMenu({ x: e.clientX, y: e.clientY, flowPos });
+  }, [rfProject]);
 
- const onDragOver = useCallback((event) => {
- event.preventDefault();
- event.dataTransfer.dropEffect = 'move';
- }, []);
+  const getNodeData = useCallback((type) => {
+    const builtin = DEFAULT_NODE_DATA[type];
+    if (builtin) {
+      return JSON.parse(JSON.stringify(builtin));
+    }
 
- const onDrop = useCallback((event) => {
- event.preventDefault();
- if (!wrapperRef.current) return;
+    const pm = pluginMeta.find((p) => p.type === type) || {};
+    return {
+      _label: pm.label || type,
+      _icon: pm.icon || 'Plugin',
+      _color: '#a0a0a0',
+      _hasInput: pm.hasInput !== false,
+      _hasOutput: pm.hasOutput !== false,
+      embedEnabled: false,
+      embedColor: '#303030',
+      logoUrl: '',
+      logoName: '',
+      imageUrl: '',
+      embedFooter: '',
+      ...JSON.parse(JSON.stringify(pm.defaults || {})),
+    };
+  }, [pluginMeta]);
 
- const type =
- event.dataTransfer.getData('application/reactflow') ||
- event.dataTransfer.getData('text/plain');
- if (!type) return;
+  const addNode = useCallback((type, position) => {
+    if (!type || !position) return;
+    const id = `${type}_${Date.now()}_${_nc++}`;
+    const data = getNodeData(type);
+    setNodes((prev) => {
+      const next = [...prev, { id, type, position, data }];
+      recordHistory(next, edges);
+      return next;
+    });
+  }, [getNodeData, setNodes, edges, recordHistory]);
 
- const bounds = wrapperRef.current.getBoundingClientRect();
- const position = rfProject({
- x: event.clientX - bounds.left,
- y: event.clientY - bounds.top,
- });
+  const addNodeAtPos = useCallback((type) => {
+    if (!contextMenu) return;
+    addNode(type, contextMenu.flowPos);
+  }, [addNode, contextMenu]);
 
- setContextMenu(null);
- addNode(type, position);
- }, [addNode, rfProject]);
+  const handleAddNodeCenter = useCallback(() => {
+    if (!wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const flowPos = rfProject({ x: rect.width / 2, y: rect.height / 2 });
+    setContextMenu({ x: rect.left + rect.width / 2 - 100, y: rect.top + rect.height / 2 - 100, flowPos });
+  }, [rfProject]);
 
- // close context menu when clicking outside
- const onPaneClick = useCallback(() => {
- setContextMenu(null);
- }, []);
+  const handleAddNodeFromSidebar = useCallback((type) => {
+    if (!wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const flowPos = rfProject({
+      x: rect.width / 2 + (Math.random() * 60 - 30),
+      y: rect.height / 2 + (Math.random() * 60 - 30),
+    });
+    addNode(type, flowPos);
+  }, [addNode, rfProject]);
 
- const onWrapperContextMenu = useCallback((event) => {
- if (event.target?.closest?.('.react-flow__node')) return;
- onPaneContextMenu(event);
- }, [onPaneContextMenu]);
+  const handleClearCanvas = useCallback(() => {
+    if (window.confirm('Clear all nodes and connections from the canvas? This cannot be undone.')) {
+      setNodes([]);
+      setEdges([]);
+      recordHistory([], []);
+    }
+  }, [setNodes, setEdges, recordHistory]);
 
- return (
- <div className="editor-screen">
- <Toolbar nodes={nodes} edges={edges} />
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
 
- <div className="editor-body">
- <div className="rf-wrapper" ref={wrapperRef} onContextMenu={onWrapperContextMenu}>
- <ReactFlow
- nodes={nodes}
- edges={edges}
- onNodesChange={onNodesChange}
- onEdgesChange={onEdgesChange}
- onConnect={onConnect}
- onDragOver={onDragOver}
- onDrop={onDrop}
- onPaneContextMenu={onPaneContextMenu}
- onPaneClick={onPaneClick}
- nodeTypes={nodeTypes}
- noPanClassName="nopan"
- noDragClassName="nodrag"
- noWheelClassName="nowheel"
- fitView
- fitViewOptions={{ padding: 0.3 }}
- deleteKeyCode="Delete"
- snapToGrid
- snapGrid={[10, 10]}
- selectionOnDrag
- selectionMode={SelectionMode.Partial}
- panOnDrag={[1, 2]}
- minZoom={0.1}
- maxZoom={2}
- defaultEdgeOptions={{
- type: 'default',
- style: { stroke: '#a855f7', strokeWidth: 2, filter: 'drop-shadow(0 0 5px rgba(168,85,247,0.5))' },
- }}
- connectionLineStyle={{
- stroke: '#a855f7',
- strokeWidth: 2,
- filter: 'drop-shadow(0 0 6px rgba(168,85,247,0.85))',
- }}
- className="node-editor-flow"
- >
- {/* Base line grid — thin grey lines on black */}
- <Background
- id="1"
- variant={BackgroundVariant.Lines}
- gap={40}
- size={1}
- color="#787878"
- />
- {/* Intersection dots — brighter so grid nodes are clear */}
- <Background
- id="2"
- variant={BackgroundVariant.Dots}
- gap={40}
- size={3}
- color="#cfcfcf"
- />
- <Controls className="bg-black/60 backdrop-blur-xl border border-purple-900/30 rounded-xl overflow-hidden shadow-xl" />
- <MiniMap
- nodeColor={(n) => MINIMAP_NODE_COLOR[n.type] || '#2e1a47'}
- maskColor="rgba(0, 0, 0, 0.7)"
- style={{ background: '#0d0b14', border: '1px solid #2e1a47', borderRadius: '12px' }}
- />
- <Panel position="top-right">
- <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full px-4 py-1.5 text-[10px] font-medium text-zinc-400 shadow-xl select-none">
- {nodes.length} nodes - {edges.length} edges - RMB = add
- </div>
- </Panel>
- </ReactFlow>
- </div>
+  const onDrop = useCallback((event) => {
+    event.preventDefault();
+    if (!wrapperRef.current) return;
 
- {showNPanel && (
- <NPanel selectedNode={selectedNode} setNodes={setNodes} />
- )}
- </div>
+    const type =
+      event.dataTransfer.getData('application/reactflow') ||
+      event.dataTransfer.getData('text/plain');
+    if (!type) return;
 
- <LogPanel />
+    const bounds = wrapperRef.current.getBoundingClientRect();
+    const position = rfProject({
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    });
 
- {contextMenu && (
- <ContextMenu
- menu={contextMenu}
- palette={NODE_PALETTE}
- pluginMeta={pluginMeta}
- onAdd={addNodeAtPos}
- onClose={() => setContextMenu(null)}
- />
- )}
- </div>
- );
+    setContextMenu(null);
+    addNode(type, position);
+  }, [addNode, rfProject]);
+
+  const onPaneClick = useCallback(() => {
+    setContextMenu(null);
+  }, []);
+
+  const onWrapperContextMenu = useCallback((event) => {
+    if (event.target?.closest?.('.react-flow__node')) return;
+    onPaneContextMenu(event);
+  }, [onPaneContextMenu]);
+
+  return (
+    <div className="editor-screen">
+      <Toolbar
+        nodes={nodes}
+        edges={edges}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        canUndo={historyIndex > 0}
+        canRedo={historyIndex < history.length - 1}
+        onZoomIn={() => zoomIn?.({ duration: 200 })}
+        onZoomOut={() => zoomOut?.({ duration: 200 })}
+        onFitView={() => fitView?.({ duration: 300, padding: 0.25 })}
+        onAddNode={handleAddNodeCenter}
+        onClearCanvas={handleClearCanvas}
+        showLeftSidebar={showLeftSidebar}
+        onToggleLeftSidebar={() => setShowLeftSidebar((s) => !s)}
+        showNPanel={showNPanel}
+        onToggleNPanel={() => setShowNPanel((p) => !p)}
+      />
+
+      <div className="editor-body">
+        <LeftSidebar
+          isOpen={showLeftSidebar}
+          onToggle={() => setShowLeftSidebar((s) => !s)}
+          onAddNode={handleAddNodeFromSidebar}
+          pluginMeta={pluginMeta}
+        />
+
+        <div className="rf-wrapper" ref={wrapperRef} onContextMenu={onWrapperContextMenu}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
+            onPaneContextMenu={onPaneContextMenu}
+            onPaneClick={onPaneClick}
+            nodeTypes={nodeTypes}
+            noPanClassName="nopan"
+            noDragClassName="nodrag"
+            noWheelClassName="nowheel"
+            fitView
+            fitViewOptions={{ padding: 0.3 }}
+            deleteKeyCode="Delete"
+            snapToGrid
+            snapGrid={[10, 10]}
+            selectionOnDrag
+            selectionMode={SelectionMode.Partial}
+            panOnDrag={[1, 2]}
+            minZoom={0.1}
+            maxZoom={2}
+            defaultEdgeOptions={{
+              type: 'default',
+              style: { stroke: '#777777', strokeWidth: 2 },
+            }}
+            connectionLineStyle={{
+              stroke: '#c8c8c8',
+              strokeWidth: 2,
+            }}
+            className="node-editor-flow"
+          >
+            {/* Minimalist dot grid matching reference */}
+            <Background
+              variant={BackgroundVariant.Dots}
+              gap={24}
+              size={1.2}
+              color="#262626"
+            />
+
+            {/* Empty Canvas State (Section 6) */}
+            {nodes.length === 0 && (
+              <div className="cq-canvas-empty">
+                <div className="cq-canvas-empty-box">
+                  <div className="text-2xl text-zinc-500 mb-2">◫</div>
+                  <h3 className="text-sm font-semibold text-zinc-200 mb-1">Canvas is Empty</h3>
+                  <p className="text-[11px] text-zinc-500 mb-4 max-w-xs">
+                    Start creating your Discord bot by adding nodes or choosing templates.
+                  </p>
+                  <button
+                    type="button"
+                    className="cq-btn-primary"
+                    onClick={handleAddNodeCenter}
+                  >
+                    + Add First Node
+                  </button>
+                  <div className="text-[10px] text-zinc-600 mt-3 font-mono">
+                    Right-click anywhere to add • Space + drag to pan
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Bottom-left HUD indicator */}
+            <div className="cq-hud-bottom-left">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="font-semibold text-zinc-200">CoquetteFlow</span>
+              <span className="text-zinc-600">•</span>
+              <span>{nodes.length} nodes</span>
+              <span className="text-zinc-600">•</span>
+              <span>{edges.length} connections</span>
+            </div>
+
+            {/* Bottom-right shortcut guide */}
+            <div className="cq-hud-bottom-right">
+              <span className="flex items-center gap-1"><span className="cq-kbd">Space</span> Pan</span>
+              <span className="flex items-center gap-1"><span className="cq-kbd">Scroll</span> Zoom</span>
+              <span className="flex items-center gap-1"><span className="cq-kbd">RMB</span> Add</span>
+              <span className="flex items-center gap-1"><span className="cq-kbd">Del</span> Delete</span>
+              <span className="flex items-center gap-1"><span className="cq-kbd">Ctrl+Z</span> Undo</span>
+            </div>
+          </ReactFlow>
+        </div>
+
+        {showNPanel && (
+          <NPanel selectedNode={selectedNode} setNodes={setNodes} edges={edges} />
+        )}
+      </div>
+
+      <LogPanel />
+
+      {contextMenu && (
+        <ContextMenu
+          menu={contextMenu}
+          palette={NODE_PALETTE}
+          pluginMeta={pluginMeta}
+          onAdd={addNodeAtPos}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
+    </div>
+  );
 }
 
 export default function EditorScreen() {
- return (
- <ReactFlowProvider>
- <EditorInner />
- </ReactFlowProvider>
- );
+  return (
+    <ReactFlowProvider>
+      <EditorInner />
+    </ReactFlowProvider>
+  );
 }
