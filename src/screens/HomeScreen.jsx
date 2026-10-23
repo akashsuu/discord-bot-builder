@@ -21,18 +21,20 @@ export default function HomeScreen() {
   return (
     <div className="home-screen">
       <div className="home-content">
-        <div className="home-logo flex flex-col items-center">
+        <div className="home-logo flex flex-col items-center text-center">
           <img
             src={logoIcon}
             alt="CoquetteFlow Logo"
-            className="w-16 h-16 rounded-2xl mb-4 object-contain shadow-[0_8px_30px_rgba(0,0,0,0.8)] border border-[#353535]"
+            className="w-16 h-16 rounded-2xl mb-5 object-contain shadow-[0_12px_36px_rgba(0,0,0,0.9)] border border-[#353535]"
           />
           <img
             src={logoWordmark}
             alt="CoquetteFlow"
-            className="h-10 mb-2 object-contain"
+            className="h-20 sm:h-24 md:h-28 w-auto max-w-[360px] mb-4 object-contain filter drop-shadow-[0_14px_35px_rgba(0,0,0,0.9)] select-none"
           />
-          <p className="home-subtitle">Minimalist Node-Based Discord Bot Builder</p>
+          <p className="home-subtitle text-xs text-[#a0a0a0] font-sans">
+            Minimalist Node-Based Discord Bot Builder
+          </p>
         </div>
 
         <div className="home-actions">
@@ -42,7 +44,6 @@ export default function HomeScreen() {
               Create Bot Project
             </button>
             <button className="cq-btn-secondary flex-1 justify-center py-2.5" type="button" onClick={() => setLoadModalOpen(true)}>
-              <span>📂</span>
               My Projects
             </button>
           </div>

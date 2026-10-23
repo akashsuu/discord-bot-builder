@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { useProject } from '../context/ProjectContext';
 import { NODE_PALETTE } from '../nodes/nodeTypes';
 import logoIcon from '../assets/coquetteflow-icon.png';
-import logoWordmark from '../assets/coquetteflow-wordmark.png';
 
 // Structured categories matching Section 4 & 5
 const SIDEBAR_CATEGORIES = [
@@ -141,7 +140,7 @@ export default function LeftSidebar({ isOpen, onToggle, onAddNode, pluginMeta = 
       <div className="cq-sidebar-hdr">
         <div className="flex items-center gap-2">
           <img src={logoIcon} alt="CoquetteFlow" className="w-4 h-4 rounded object-contain shrink-0" />
-          <img src={logoWordmark} alt="CoquetteFlow" className="h-3 object-contain opacity-90" />
+          <span className="text-xs font-semibold text-zinc-100 tracking-tight">CoquetteFlow</span>
         </div>
         <button
           className="cq-sidebar-close-btn"

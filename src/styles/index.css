@@ -1200,7 +1200,7 @@ select.nopan,
   flex-direction: column;
   align-items: center;
   gap: 28px;
-  max-width: 440px;
+  max-width: 500px;
   width: 100%;
   padding: 0 24px;
 }

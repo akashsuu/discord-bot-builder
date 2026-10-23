@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useProject } from '../context/ProjectContext';
 import logoIcon from '../assets/coquetteflow-icon.png';
-import logoWordmark from '../assets/coquetteflow-wordmark.png';
 
 export default function CreateProjectScreen() {
   const { setScreen, openProject } = useProject();
@@ -46,7 +45,7 @@ export default function CreateProjectScreen() {
 
         <div className="flex items-center gap-2 mb-3">
           <img src={logoIcon} alt="CoquetteFlow" className="w-5 h-5 rounded object-contain shrink-0" />
-          <img src={logoWordmark} alt="CoquetteFlow" className="h-3.5 object-contain opacity-90" />
+          <span className="text-xs font-semibold text-zinc-300 tracking-tight">CoquetteFlow</span>
         </div>
 
         <h2 className="form-title">New Project</h2>
