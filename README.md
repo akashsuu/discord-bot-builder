@@ -1,61 +1,104 @@
-# Kiodium
+<p align="center">
+  <img src="assets/coquetteflow-wordmark.png" alt="CoquetteFlow Logo" width="380" />
+</p>
 
-**Visual node-based Discord bot creator.**
-Build, run, and export Discord bots by connecting nodes in a nodes-style editor.
+<p align="center">
+  <strong>Minimalist, dark-canvas visual Discord bot builder.</strong><br>
+  Build, test, run, and export full-featured Discord.js v14 bots using interactive node graphs.
+</p>
 
-> Kiodium. All rights reserved.
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#screenshots">Screenshots</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#web-hosting--deployment">Deployment</a> •
+  <a href="#node-types">Node Types</a> •
+  <a href="#memory-saver--auto-sleep">Memory Saver</a>
+</p>
 
 ---
 
-## Features
+## 📸 Screenshots
 
-- **Visual node editor** — drag, drop, and connect nodes on an infinite canvas
-- **Live bot runner** — start and stop your bot directly inside the app
-- **Code export** — generate a real, runnable `bot.js` file
-- **Auto-save** — project saves automatically every 2 seconds
-- **Dark theme** — Blender-inspired UI
+### 1. Minimalist Node Canvas & Live Preview
+Build bot workflows with floating charcoal nodes, clean handles, live Discord embed previews, and real-time event logs.
+
+![CoquetteFlow Node Editor Canvas](assets/screenshots/coquetteflow-editor.png)
 
 ---
 
-## Tech Stack
+### 2. Smooth Curved Connections & Minimized Nodes
+Connect triggers to commands, moderation filters, and actions with elegant curved bezier wires. Minimize nodes to maximize canvas focus.
+
+![CoquetteFlow Connections & Minimized Nodes](assets/screenshots/coquetteflow-connections.png)
+
+---
+
+### 3. Add Node Context Menu
+Right-click anywhere or click **+ Add Node** in the floating toolbar to browse categorized triggers, actions, moderation tools, and utility plugins.
+
+<p align="center">
+  <img src="assets/screenshots/coquetteflow-context-menu.png" alt="CoquetteFlow Add Node Menu" width="48%" />
+  <img src="assets/screenshots/coquetteflow-plugin-menu.png" alt="CoquetteFlow Plugin Submenu" width="48%" />
+</p>
+
+---
+
+## ✨ Features
+
+- **Dark Minimalist Aesthetic** — Strict charcoal, gray, and white monochrome palette (`#080808` / `#171717` / `#1d1d1d`) designed like a professional creative workstation.
+- **Visual Node Editor** — Drag, drop, connect, minimize, and organize nodes on an infinite dot-grid canvas.
+- **117+ Modular Plugins** — Built-in moderation (Anti-Spam, Anti-BadWord, Anti-Link, Ban, Kick, Mute), economy, music, utility, and custom command nodes.
+- **Live Server Bot Runner** — Test and run your bot in real-time directly on your server or desktop.
+- **⚡ Auto-Sleep & RAM Saver** — Automatically detects when builders leave or close the website and shuts down idling bots to conserve server RAM.
+- **Export Discord.js v14 Code** — Download clean, standard, production-ready `bot.js` code or backup your workflow in `project.json`.
+- **Live Discord Preview** — See how embeds, buttons, and message templates will look in Discord before running.
+- **Web & Desktop Editions** — Host as a full multi-user web application or run locally as an Electron desktop app.
+
+---
+
+## 🛠 Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Desktop | Electron 28 |
-| UI Framework | React 18 |
-| Node Editor | React Flow 11 |
-| Discord API | discord.js 14 |
-| Bundler | Webpack 5 + Babel |
-| Storage | JSON project files |
+| **Web & API Server** | Node.js, Express, WebSockets (`ws`) |
+| **Desktop Shell** | Electron 28 |
+| **Frontend Framework** | React 18 |
+| **Node Graph Engine** | React Flow 11 |
+| **Discord API Client** | Discord.js 14 |
+| **Build System** | Webpack 5, Babel, Tailwind CSS |
+| **Process Manager** | PM2 / Docker |
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) v18 or later
-- npm v9 or later
+- [Node.js](https://nodejs.org/) v18.0.0 or higher
+- npm v9 or higher
 
-### Install
+### Installation
 
 ```bash
-cd kiodium
+git clone https://github.com/akashsuu/discord-bot-builder.git coquetteflow
+cd coquetteflow
 npm install
 ```
 
-### Run as Website (Hosted Web Edition)
+### Running as a Hosted Web App
 
 ```bash
-# 1. Build frontend & start web server
-npm run start:web
+# 1. Build the frontend bundle
+npm run build
 
-# Or if frontend is already built:
+# 2. Start the web server
 npm start
 ```
-The application will be live at http://localhost:3000.
 
-### Run as Desktop App (Electron)
+The CoquetteFlow web platform will be accessible at `http://localhost:3000` (or your configured `PORT`).
+
+### Running as Desktop Application (Electron)
 
 ```bash
 npm run start:electron
@@ -65,36 +108,41 @@ npm run start:electron
 
 ## 🌐 Web Hosting & Deployment
 
-You can host Kiodium on your website/server so multiple users can build bots in their browsers and run them hosted on your server!
+CoquetteFlow can be hosted on any VPS, cloud server, or container platform.
 
-### Option 1: Docker (Recommended)
-
-```bash
-# Build and run with Docker Compose
-docker compose up -d
-```
-Your server will run on port 3000 with automated container restart and persistent volume storage for bot projects in /app/data.
-
-### Option 2: PM2 (Node Process Manager on VPS)
+### Option 1: PM2 (Recommended for VPS)
 
 ```bash
+# 1. Compile bundle
 npm run build
+
+# 2. Start with PM2
 pm2 start ecosystem.config.js
 pm2 save
 ```
 
-### Option 3: Nginx Reverse Proxy with WebSocket Support
+### Option 2: Docker & Docker Compose
+
+```bash
+# Start container in background
+docker compose up -d
+```
+
+### Option 3: Nginx Reverse Proxy with WebSockets
+
+To point your custom domain (e.g. `coquetteflow.bot.nu`) to your instance:
 
 ```nginx
 server {
-    server_name your-domain.com;
+    server_name coquetteflow.bot.nu;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:44556;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
         proxy_cache_bypass $http_upgrade;
     }
 }
@@ -102,305 +150,105 @@ server {
 
 ---
 
-### Run (development)
+## ⚡ Memory Saver & Auto-Sleep
 
-```bash
-npm run dev
-```
+When hosting for users online, multiple running bots can quickly consume server RAM. CoquetteFlow features a presence-aware auto-sleep architecture:
 
-This builds the React frontend then opens the Electron window.
-
-### Watch mode (live reload)
-
-Open two terminals:
-
-```bash
-# Terminal 1 — rebuild on file changes
-npm run watch
-
-# Terminal 2 — start Electron after first build
-npm start
-```
+- **Active Heartbeat**: The browser sends a keep-alive heartbeat every 8 seconds while building.
+- **Instant Unload Beacon**: When a user closes their tab or browser, `navigator.sendBeacon('/api/bot/leave')` instantly alerts the server.
+- **Smart Grace Period**: A brief grace countdown prevents bots from stopping during normal page refreshes (`F5`).
+- **RAM Reclaimed**: The server destroys the Discord client, clears guild caches, and frees memory back to the operating system.
 
 ---
 
-## Project Structure
-
-```
-kiodium/
-├── main.js Electron main process + IPC handlers
-├── preload.js Secure contextBridge API surface
-├── webpack.config.js
-├── .babelrc
-├── package.json
-│
-├── src/ React frontend
-│ ├── index.html
-│ ├── index.jsx
-│ ├── App.jsx
-│ ├── context/
-│ │ └── ProjectContext.jsx Global state (screen, project, bot, logs)
-│ ├── screens/
-│ │ ├── HomeScreen.jsx Create / Load project
-│ │ ├── CreateProjectScreen.jsx
-│ │ ├── TokenScreen.jsx Discord bot token entry
-│ │ └── EditorScreen.jsx React Flow canvas
-│ ├── nodes/
-│ │ ├── EventMessageNode.jsx
-│ │ ├── CustomCommandNode.jsx
-│ │ ├── SendMessageNode.jsx
-│ │ ├── ConditionBranchNode.jsx
-│ │ └── nodeTypes.js Node registry + palette metadata
-│ ├── components/
-│ │ ├── Toolbar.jsx Run / Stop / Save / Export / Token
-│ │ ├── NodePalette.jsx Draggable node sidebar
-│ │ └── LogPanel.jsx Collapsible console output
-│ └── styles/
-│ └── index.css
-│
-├── backend/
-│ ├── botRunner.js discord.js execution engine (main process)
-│ ├── codeExporter.js Generates bot.js from node graph
-│ └── pluginLoader.js Loads /plugins/* at startup
-│
-└── plugins/
- └── ping_command/ Example plugin
- ├── plugin.json
- └── index.js
-```
-
----
-
-## Node Types
-
-###  Message Event
-Trigger node. Fires whenever a message is received in any channel the bot can see.
-No inputs. One output: `message`.
-
-###  Custom Command
-Checks if the incoming message starts with a command string.
-If it matches, optionally sends a reply, then passes the message downstream.
-
-| Field | Description |
-|---|---|
-| Command | e.g. `!hello` |
-| Reply | e.g. `Hello {user}!` |
-
-###  Send Message
-Sends a text message to the same channel the trigger came from.
-
-| Field | Description |
-|---|---|
-| Text | Message content (supports variables) |
-
-###  Condition Branch
-Evaluates a condition and routes execution down a **True** or **False** path.
-
-| Field | Options |
-|---|---|
-| Condition | `starts_with`, `contains`, `equals` |
-| Value | The string to test against |
-
----
-
-## Variable Substitution
-
-Use these placeholders in **Reply** and **Text** fields:
-
-| Variable | Replaced with |
-|---|---|
-| `{user}` | The sender's username |
-| `{args}` | Everything after the command word |
-| `{tag}` | The sender's full tag (`user#1234`) |
-| `{channel}` | The channel name |
-
-Example: `Hello {user}, you said: {args}` sent by `Alice` with `!greet world` →
-`Hello Alice, you said: world`
-
----
-
-## Keyboard Shortcuts
+## ⌨️ Keyboard Shortcuts
 
 | Shortcut | Action |
 |---|---|
-| `Ctrl + S` | Save project |
-| `Delete` | Delete selected node or edge |
-| `Scroll` | Zoom canvas |
-| `Middle-click drag` | Pan canvas |
+| `N` | Toggle Right Properties / Inspector Panel |
+| `Ctrl + S` | Save bot project to server |
+| `Ctrl + Z` | Undo last graph modification |
+| `Ctrl + Y` | Redo graph modification |
+| `Delete` / `Backspace` | Delete selected node(s) or connection wire |
+| `Right-Click` | Open Add Node context menu at cursor position |
+| `Mouse Wheel` | Zoom in / out on canvas |
+| `Middle-Click Drag` | Pan canvas |
 
 ---
 
-## Project File Format
+## 📦 Exported Code Example
 
-Projects are stored as `project.json`:
+Clicking **Export > Export bot.js** produces clean Discord.js v14 code:
 
-```json
-{
- "name": "My Bot",
- "token": "",
- "nodes": [
- {
- "id": "event_message_1",
- "type": "event_message",
- "position": { "x": 100, "y": 200 },
- "data": { "label": "Message Event" }
- },
- {
- "id": "custom_command_1",
- "type": "custom_command",
- "position": { "x": 380, "y": 200 },
- "data": { "command": "!hello", "reply": "Hello {user}!" }
- }
- ],
- "edges": [
- {
- "id": "e1",
- "source": "event_message_1",
- "sourceHandle": "output",
- "target": "custom_command_1",
- "targetHandle": "input"
- }
- ]
-}
-```
-
-> **Security:** The token is stored locally only. It is never logged or transmitted anywhere.
-
----
-
-## Plugin System
-
-Extend the app with new node types by dropping a folder into `/plugins/`.
-
-### Plugin structure
-
-```
-plugins/
-└── my_plugin/
- ├── plugin.json
- └── index.js
-```
-
-### plugin.json
-
-```json
-{
- "name": "My Plugin",
- "version": "1.0.0",
- "description": "Does something cool",
- "author": "You",
- "icon": ""
-}
-```
-
-### index.js
-
-```js
-module.exports = {
- nodes: {
- my_node_type: {
- async execute(node, message) {
- // node.data contains your node's field values
- // message is a discord.js Message object
- // return true → downstream nodes run
- // return false → stop this execution path
- },
- generateCode(node) {
- return `/* valid JS that uses the message variable */`;
- }
- }
- }
-};
-```
-
-### Built-in example — `plugins/ping_command/`
-
-Registers a `ping_command` node that responds to `!ping` with latency:
-
-```js
-module.exports = {
- nodes: {
- ping_command: {
- async execute(node, message) {
- if (message.content.trim().toLowerCase() !== '!ping') return false;
- const latency = Date.now() - message.createdTimestamp;
- await message.channel.send(` Pong! Latency: **${latency}ms**`);
- return true;
- },
- generateCode(node) {
- return `if (message.content.trim().toLowerCase() === "!ping") {
- const latency = Date.now() - message.createdTimestamp;
- message.channel.send(\`Pong! Latency: \${latency}ms\`);
-}`;
- }
- }
- }
-};
-```
-
-
----
-
-## Exported Code
-
-Clicking ** Export** generates a self-contained `bot.js`:
-
-```js
+```javascript
 const { Client, GatewayIntentBits } = require("discord.js");
 
 const client = new Client({
- intents: [
- GatewayIntentBits.Guilds,
- GatewayIntentBits.GuildMessages,
- GatewayIntentBits.MessageContent,
- ],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
 client.once("ready", () => {
- console.log(`Logged in as ${client.user.tag}`);
+  console.log(`[CoquetteFlow] Logged in as ${client.user.tag}`);
 });
 
 client.on("messageCreate", async (message) => {
- if (message.author.bot) return;
+  if (message.author.bot) return;
 
- if (message.content.startsWith("!hello")) {
- message.channel.send(`Hello ${message.author.username}!`);
- }
+  if (message.content.startsWith("!hello")) {
+    message.channel.send(`Hello ${message.author.username}!`);
+  }
 });
 
 client.login("YOUR_BOT_TOKEN");
 ```
 
-Run the exported file with:
+---
 
-```bash
-npm install discord.js
-npm start
+## 🧩 Plugin System
+
+You can add custom node types by creating a subfolder in `/plugins/`:
+
+```
+plugins/
+└── my_plugin/
+    ├── plugin.json
+    └── index.js
+```
+
+### `plugin.json`
+```json
+{
+  "name": "My Plugin",
+  "version": "1.0.0",
+  "description": "Custom moderation or utility node",
+  "author": "You",
+  "category": "moderation"
+}
+```
+
+### `index.js`
+```javascript
+module.exports = {
+  nodes: {
+    my_plugin_node: {
+      async execute(node, message, helpers) {
+        // Run logic when message arrives
+        return true; // Pass through to downstream nodes
+      },
+      generateCode(node) {
+        return `/* custom generated discord.js code */`;
+      }
+    }
+  }
+};
 ```
 
 ---
 
-## Scripts
+## 📄 License
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Build frontend then launch Electron |
-| `npm run build` | One-time webpack build (development mode) |
-| `npm run watch` | Webpack in watch mode (rebuilds on change) |
-| `npm start` | Launch Electron (requires prior build) |
-
----
-
-## Discord Bot Setup
-
-1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Create a new application → Bot → add a bot
-3. Under **Privileged Gateway Intents**, enable **Message Content Intent**
-4. Copy the token and paste it in the app via the ** Token** button
-5. Invite the bot to your server using OAuth2 → URL Generator (scopes: `bot`)
-
----
-
-## License
-
-Kiodium. All rights reserved.
+CoquetteFlow. All rights reserved.
